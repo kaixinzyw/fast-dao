@@ -1,0 +1,546 @@
+# spring-db-template
+
+### *偷懒必备的ORM框架,提高非常多的开发效率*
+### 作者:张亚伟
+### 邮箱:398850094@qq.com
+
+基于Spring深度封装的ORM快速开发框架
+
+---
+有不完善的地方请多多指导
+
+---
+
+### 安装方式
+
+----
+@Component
+public class FastConfig {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Bean
+    public void fastJdbcConfig(){
+        //目前有MyBatis实现FastMyBatisImpl.class和SpringJdbc实现SpringJDBCMySqlImpl.class
+        //可以自己通过继承执行器FastDBActuator编写自己的实现
+        AutomaticParameterSetting setting = new AutomaticParameterSetting(FastMyBatisImpl.class);
+        //设置默认属性字段自动操作配置,如果表设计和我不同,自行设置
+        //主键:id,创建时间:createTime,更新时间:updateTime,逻辑删除:deleted
+        setting.defaultSetting();
+    }
+}
+----
+
+### 代码生成
+
+----
+
+public class FileTest {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException, TemplateException, IOException {
+        CodeCreateParameter codeParameter = new CodeCreateParameter();
+        //数据库驱动
+        codeParameter.setDriverClass("com.mysql.cj.jdbc.Driver");
+        //数据库连接
+        codeParameter.setUrl("jdbc:mysql://127.0.0.1:3306/xxx?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
+        //数据库账号
+        codeParameter.setUser("xxxx");
+        //数据库密码
+        codeParameter.setPassword("xxxx");
+        //文件生成的包路径
+        codeParameter.setBasePackage("xxx.xxx.xxx.xxx");
+        //需要生成的文件 (可选值Base<生成Pojo类,Pojo查询模板,Pojo字段集>,Service<Service接口>,ServiceImpl<Service实现类>,Dto<Dto对象>,Dao<Dao对象>, All<上述所有文件>)
+        codeParameter.setNeedModules(CodeCreateParameter.CodeCreateModule.All);
+        //是否生成表前缀
+        codeParameter.setPrefix(false);
+        //需要生成的表名 (可选值,具体表名或all)
+        codeParameter.setCreateTables("tab1","tab2");
+        //生成代码
+        new TableFileCreateUtils().create(codeParameter);
+    }
+}
+
+----
+
+
+### 两种操作方式
+
+
+
+第一种直接通过Pojo模板进行操作
+
+----
+CREATE TABLE `user_test` (
+	`id` CHAR ( 32 ) NOT NULL COMMENT '主键ID',
+	`name` VARCHAR ( 255 ) DEFAULT NULL COMMENT '用户名',
+	`age` INT ( 11 ) DEFAULT NULL COMMENT '年龄',
+	`create_time` datetime DEFAULT NULL COMMENT '创建时间',
+	`update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`deleted` bit ( 1 ) DEFAULT NULL COMMENT '是否删除',
+PRIMARY KEY ( `id` ))
+
+例1:
+/**
+ * 主键查询
+ */
+UserTest user = UserTestTemplate.fastFunction().findByPrimaryKey("主键id");
+
+例2:
+/**
+ * 数据插入
+ */
+UserTestTemplate.fastFunction().insert(user);
+
+例3:
+/**
+ * 按条件查询并分页
+ */
+UserTestTemplate userTestTemplate = new UserTestTemplate();
+userTestTemplate.fastName().equal("张亚伟");//指定字段AND条件
+PageInfo<UserTest> userPageInfo = userTestTemplate.dbTemplate().findPage(1, 10);
+
+----
+
+第二种通过Service继承通用方法进行操作
+
+----
+@Autowired
+private IUserTestService userTestService;
+
+例1:
+/**
+ * 主键查询
+ */
+UserTest userTest = userTestService.findByPrimaryKey("ec37288a7c504047b09cc6a27c55fec5");
+
+例2:
+/**
+ * 数据插入
+ */
+ Boolean b = userTestService.insert(user);
+
+例3:
+/**
+ * 按条件查询并分页
+ */
+FastExample fastExample = new FastExample();
+fastExample.field(UserTestFields.Name).equal("张亚伟");//指定字段AND查询
+PageInfo<UserTest> page = userTestService.findPage(fastExample, 1, 10);
+----
+
+# 本框架具备很强的灵活性,可兼容任意的其他框架进行使用
+
+
+
+
+
+### 贴点测试类
+
+----
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringFastjdbcMysqlTestApplication.class)
+public class FastTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private IUserTestService userTestService;
+
+    @Test
+    public void insert() {
+        long time = System.currentTimeMillis();
+        for (int i = 1; i <= 100; i++) {
+            UserTest user = new UserTest();
+            user.setName("张亚伟" + i);
+            Boolean b = userTestService.insert(user);
+        }
+        //System.out.println("执行数据共用" + (System.currentTimeMillis() - time));
+    }
+
+    @Test
+    public void inrtList() {
+        long time = System.currentTimeMillis();
+        List<UserTest> users = new ArrayList<>();
+        for (int i = 1; i <= 10000; i++) {
+            UserTest user = new UserTest();
+            user.setName("张亚伟" + i);
+            user.setAge(i);
+            users.add(user);
+        }
+        Integer integer = userTestService.inrtList(users);
+        //System.out.println("执行数据共用" + (System.currentTimeMillis() - time));
+
+    }
+
+    @Test
+    public void deleteByPrimaryKey() {
+        Boolean b = userTestService.deleteByPrimaryKey("ec37288a7c504047b09cc6a27c55fec5");
+        //System.out.println(b);
+    }
+
+    @Test
+    public void findByPrimaryKey() {
+        UserTest userTest = userTestService.findByPrimaryKey("ec37288a7c504047b09cc6a27c55fec5");
+        //System.out.println(JSONUtil.toJsonStr(userTest));
+    }
+
+    @Test
+    public void findByIn() {
+        List<UserTest> byIn = userTestService.findByIn(UserTestFields.Name, "张亚伟1", "张亚伟2");
+        //System.out.println(JSONUtil.toJsonStr(byIn));
+    }
+
+
+    @Test
+    public void findAll() {
+        List<UserTest> byIn = userTestService.findAll();
+        //System.out.println(JSONUtil.toJsonStr(byIn));
+    }
+
+    @Test
+    public void updateByPrimaryKeySelective() {
+        UserTest userTest = new UserTest();
+        userTest.setId("ec37288a7c504047b09cc6a27c55fec5");
+        userTest.setName("updateByPrimaryKeySelective");
+
+
+        Boolean update = userTestService.updateByPrimaryKeySelective(userTest);
+        //System.out.println(update);
+    }
+
+    @Test
+    public void findOne() {
+        UserTest userTest = new UserTest();
+        userTest.setName("张亚伟1");
+
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).like("%张亚伟%").or().equal("张亚伟2");
+        fastExample.field(UserTestFields.Age).in(1, 2, 3, 4, 5, 6, 7).or().equal(1);
+        fastExample.equalObject(userTest);
+
+        UserTest byIn = userTestService.findOne(fastExample);
+        //System.out.println(JSONUtil.toJsonStr(byIn));
+    }
+
+
+    @Test
+    public void findAll2() {
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).like("%张亚伟%");
+        fastExample.field(UserTestFields.Age).less(4);
+        List<UserTest> all = userTestService.findAll(fastExample);
+        //System.out.println(JSONUtil.toJsonStr(all));
+    }
+
+    @Test
+    public void findCount() {
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).like("%张亚伟%");
+        Integer count = userTestService.findCount(fastExample);
+        //System.out.println(count);
+    }
+
+    @Test
+    public void findPage() {
+        long time = System.currentTimeMillis();
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).equal("张亚伟");//指定字段AND查询
+        PageInfo<UserTest> page = userTestService.findPage(fastExample, 1, 100000);
+        for (int i = 1; page.getSize() > 0; i++) {
+            long l = System.currentTimeMillis();
+            page = userTestService.findPage(fastExample, i, 100000);
+            //System.out.println(page.getSize());
+            //System.out.println(i+"此处执行用时" + (System.currentTimeMillis() - l));
+        }
+        //System.out.println("执行数据共用" + (System.currentTimeMillis() - time));
+    }
+
+    @Test
+    public void update() {
+        UserTest userTest = new UserTest();
+        userTest.setName("update");
+
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).like("%张亚伟%");
+        fastExample.field(UserTestFields.Age).less(5);
+        Integer count = userTestService.update(userTest, fastExample);
+        //System.out.println(count);
+    }
+
+
+    @Test
+    public void updateSelective() {
+        UserTest userTest = new UserTest();
+        userTest.setName("update");
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).like("%张亚伟%");
+        fastExample.field(UserTestFields.Age).less(5);
+
+        Integer count = userTestService.updateSelective(userTest, fastExample);
+        //System.out.println(count);
+    }
+
+    @Test
+    public void delete() {
+        FastExample fastExample = new FastExample();
+        fastExample.field(UserTestFields.Name).like("%张亚伟%");
+        fastExample.field(UserTestFields.Age).less(5);
+        Integer count = userTestService.delete(fastExample);
+        //System.out.println(count);
+    }
+}
+
+
+
+
+
+
+
+
+public class JDBCTest {
+
+    @Test
+    public void test1() {
+        create();
+        long time = System.currentTimeMillis();
+        for (int i = 1; i <= 10; i++) {
+            UserTest user = new UserTest();
+            user.setName("张亚伟" + i);
+            user.setAge(i);
+            UserTestTemplate.fastFunction().insert(user);
+        }
+        //System.out.println("执行数据共用" + (System.currentTimeMillis() - time));
+    }
+
+    @Test
+    public void test2() {
+        create();
+        long time = System.currentTimeMillis();
+        List<UserTest> users = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            UserTest user = new UserTest();
+            user.setName("张亚伟" + i);
+            user.setAge(i);
+            users.add(user);
+        }
+        UserTestTemplate.fastFunction().insertList(users);
+
+        //System.out.println("执行数据共用" + (System.currentTimeMillis() - time));
+
+    }
+
+    @Test
+    public void test3() {
+        create();
+        long time = System.currentTimeMillis();
+        List<UserTest> all = UserTestTemplate.fastFunction().findAll();
+        //System.out.println("执行数据共用" + (System.currentTimeMillis() - time));
+
+        //System.out.println(all);
+    }
+
+    @Test
+    public void test4() {
+        create();
+        UserTest user = new UserTest();
+        user.setName("张亚伟1");
+        UserTestTemplate userTemplate = new UserTestTemplate();
+        //数据中所有
+        userTemplate.fastEqualToUserTest(user);
+        userTemplate.fastName().like("张亚伟%");
+        userTemplate.fastAge().in(1, 2, 3);
+        userTemplate.fastDeleted().in(0);
+        userTemplate.fastName().in("张亚伟1", "张亚伟2", "张亚伟3");
+
+        user = userTemplate.dbTemplate().findOne();
+        //System.out.println(user.toString());
+    }
+
+    @Test
+    public void test5() {
+        create();
+        UserTest user = new UserTest();
+        user.setName("张亚伟1");
+        UserTestTemplate userTemplate = new UserTestTemplate();
+        userTemplate.fastEqualToUserTest(user);
+        userTemplate.fastName().like("张亚伟%");
+        userTemplate.fastAge().in(1,2,3);
+        userTemplate.fastDeleted().in(false);
+        userTemplate.fastName().in("张亚伟1","张亚伟2","张亚伟3");
+        userTemplate.fastCreateTime().in(new Date(),new Date(),new Date());
+        List<UserTest> all = userTemplate.dbTemplate().findAll();
+        //System.out.println(all.size());
+        //System.out.println(JSONUtil.toJsonStr(all));
+    }
+
+    @Test
+    public void test6() {
+        create();
+        UserTestTemplate userTemplate = new UserTestTemplate();
+        userTemplate.fastName().like("张亚伟%");
+        userTemplate.fastAge().in(1,2,3);
+        userTemplate.fastDeleted().in(0);
+        userTemplate.fastName().in("张亚伟1","张亚伟2","张亚伟3");
+        Integer count = userTemplate.dbTemplate().findCount();
+        //System.out.println(count);
+    }
+
+    @Test
+    public void test7() {
+        create();
+        UserTest userTest = new UserTest();
+        userTest.setAge(18);
+
+        //查询条件包含了目前所有的常用操作,一下列举几个作为参考
+        UserTestTemplate ut = new UserTestTemplate();
+        ut.fastEqualToUserTest(userTest);//对象中所有不为空参数都作为AND条件
+        ut.fastAge().lessOrEqual(20); //指定字段小于等于查询
+        ut.fastName().equal("张亚伟");//指定字段AND条件
+        ut.fastAge().orderByAsc();//指定字段排序
+        PageInfo<UserTest> userPageInfo = ut.dbTemplate().findPage(1, 10);
+        //System.out.println(JSONUtil.toJsonStr(userPageInfo));
+    }
+
+    @Test
+    public void test8() {
+        create();
+        UserTest user = new UserTest();
+        user.setName("张亚伟-1");
+        user.setAge(-1);
+        user.setId("85f1ba1da50740afb8274084e33a0cb4");
+        //System.out.println(UserTestTemplate.fastFunction().updateByPrimaryKeySelective(user));
+    }
+
+    @Test
+    public void test9() {
+        create();
+        UserTest user = new UserTest();
+        user.setAge(-2);
+        user.setName("张亚伟-2");
+
+        UserTestTemplate userTemplate = new UserTestTemplate();
+        userTemplate.fastName().equal("张亚伟2");
+
+        //System.out.println(userTemplate.dbTemplate().updateSelective(user));
+    }
+
+    @Test
+    public void test10() {
+        create();
+        UserTest user = new UserTest();
+        user.setAge(-22);
+        user.setName("张亚伟in");
+        user.setDeleted(false);
+        UserTestTemplate UserTestTemplate = new UserTestTemplate();
+        UserTestTemplate.fastName().in("张亚伟-2");
+
+        //System.out.println(UserTestTemplate.dbTemplate().update(user));
+    }
+
+    @Test
+    public void test11() {
+        create();
+        UserTestTemplate userTemplate = new UserTestTemplate();
+        userTemplate.fastId().equal("0041b89142fd459b88392414724ddbcc");
+        //System.out.println(userTemplate.dbTemplate().deleteDisk());
+    }
+
+    @Test
+    public void test12() {
+        create();
+        //System.out.println(UserTestTemplate.fastFunction().deleteByPrimaryKey("c6a6861527ac4fe7a2de29831fa5a81b"));
+    }
+
+    @Test
+    public void test13() {
+        create();
+        UserTestTemplate UserTestTemplate = new UserTestTemplate();
+        UserTestTemplate.fastName().like("张亚伟%");
+        //System.out.println(UserTestTemplate.dbTemplate().deleteDisk());
+    }
+
+    @Test
+    public void test14() {
+        create();
+        FastExample fastExample = new FastExample();
+        List<UserTest> age = UserTestTemplate.fastFunction().findByIn("age", 1, 2, null);
+
+        //System.out.println(JSONUtil.toJsonStr(age));
+    }
+
+    @Test
+    public void test15() {
+        create();
+        List<UserTest> user = UserTestTemplate.fastFunction().findByIn("id", "579427c5959a4e73841f437d1897abb6", "58092420f83d4fbe85481f8d9c9382ce");
+        //System.out.println(user);
+    }
+
+    @Test
+    public void test16() {
+        create();
+
+        UserTest userTest = new UserTest();
+        userTest.setName("张亚伟1");
+
+        UserTestTemplate userTemplate = new UserTestTemplate();
+        userTemplate.fastEqualToUserTest(userTest);
+        userTemplate.fastName().or().equal("张亚伟2");
+        userTemplate.fastName().orderByAsc();
+        userTemplate.fastName().showField();
+        userTemplate.fastAge().showField();
+        List<UserTest> all = userTemplate.dbTemplate().findAll();
+        //System.out.println(JSONUtil.toJsonStr(all));
+    }
+
+    @Test
+    public void test17() {
+        create();
+        UserTest user = new UserTest();
+        user.setId("30433cbbdf594aeb86bcbc350b140c17");
+        user.setName("张亚伟-1");
+        user.setAge(-1);
+        UserTest b = UserTestTemplate.fastFunction().findByPrimaryKey("1206947dc88045059cb0e6f4fe3c60a5");
+        //System.out.println(b);
+    }
+
+
+    private void create() {
+        AutomaticParameterSetting.setPrimaryKeyField("id");
+        AutomaticParameterSetting.setPrimaryKeyType(PrimaryKeyTypeEnum.UUID.getType());
+        AutomaticParameterSetting.setCreateTimeField("createTime");
+        AutomaticParameterSetting.setUpdateTimeField("updateTime");
+        AutomaticParameterSetting.setDeleteField("deleted");
+        AutomaticParameterSetting.setDeleteValue(true);
+        AutomaticParameterSetting.setNoDeleteValue(false);
+
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
+        dataSource.setUsername("root");
+        dataSource.setPassword("kaixin001");
+        FastDBConnection.setJdbcTemplate(new JdbcTemplate(dataSource));
+    }
+
+}
+
+
+----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
