@@ -2,7 +2,7 @@ package com.fast.db.template.code.bean;
 
 /**
  * 表对应的属性
- * Created by zhangjh on 16/6/12.
+ * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 public class BeanInfo {
     /**

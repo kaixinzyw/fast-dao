@@ -1,8 +1,9 @@
-package ${conf.basePackage}.${conf.servicePackage}<#if prefixName??>.${prefixName}</#if>;
+<#assign beanName = table.pojoName/>
+package ${table.iservicePackPath};
 
-import ${conf.basePackage}.${conf.beanPackage}<#if prefixName??>.${prefixName}</#if>.${beanName};
-import com.fast.jdbc.base.IFastBaseService;
+import ${table.pojoClassPackPath};
+import com.fast.db.template.base.IFastBaseService;
 
-public interface I${beanName}Service extends IFastBaseService<${beanName}> {
+public interface ${table.iserviceName} extends IFastBaseService<${beanName}> {
 
 }

@@ -29,14 +29,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 对Page<E>结果进行包装
- * <p/>
+ * 对Page结果进行包装
  * 新增分页的多项属性，主要参考:http://bbs.csdn.net/topics/360010907
- *
- * @author liuzh/abel533/isea533
- * @version 3.3.0
- * @since 3.2.2
- * 项目地址 : http://git.oschina.net/free/Mybatis_PageHelper
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageInfo<T> extends PageSerializable<T> {
@@ -82,11 +76,7 @@ public class PageInfo<T> extends PageSerializable<T> {
     public PageInfo() {
     }
 
-    /**
-     * 包装Page对象
-     *
-     * @param list
-     */
+
     public PageInfo(List<T> list) {
         this(list, 8);
     }

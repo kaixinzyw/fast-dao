@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author 张亚伟 398850094@qq.com
+ * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 public class PageSerializable<T> implements Serializable {
     private static final long serialVersionUID = 1L;

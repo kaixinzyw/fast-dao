@@ -1,124 +1,387 @@
 # spring-db-template
 
-### *偷懒必备的ORM框架,提高非常多的开发效率*
-### 作者:张亚伟
-### 邮箱:398850094@qq.com
+### *偷懒必备的ORM框架,大幅度提高开发效率,减少编码量*
+### 作者: 张亚伟
+### QQ群: 554127796
+### GitHub: https://github.com/kaixinzyw/fast-db-template
+### 码云: https://gitee.com/fast-product/fast-db-template
 
-基于Spring深度封装的ORM快速开发框架
----
 
-警告:目前只支持主键为字符串,逻辑删除字段布尔,创建时间和更新时间datetime 的表,
+### 功能简介
+----
+1. 极·简化数据库操作，大幅度提高编码效率,此框架核心价值所在,上手难度非常低;
+    例-分页查询: PageInfo<Demo> page = DemoTemplate..create().dao().findPage(1, 10);
+    例-新增数据: Boolean success = DemoTemplate.create().dao().insert(demo);
+    例-更新数据: Integer updateCount = DemoTemplate.create().id(1).dao().update(demo);
+    例-删除数据: Integer delCount = DemoTemplate.create().id(1).dao().delete();
 
----
-有不完善的地方请多多指导
+2. 自动对<创建时间 | 更新时间 | 主键 | 逻辑删除>进行设置;
 
----
+3. 支持3种数据缓存<本地缓存，Redis缓存，本地和Redis结合缓存>,支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据;
 
-### 安装方式
+4. 逻辑删除保护,对逻辑删除标记的数据在更新,查询等操作时候进行过滤;
+
+5. SQL自检,对每一条SQL执行进行日志输出<可设置开启或关闭>,自动拼接SQL语句占位条件<复制即用>,并输出SQL执行效率,执行结果;
+    例:
+    com.db.test.pojo.UserTest: SELECT -> user_test: SQL执行报告↓
+    SELECT `id` as id, `name` as name
+    FROM user_test
+    WHERE (`deleted` = false)
+    AND (`name` = '张三')
+    ORDER BY `age` asc  limit 1 ;
+    本次执行耗时:3毫秒
+    执行结果:
+    [{"age":10,"createTime":"2019-10-26","deleted":false,"id":17333,"name":"张亚伟10"}]
+
+6. 快速数据源更换,可以对任意一次操作进行数据源更换,方便快捷;
+
+7. 支持自定义SQL,自动进行类和表之间的映射;
+
+8. 丰富的模板文件生成器设置,满足各种场景的需求
+
+9. 可按需要对框架扩展<任意数据库,任意框架>的快速操作实现<本框架自身实现了对JDBC和 MyBatis的MySql数据库操作扩展实现,可任意选择使用哪一种>;
+
+10. 完美兼容其他ORM框架,可以搭配任意ORM框架一同使用<如:MyBatis>;
 
 ----
-@Component
-public class FastConfig {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Bean
-    public void fastJdbcConfig(){
-        //目前有MyBatis实现FastMyBatisImpl.class和SpringJdbc实现SpringJDBCMySqlImpl.class
-        //可以自己通过继承执行器FastDBActuator编写自己的实现
-        AutomaticParameterSetting setting = new AutomaticParameterSetting(FastMyBatisImpl.class);
-        //设置默认属性字段自动操作配置,如果表设计和我不同,自行设置
-        //主键:id,创建时间:createTime,更新时间:updateTime,逻辑删除:deleted
-        setting.defaultSetting();
+### 1. 快速开始
+#### 1.1 安装
+
+----
+    本项目使用JDK1.8,依赖SpringBoot,使用Maven
+    <dependency>
+        <groupId>com.github.kaixinzyw</groupId>
+        <artifactId>fast-db-template</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+----
+
+#### 1.2 框架配置
+
+----
+/**
+ * 配置创建
+ * 参数1: 可选值 1:SpringJDBCMySqlImpl.class:使用SpringJDBC实现, 2:FastMyBatisImpl.class: 使用MyBatis实现
+ * 参数2: 框架操作的主键字段名称
+ * 参数3: 框架操作的主键类型,目前可选32位UUID或自增AUTO
+ */
+AutomaticParameterSetting setting = new AutomaticParameterSetting(SpringJDBCMySqlImpl.class, "id", PrimaryKeyType.AUTO);
+
+/**
+ * 字段驼峰转换 例 user_name = userName
+ */
+setting.openToCamelCase();
+
+/**
+ * 开启SQL执行日志打印,INFO级别,自动使用项目使用的日志框架
+ * 参数1: 是否打印SQL日志
+ * 参数2: 是否打印SQL执行结果
+ */
+setting.openSqlPrint(true, true);
+
+/**
+ * 开启自动设置创建时间
+ * 参数1: 需要设置创建时间的字段名
+ */
+setting.openAutoSetCreateTime("createTime");
+
+/**
+ * 开启自动设置更新时间
+ * 参数1: 需要设置更新时间的字段名
+ */
+setting.openAutoSetUpdateTime("updateTime");
+
+/**
+ * 开启逻辑删除功能
+ * 参数1:  逻辑删除字段名
+ * 参数2:  逻辑删除标记默认值
+ */
+setting.openLogicDelete("deleted", true);
+
+/**
+ * 开启缓存功能
+ * 参数1:  默认缓存时间
+ * 参数2:  默认缓存时间类型
+ */
+setting.openCache(10L, TimeUnit.SECONDS);
+----
+
+#### 1.3 模板文件生成
+----
+FileCreateConfig config = new FileCreateConfig();
+
+//数据库连接
+config.setDBInfo("jdbc:mysql://127.0.0.1:3306/dome?useUnicode=true&characterEncoding=utf-8","root","123456","com.mysql.cj.jdbc.Driver");
+
+//文件生成的包路径
+config.setBasePackage("com.db.test");
+
+//需要生成的文件类型 (可选值Base<生成Pojo类,Pojo查询模板,Pojo字段集>,Service<Service接口>,ServiceImpl<Service实现类>,Dto<Dto对象>,Dao<Dao对象>, All<上述所有文件>)
+config.setNeedModules(FileCreateConfig.CodeCreateModule.All);
+
+//是否生成表前缀
+config.setPrefix(false,false,null);
+
+//是否使用lombok插件
+config.setUseLombok(true);
+
+//是否下划线转大小写,默认true
+config.setUnderline2CamelStr(true);
+
+//是否覆盖原文件,默认false
+config.setReplaceFile(false);
+
+//多模块项目指定模块生成
+config.setChildModuleName("service");
+
+//需要生成的表名 (可选值,具体表名或all)
+config.setCreateTables("user_test");
+
+//生成代码
+TableFileCreateUtils.create(config);
+
+模板文件生成后,会对数据库中表创建相对应的操作模板,例数据库中的demo表
+--两种模板创建方式
+    1.创建无初始化条件模板
+    DemoTemplate template = DemoTemplate.create();
+    2.创建有初始化条件模板,参数中值不为null的属性会作为AND条件
+    DemoTemplate template = DemoTemplate.create(对象);
+
+--模板文件中对应数据库每列都有相对应的字段操作
+    1.无初始化参数字段操作
+    template.字段名();
+    2.有初始化参数的字段操作,传入的参数如果不为null会作为AND条件
+    template.字段名(参数);
+
+----
+
+### 2. 使用说明
+
+#### 2.1 条件设置
+
+----
+DemoTemplate template = DemoTemplate.create();
+范围条件设置
+    //指定字段值范围条件,例-年龄在20-30之间 template.age().between(20, 30)
+    template.字段名().between(min, max)
+
+排序设置
+    //指定字段SELECT查询时进行排序,可设置多个
+    template.字段名().orderByDesc();
+    template.字段名().orderByAsc();
+
+IN条件设置
+    //指定字段值必须包含所传参数
+    template.字段名().in("参数1","参数2"...);
+    template.字段名().in(List);
+
+NotNull|IsNull条件设置
+    //指定字段值必须为 isNull|notNull
+    template.字段名().isNull();
+    template.字段名().notNull();
+
+相等条件设置
+    //指定字段值必须等于所传参数
+    template.字段名().valEqual(参数);
+
+大于|大于等于 条件设置
+    //指定字段值必须大于|大于等于所传参数
+    template.字段名().greater(参数);
+    template.字段名().greaterOrEqual(参数);
+
+小于|小于等于 条件设置
+    //指定字段值必须小于|小于等于所传参数
+    template.字段名().greater(参数);
+    template.字段名().greaterOrEqual(参数);
+
+模糊条件设置
+    //指定字段值必须符合模糊条件
+    template.字段名().like(参数);
+    template.字段名().likeLeft(参数);
+    template.字段名().likeRight(参数);
+
+对象条件设置:
+    //对象不为null参数会作为AND条件
+    template.equalPojo(对象);
+
+指定字段查询设置:
+    //SELECT查询时候只查询出指定字段,可设置多个
+    template.字段名().showField();
+
+过滤字段查询设置:
+    //SELECT查询时候不查询指定字段,可设置多个
+    template.字段名().hideField();
+
+字段去重复设置
+    //指定字段去重查询
+    template.字段名().distinctField();
+
+SQL条件设置:
+    //会在WHERE后拼接自定义SQL语句,如果有参数需要使用#{参数名}进行占位,并在参数值MAP集合put(参数名,参数值)
+    template.andSql(SQL语句,参数)或template.orSql(SQL语句,参数);
+    template.orSql(SQL语句,参数)或template.orSql(SQL语句,参数);
+
+关闭逻辑删除保护:
+    //会对本次执行进行逻辑删除保护关闭
+    template.closeLogicDeleteProtect();
+
+OR条件设置
+    //指定字段OR条件设置,例-年龄等于20或为null template.age().valEqual(20).or().isNull();
+    template.字段名().or();
+----
+
+#### 2.2 Dao执行器
+----
+Dao执行器调用:
+    1.模板直接调用
+    FastDao<Demo> dao = DemoTemplate.create().dao();
+    2.字段条件操作时调用
+    FastDao<Demo> dao = DemoTemplate.create().字段名().isNull().dao();
+    例:如果单字段查询可以直接快速得到结果
+    List<Demo> list = DemoTemplate.create().userName().isNull().dao().findAll();
+----
+执行器方法:
+|===
+|方法名 |说明
+
+|Boolean insert(Pojo pojo)
+|新增数据,并对框架设置的主键字段进行赋值
+
+|Pojo findOne()
+|通过查询条件查询一条数据
+
+|List<Pojo> findAll()
+|通过查询条件查询所符合要求的所有数据
+
+|Integer findCount()
+|通过查询条件查询所符合要求的数据数量
+
+|PageInfo<Pojo> findPage(int pageNum, int pageSize)
+|通过查询条件查询所符合要求的数据,并进行分页
+
+|Integer update(Pojo pojo)
+|通过条件更新数据, 参数为空则的字段不会进行更新
+
+|Integer updateOverwrite(Pojo pojo)
+|通过条件更新数据,参数为空则的字段也会进行更新
+
+|Integer delete()
+|对符合条件的数据进行逻辑删除标记 (本操作会自动将数据删除标记修改,并会对更新时间进行自动赋值)
+
+|Integer deleteDisk()
+|通过条件物理删除 (本操作会进行物理删除,请谨慎操作)
+
+|===
+
+#### 2.3 自定义SQL
+
+----
+多表等复杂SQL操作,可以使用自定义SQL执行器实现,框架会自动进行对象和表进行映射
+
+FastCustomSqlDao<操作类> dao = FastCustomSqlDao.create(操作类, SQL语句, 参数)
+
+例:
+String sql = "SELECT u2.`name` as u2Name, u1.`name` as u1Name " +
+             "FROM user_test2 u2 LEFT JOIN user_test u1 " +
+             "WHERE u2.`AND u1.id = u2.user_test_id " +
+             "AND u2.name = #{u2Name}";
+
+Map<String, Object> params = new HashMap<>();
+params.put("u2Name", "张三");
+
+List<UserTest2Dto> all = FastCustomSqlDao.create(UserTest2Dto.class, sql, params).findAll();
+----
+
+#### 2.4 缓存使用
+----
+开启缓存功能后,可以操作类上添加注解的方式使用三种不同的缓存使用
+/**
+ * Redis缓存,当开启缓存并操作对象配置此注解时,会将查询到的数据缓存到redis中
+ * 当进行使用此框架模板进行操作新增,更新,删除操作时,会自动刷新Redis缓存中的数据
+ * 此实现使用了StringRedisTemplate
+ * 默认参数为框架设置的缓存时间和类型
+ * 缓存可选参数
+ * FastRedisCache(Long 秒) 如@FastRedisCache(60L) 缓存60秒
+ * FastRedisCache(cacheTime = 时间,cacheTimeType = TimeUnit) 如@FastRedisCache(cacheTime =1L,cacheTimeType = TimeUnit.HOURS) 缓存1小时
+ */
+1: @FastRedisCache
+
+/**
+ * Redis和本地内存结合的缓存,在特殊场景使用,数据库中需要实时进行集群同步,数据量大并取用频繁,并且数据修改不频繁的场景,如商品的品牌或类目信息
+ * Redis只会存储版本号,本地存储具体数据内容
+ * 当开启缓存并操作对象配置此注解时,会将查询到的数据缓存到本地中,同时在Redis中获取数据版本号
+ * 当进行使用此框架模板进行操作新增,更新,删除操作时,会自动刷新Redis缓存中的数据数据版本号
+ * 此方法使用了RedisConnectionFactory
+ * 默认参数为框架设置的缓存时间和类型
+ * 缓存可选参数
+ * FastRedisLocalCache(Long 秒) 如@FastRedisLocalCache(60L) 缓存60秒
+ * FastRedisLocalCache(cacheTime = 时间,cacheTimeType = TimeUnit) 如@FastRedisLocalCache(cacheTime =1L,cacheTimeType = TimeUnit.HOURS) 缓存1小时
+ */
+2: @FastRedisLocalCache
+
+/**
+ * 纯本地内存缓存,当集群项目部署,不会进行其他服务器的缓存刷新,使用场景需要注意,缓存的数据一般不会变,比如项目存储在数据库中的配置信息等
+ * 当开启缓存并操作对象配置此注解时,会将查询到的数据缓存到本地中
+ * 当进行使用此框架模板进行操作新增,更新,删除操作时,会自动刷新内存中缓存的数据
+ * 默认参数为框架设置的缓存时间和类型
+ * 缓存可选参数
+ * FastStatisCache(Long 秒) 如@FastStatisCache(60L) 缓存60秒
+ * FastStatisCache(cacheTime = 时间,cacheTimeType = TimeUnit) 如@FastStatisCache(cacheTime =1L,cacheTimeType = TimeUnit.HOURS) 缓存1小时
+ */
+3: @FastStatisCache
+----
+
+#### 2.5 数据源切换
+----
+可以在任意一次执行时进行数据源更换,更换数据源只对当前线程影响,根据不同的使用实现进行切换
+    1:使用SpringJdbc实现更换数据源
+        SpringJDBCMySqlImpl.dataSource(getDataSource());
+    2:使用MyBatis实现更换数据源
+        FastMyBatisImpl.dataSource(getDataSource());
+
+    public DataSource getDataSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/demo2");
+        dataSource.setUsername("root");
+        dataSource.setPassword("123456");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        return dataSource;
     }
-}
-----
-
-### 代码生成
-
-----
-
-public class FileTest {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException, TemplateException, IOException {
-        CodeCreateParameter codeParameter = new CodeCreateParameter();
-        //数据库驱动
-        codeParameter.setDriverClass("com.mysql.cj.jdbc.Driver");
-        //数据库连接
-        codeParameter.setUrl("jdbc:mysql://127.0.0.1:3306/xxx?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
-        //数据库账号
-        codeParameter.setUser("xxxx");
-        //数据库密码
-        codeParameter.setPassword("xxxx");
-        //文件生成的包路径
-        codeParameter.setBasePackage("xxx.xxx.xxx.xxx");
-        //需要生成的文件 (可选值Base<生成Pojo类,Pojo查询模板,Pojo字段集>,Service<Service接口>,ServiceImpl<Service实现类>,Dto<Dto对象>,Dao<Dao对象>, All<上述所有文件>)
-        codeParameter.setNeedModules(CodeCreateParameter.CodeCreateModule.All);
-        //是否生成表前缀
-        codeParameter.setPrefix(false);
-        //需要生成的表名 (可选值,具体表名或all)
-        codeParameter.setCreateTables("tab1","tab2");
-        //生成代码
-        new TableFileCreateUtils().create(codeParameter);
-    }
-}
-
 ----
 
 
-### 两种操作方式
 
 
 
-第一种直接通过Pojo模板进行操作
 
-----
 
-例1:
-/**
- * 主键查询
- */
-UserTest user = UserTestTemplate.fastFunction().findByPrimaryKey("主键id");
 
-例2:
-/**
- * 数据插入
- */
-UserTestTemplate.fastFunction().insert(user);
 
-例3:
-/**
- * 按条件查询并分页
- */
-UserTestTemplate userTestTemplate = new UserTestTemplate();
-userTestTemplate.fastName().equal("张亚伟");//指定字段AND条件
-PageInfo<UserTest> userPageInfo = userTestTemplate.dbTemplate().findPage(1, 10);
 
-----
 
-第二种通过Service继承通用方法进行操作
 
-----
-@Autowired
-private IUserTestService userTestService;
 
-例1:
-/**
- * 主键查询
- */
-UserTest userTest = userTestService.findByPrimaryKey("ec37288a7c504047b09cc6a27c55fec5");
 
-例2:
-/**
- * 数据插入
- */
- Boolean b = userTestService.insert(user);
 
-例3:
-/**
- * 按条件查询并分页
- */
-FastExample fastExample = new FastExample();
-fastExample.field(UserTestFields.Name).equal("张亚伟");//指定字段AND查询
-PageInfo<UserTest> page = userTestService.findPage(fastExample, 1, 10);
-----
 
-# 本框架具备很强的灵活性,可兼容任意的其他框架进行使用
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

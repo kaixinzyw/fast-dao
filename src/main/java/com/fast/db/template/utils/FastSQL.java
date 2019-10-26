@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author 张亚伟 398850094@qq.com
+ * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 public class FastSQL {
 
@@ -30,9 +30,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL SET(String... sets) {
         sql().sets.addAll(Arrays.asList(sets));
         return getSelf();
@@ -50,17 +48,13 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL INTO_COLUMNS(String... columns) {
         sql().columns.addAll(Arrays.asList(columns));
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL INTO_VALUES(String... values) {
         sql().values.addAll(Arrays.asList(values));
         return getSelf();
@@ -72,9 +66,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL SELECT(String... columns) {
         sql().statementType = SQLStatement.StatementType.SELECT;
         sql().select.addAll(Arrays.asList(columns));
@@ -87,9 +79,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL SELECT_DISTINCT(String... columns) {
         sql().distinct = true;
         SELECT(columns);
@@ -107,9 +97,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL FROM(String... tables) {
         sql().tables.addAll(Arrays.asList(tables));
         return getSelf();
@@ -120,9 +108,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL JOIN(String... joins) {
         sql().join.addAll(Arrays.asList(joins));
         return getSelf();
@@ -133,9 +119,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL INNER_JOIN(String... joins) {
         sql().innerJoin.addAll(Arrays.asList(joins));
         return getSelf();
@@ -146,9 +130,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL LEFT_OUTER_JOIN(String... joins) {
         sql().leftOuterJoin.addAll(Arrays.asList(joins));
         return getSelf();
@@ -159,9 +141,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL RIGHT_OUTER_JOIN(String... joins) {
         sql().rightOuterJoin.addAll(Arrays.asList(joins));
         return getSelf();
@@ -172,9 +152,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL OUTER_JOIN(String... joins) {
         sql().outerJoin.addAll(Arrays.asList(joins));
         return getSelf();
@@ -186,9 +164,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL WHERE(String... conditions) {
         sql().where.addAll(Arrays.asList(conditions));
         sql().lastList = sql().where;
@@ -210,9 +186,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL GROUP_BY(String... columns) {
         sql().groupBy.addAll(Arrays.asList(columns));
         return getSelf();
@@ -224,9 +198,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL HAVING(String... conditions) {
         sql().having.addAll(Arrays.asList(conditions));
         sql().lastList = sql().having;
@@ -238,9 +210,7 @@ public class FastSQL {
         return getSelf();
     }
 
-    /**
-     *
-     */
+
     public FastSQL ORDER_BY(String... columns) {
         sql().orderBy.addAll(Arrays.asList(columns));
         return getSelf();

@@ -1,11 +1,13 @@
-package ${conf.basePackage}.${conf.servicePackage}<#if prefixName??>.${prefixName}</#if>.impl;
+<#assign beanName = table.pojoName/>
+<#assign prefixName = table.prefixName/>
+package ${table.servicePackPath};
 
-import ${conf.basePackage}.${conf.servicePackage}<#if prefixName??>.${prefixName}</#if>.I${beanName}Service;
-import ${conf.basePackage}.${conf.beanPackage}<#if prefixName??>.${prefixName}</#if>.${beanName};
-import com.fast.jdbc.base.FastBaseServiceImpl;
+import ${table.iserviceClassPackPath};
+import ${table.pojoClassPackPath};
+import com.fast.db.template.base.FastBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ${beanName}ServiceImpl extends FastBaseServiceImpl<${beanName}> implements I${beanName}Service {
+public class ${table.serviceName} extends FastBaseServiceImpl<${beanName}> implements ${table.iserviceName} {
 
 }

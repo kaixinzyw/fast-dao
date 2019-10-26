@@ -1,10 +1,11 @@
-package ${conf.basePackage}.${conf.daoPackage}<#if prefixName??>.${prefixName}</#if>;
+<#assign beanName = table.pojoName/>
+package ${table.daoPackPath};
 
-import ${conf.basePackage}.${conf.beanPackage}<#if prefixName??>.${prefixName}</#if>.${beanName};
+import ${table.pojoClassPackPath};
 import org.springframework.stereotype.Repository;
-import com.fast.jdbc.base.FastBaseDao;
+import com.fast.db.template.base.FastBaseDao;
 
 @Repository
-public class ${beanName}Dao extends FastBaseDao<${beanName}>{
+public class ${table.daoName} extends FastBaseDao<${beanName}> {
 
 }

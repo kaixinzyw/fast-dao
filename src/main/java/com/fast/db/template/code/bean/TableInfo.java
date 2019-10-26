@@ -7,13 +7,19 @@ import java.util.Set;
 /**
  * 表对象
  *
- * @author zhangjh
+ * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 public class TableInfo {
+
     /**
      * 表名
      */
     private String tableName;
+
+    /**
+     * 前缀名
+     */
+    private String prefixName;
 
     /**
      * bean
@@ -57,6 +63,44 @@ public class TableInfo {
      * bean类导入的包
      */
     private Set<String> packages;
+
+    /**
+     * 以下为各个模板类型的文件路径和包信息
+     */
+    private String pojoPackPath;
+    private String pojoFilePath;
+    private String pojoName;
+    private String pojoClassPackPath;
+
+    private String pojoTemplatePackPath;
+    private String pojoTemplateFilePath;
+    private String pojoTemplateName;
+    private String pojoTemplateClassPackPath;
+
+    private String pojoFieldsPackPath;
+    private String pojoFieldsFilePath;
+    private String pojoFieldsName;
+    private String pojoFieldsClassPackPath;
+
+    private String dtoPackPath;
+    private String dtoFilePath;
+    private String dtoName;
+    private String dtoClassPackPath;
+
+    private String daoPackPath;
+    private String daoFilePath;
+    private String daoName;
+    private String daoClassPackPath;
+
+    private String iservicePackPath;
+    private String iserviceFilePath;
+    private String iserviceName;
+    private String iserviceClassPackPath;
+
+    private String servicePackPath;
+    private String serviceFilePath;
+    private String serviceName;
+    private String serviceClassPackPath;
 
     public String getTableName() {
         return tableName;
@@ -136,5 +180,237 @@ public class TableInfo {
 
     public void setPackages(Set<String> packages) {
         this.packages = packages;
+    }
+
+    public String getPrefixName() {
+        return prefixName;
+    }
+
+    public void setPrefixName(String prefixName) {
+        this.prefixName = prefixName;
+    }
+
+    public String getDaoPackPath() {
+        return daoPackPath;
+    }
+
+    public void setDaoPackPath(String daoPackPath) {
+        this.daoPackPath = daoPackPath;
+    }
+
+    public String getDtoPackPath() {
+        return dtoPackPath;
+    }
+
+    public void setDtoPackPath(String dtoPackPath) {
+        this.dtoPackPath = dtoPackPath;
+    }
+
+    public String getIservicePackPath() {
+        return iservicePackPath;
+    }
+
+    public void setIservicePackPath(String iservicePackPath) {
+        this.iservicePackPath = iservicePackPath;
+    }
+
+    public String getServicePackPath() {
+        return servicePackPath;
+    }
+
+    public void setServicePackPath(String servicePackPath) {
+        this.servicePackPath = servicePackPath;
+    }
+
+    public String getPojoPackPath() {
+        return pojoPackPath;
+    }
+
+    public void setPojoPackPath(String pojoPackPath) {
+        this.pojoPackPath = pojoPackPath;
+    }
+
+    public String getPojoTemplatePackPath() {
+        return pojoTemplatePackPath;
+    }
+
+    public void setPojoTemplatePackPath(String pojoTemplatePackPath) {
+        this.pojoTemplatePackPath = pojoTemplatePackPath;
+    }
+
+    public String getPojoFieldsPackPath() {
+        return pojoFieldsPackPath;
+    }
+
+    public void setPojoFieldsPackPath(String pojoFieldsPackPath) {
+        this.pojoFieldsPackPath = pojoFieldsPackPath;
+    }
+
+    public String getPojoClassPackPath() {
+        return pojoClassPackPath;
+    }
+
+    public void setPojoClassPackPath(String pojoClassPackPath) {
+        this.pojoClassPackPath = pojoClassPackPath;
+    }
+
+    public String getPojoTemplateClassPackPath() {
+        return pojoTemplateClassPackPath;
+    }
+
+    public void setPojoTemplateClassPackPath(String pojoTemplateClassPackPath) {
+        this.pojoTemplateClassPackPath = pojoTemplateClassPackPath;
+    }
+
+    public String getPojoFieldsClassPackPath() {
+        return pojoFieldsClassPackPath;
+    }
+
+    public void setPojoFieldsClassPackPath(String pojoFieldsClassPackPath) {
+        this.pojoFieldsClassPackPath = pojoFieldsClassPackPath;
+    }
+
+    public String getDtoClassPackPath() {
+        return dtoClassPackPath;
+    }
+
+    public void setDtoClassPackPath(String dtoClassPackPath) {
+        this.dtoClassPackPath = dtoClassPackPath;
+    }
+
+    public String getDaoClassPackPath() {
+        return daoClassPackPath;
+    }
+
+    public void setDaoClassPackPath(String daoClassPackPath) {
+        this.daoClassPackPath = daoClassPackPath;
+    }
+
+    public String getIserviceClassPackPath() {
+        return iserviceClassPackPath;
+    }
+
+    public void setIserviceClassPackPath(String iserviceClassPackPath) {
+        this.iserviceClassPackPath = iserviceClassPackPath;
+    }
+
+    public String getServiceClassPackPath() {
+        return serviceClassPackPath;
+    }
+
+    public void setServiceClassPackPath(String serviceClassPackPath) {
+        this.serviceClassPackPath = serviceClassPackPath;
+    }
+
+    public String getPojoName() {
+        return pojoName;
+    }
+
+    public void setPojoName(String pojoName) {
+        this.pojoName = pojoName;
+    }
+
+    public String getPojoTemplateName() {
+        return pojoTemplateName;
+    }
+
+    public void setPojoTemplateName(String pojoTemplateName) {
+        this.pojoTemplateName = pojoTemplateName;
+    }
+
+    public String getPojoFieldsName() {
+        return pojoFieldsName;
+    }
+
+    public void setPojoFieldsName(String pojoFieldsName) {
+        this.pojoFieldsName = pojoFieldsName;
+    }
+
+    public String getDtoName() {
+        return dtoName;
+    }
+
+    public void setDtoName(String dtoName) {
+        this.dtoName = dtoName;
+    }
+
+    public String getDaoName() {
+        return daoName;
+    }
+
+    public void setDaoName(String daoName) {
+        this.daoName = daoName;
+    }
+
+    public String getIserviceName() {
+        return iserviceName;
+    }
+
+    public void setIserviceName(String iserviceName) {
+        this.iserviceName = iserviceName;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getPojoFilePath() {
+        return pojoFilePath;
+    }
+
+    public void setPojoFilePath(String pojoFilePath) {
+        this.pojoFilePath = pojoFilePath;
+    }
+
+    public String getPojoTemplateFilePath() {
+        return pojoTemplateFilePath;
+    }
+
+    public void setPojoTemplateFilePath(String pojoTemplateFilePath) {
+        this.pojoTemplateFilePath = pojoTemplateFilePath;
+    }
+
+    public String getPojoFieldsFilePath() {
+        return pojoFieldsFilePath;
+    }
+
+    public void setPojoFieldsFilePath(String pojoFieldsFilePath) {
+        this.pojoFieldsFilePath = pojoFieldsFilePath;
+    }
+
+    public String getDtoFilePath() {
+        return dtoFilePath;
+    }
+
+    public void setDtoFilePath(String dtoFilePath) {
+        this.dtoFilePath = dtoFilePath;
+    }
+
+    public String getDaoFilePath() {
+        return daoFilePath;
+    }
+
+    public void setDaoFilePath(String daoFilePath) {
+        this.daoFilePath = daoFilePath;
+    }
+
+    public String getIserviceFilePath() {
+        return iserviceFilePath;
+    }
+
+    public void setIserviceFilePath(String iserviceFilePath) {
+        this.iserviceFilePath = iserviceFilePath;
+    }
+
+    public String getServiceFilePath() {
+        return serviceFilePath;
+    }
+
+    public void setServiceFilePath(String serviceFilePath) {
+        this.serviceFilePath = serviceFilePath;
     }
 }

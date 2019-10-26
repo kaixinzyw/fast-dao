@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author 张亚伟 398850094@qq.com
+ * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 public class Page<E> extends ArrayList<E> {
     private static final long serialVersionUID = 1L;
@@ -82,11 +82,7 @@ public class Page<E> extends ArrayList<E> {
         setReasonable(reasonable);
     }
 
-    /**
-     * int[] rowBounds
-     * 0 : offset
-     * 1 : limit
-     */
+
     public Page(int[] rowBounds, boolean count) {
         super(0);
         if (rowBounds[0] == 0 && rowBounds[1] == Integer.MAX_VALUE) {
