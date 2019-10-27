@@ -1,6 +1,6 @@
 = spring-db-template
 
-=== *偷懒必备的ORM框架,大幅度提高开发效率,减少编码量*
+=== Java ORM框架,大幅度提高开发效率,减少编码量
 === 作者: 张亚伟
 === QQ群: 554127796
 === GitHub: https://github.com/kaixinzyw/fast-db-template
