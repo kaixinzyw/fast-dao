@@ -19,10 +19,10 @@ public class SpringUtil implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (SpringUtil.applicationContext == null) {
             SpringUtil.applicationContext = applicationContext;
-            SqlSession sqlSession = SpringUtil.getBean(SqlSession.class);
-            if (sqlSession != null) {
+            try {
+                SqlSession sqlSession = SpringUtil.getBean(SqlSession.class);
                 sqlSession.getConfiguration().addMapper(FastMyBatisMapper.class);
-            }
+            }catch (Exception e){}
         }
     }
 
@@ -31,14 +31,20 @@ public class SpringUtil implements ApplicationContextAware {
     }
 
     public static Object getBean(String name) {
-        return getApplicationContext().getBean(name);
+        try {
+            return getApplicationContext().getBean(name);
+        }catch (Exception e){return null;}
     }
 
     public static <T> T getBean(Class<T> clazz) {
-        return getApplicationContext().getBean(clazz);
+        try {
+            return getApplicationContext().getBean(clazz);
+        }catch (Exception e){return null;}
     }
 
     public static <T> T getBean(String name, Class<T> clazz) {
-        return getApplicationContext().getBean(name, clazz);
+        try {
+            return getApplicationContext().getBean(name, clazz);
+        }catch (Exception e){return null;}
     }
 }
