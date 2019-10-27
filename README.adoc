@@ -1,13 +1,15 @@
-# spring-db-template
+= spring-db-template
 
-### *偷懒必备的ORM框架,大幅度提高开发效率,减少编码量*
-### 作者: 张亚伟
-### QQ群: 554127796
-### GitHub: https://github.com/kaixinzyw/fast-db-template
-### 码云: https://gitee.com/fast-product/fast-db-template
+=== *偷懒必备的ORM框架,大幅度提高开发效率,减少编码量*
+=== 作者: 张亚伟
+=== QQ群: 554127796
+=== GitHub: https://github.com/kaixinzyw/fast-db-template
+=== 码云: https://gitee.com/fast-product/fast-db-template
 
 
-### 功能简介
+
+== 功能简介
+[source,text]
 ----
 1. 极·简化数据库操作，大幅度提高编码效率,此框架核心价值所在,上手难度非常低;
     例-分页查询: PageInfo<Demo> page = DemoTemplate..create().dao().findPage(1, 10);
@@ -44,9 +46,9 @@
 10. 完美兼容其他ORM框架,可以搭配任意ORM框架一同使用<如:MyBatis>;
 
 ----
-### 1. 快速开始
-#### 1.1 安装
-
+=== 1. 快速开始
+==== 1.1 安装
+[source,text]
 ----
     本项目使用JDK1.8,依赖SpringBoot,使用Maven
     <dependency>
@@ -56,8 +58,8 @@
     </dependency>
 ----
 
-#### 1.2 框架配置
-
+==== 1.2 框架配置
+[source,text]
 ----
 /**
  * 配置创建
@@ -106,7 +108,8 @@ setting.openLogicDelete("deleted", true);
 setting.openCache(10L, TimeUnit.SECONDS);
 ----
 
-#### 1.3 模板文件生成
+==== 1.3 模板文件生成
+[source,text]
 ----
 FileCreateConfig config = new FileCreateConfig();
 
@@ -140,7 +143,8 @@ config.setCreateTables("user_test");
 //生成代码
 TableFileCreateUtils.create(config);
 
-模板文件生成后,会对数据库中表创建相对应的操作模板,例数据库中的demo表
+模板文件生成后,会对数据库中表创建相对应的操作模板
+例: 数据库中的demo表进行模板文件生成后
 --两种模板创建方式
     1.创建无初始化条件模板
     DemoTemplate template = DemoTemplate.create();
@@ -155,82 +159,105 @@ TableFileCreateUtils.create(config);
 
 ----
 
-### 2. 使用说明
+=== 2. 使用说明
 
-#### 2.1 条件设置
+==== 2.1 条件设置
 
-----
 DemoTemplate template = DemoTemplate.create();
-范围条件设置
-    //指定字段值范围条件,例-年龄在20-30之间 template.age().between(20, 30)
-    template.字段名().between(min, max)
+|===
+|功能 |方法 |说明
 
-排序设置
-    //指定字段SELECT查询时进行排序,可设置多个
-    template.字段名().orderByDesc();
-    template.字段名().orderByAsc();
+|相等条件设置
+|template.字段名().valEqual(参数)
+|指定字段值等于所传参数
 
-IN条件设置
-    //指定字段值必须包含所传参数
-    template.字段名().in("参数1","参数2"...);
-    template.字段名().in(List);
+|大于条件设置
+|template.字段名().greater(参数)
+|指定字段值大于所传参数
 
-NotNull|IsNull条件设置
-    //指定字段值必须为 isNull|notNull
-    template.字段名().isNull();
-    template.字段名().notNull();
+|大于等于条件设置
+|template.字段名().greaterOrEqual(参数)
+|指定字段值大于等于所传参数
 
-相等条件设置
-    //指定字段值必须等于所传参数
-    template.字段名().valEqual(参数);
+|小于条件设置
+|template.字段名().less(参数)
+|指定字段值小于所传参数
 
-大于|大于等于 条件设置
-    //指定字段值必须大于|大于等于所传参数
-    template.字段名().greater(参数);
-    template.字段名().greaterOrEqual(参数);
+|小于等于条件设置
+|template.字段名().lessOrEqual(参数)
+|指定字段值小于等于所传参数
 
-小于|小于等于 条件设置
-    //指定字段值必须小于|小于等于所传参数
-    template.字段名().greater(参数);
-    template.字段名().greaterOrEqual(参数);
+|模糊匹配条件设置
+|template.字段名().like(参数) +
+template.字段名().likeLeft(参数) +
+template.字段名().likeRight(参数)
+|指定字段值符合模糊匹配条件
 
-模糊条件设置
-    //指定字段值必须符合模糊条件
-    template.字段名().like(参数);
-    template.字段名().likeLeft(参数);
-    template.字段名().likeRight(参数);
+|范围条件设置
+|template.字段名().between(min, max)
+|指定字段值范围条件 +
+例: 条件为年龄在20-30之间 +
+template.age().between(20, 30)
 
-对象条件设置:
-    //对象不为null参数会作为AND条件
-    template.equalPojo(对象);
+|IN条件设置
+|template.字段名().in("参数1","参数2"...) +
+template.字段名().in(List)
+|指定字段值包含所传参数
 
-指定字段查询设置:
-    //SELECT查询时候只查询出指定字段,可设置多个
-    template.字段名().showField();
+|IsNull条件设置
+|template.字段名().isNull()
+|指定字段值条件为null
 
-过滤字段查询设置:
-    //SELECT查询时候不查询指定字段,可设置多个
-    template.字段名().hideField();
+|NotNull条件设置
+|template.字段名().notNull()
+|指定字段值条件不为null
 
-字段去重复设置
-    //指定字段去重查询
-    template.字段名().distinctField();
+|排序设置-升序
+|template.字段名().orderByAsc()
+|查询操作时进行排序-升序
 
-SQL条件设置:
-    //会在WHERE后拼接自定义SQL语句,如果有参数需要使用#{参数名}进行占位,并在参数值MAP集合put(参数名,参数值)
-    template.andSql(SQL语句,参数)或template.orSql(SQL语句,参数);
-    template.orSql(SQL语句,参数)或template.orSql(SQL语句,参数);
+|排序设置-降序
+|template.字段名().orderByDesc()
+|查询操作时进行排序-降序
 
-关闭逻辑删除保护:
-    //会对本次执行进行逻辑删除保护关闭
-    template.closeLogicDeleteProtect();
+|对象条件设置
+|template.equalPojo(对象)
+|对象中不为null属性会作为AND条件
 
-OR条件设置
-    //指定字段OR条件设置,例-年龄等于20或为null template.age().valEqual(20).or().isNull();
-    template.字段名().or();
-----
+|指定字段查询设置
+|template.字段名().showField()
+|查询操作时只查询指定字段,可设置多个
 
-#### 2.2 Dao执行器
+|过滤字段查询设置
+|template.字段名().hideField()
+|查询操作时不查询指定字段,可设置多个
+
+|字段去重复设置
+|template.字段名().distinctField();
+|查询操作时指定字段去重
+
+|自定义SQL条件设置
+|template.andSql(SQL语句,参数) +
+template.orSql(SQL语句,参数)
+|会在WHERE后拼接自定义SQL语句 +
+如果有参数需要使用#{参数名}进行占位 +
+在参数值MAP集合put(参数名,参数值)
+
+|关闭逻辑删除保护
+|template.closeLogicDeleteProtect()
+|会对本次执行进行逻辑删除保护关闭 +
+关闭后所有操作会影响到被逻辑删除标记的数据
+
+|OR条件设置
+|template.字段名().or()
+|指定字段OR条件设置 +
+例: 条件为姓名等于张三或为null +
+template.userName().valEqual("张三").or().isNull()
+|===
+
+
+==== 2.2 Dao执行器
+[source,text]
 ----
 Dao执行器调用:
     1.模板直接调用
@@ -245,7 +272,7 @@ Dao执行器调用:
 |方法名 |说明
 
 |Boolean insert(Pojo pojo)
-|新增数据,并对框架设置的主键字段进行赋值
+|新增数据,并对设置的主键字段进行赋值
 
 |Pojo findOne()
 |通过查询条件查询一条数据
@@ -273,8 +300,8 @@ Dao执行器调用:
 
 |===
 
-#### 2.3 自定义SQL
-
+==== 2.3 自定义SQL
+[source,text]
 ----
 多表等复杂SQL操作,可以使用自定义SQL执行器实现,框架会自动进行对象和表进行映射
 
@@ -292,7 +319,8 @@ params.put("u2Name", "张三");
 List<UserTest2Dto> all = FastCustomSqlDao.create(UserTest2Dto.class, sql, params).findAll();
 ----
 
-#### 2.4 缓存使用
+==== 2.4 缓存使用
+[source,text]
 ----
 开启缓存功能后,可以操作类上添加注解的方式使用三种不同的缓存使用
 /**
@@ -331,7 +359,8 @@ List<UserTest2Dto> all = FastCustomSqlDao.create(UserTest2Dto.class, sql, params
 3: @FastStatisCache
 ----
 
-#### 2.5 数据源切换
+==== 2.5 数据源切换
+[source,text]
 ----
 可以在任意一次执行时进行数据源更换,更换数据源只对当前线程影响,根据不同的使用实现进行切换
     1:使用SpringJdbc实现更换数据源
