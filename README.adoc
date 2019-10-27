@@ -1,4 +1,4 @@
-= spring-db-template
+= fast-db-template
 
 === Java ORM框架,大幅度提高开发效率,减少编码量
 === 作者: 张亚伟
