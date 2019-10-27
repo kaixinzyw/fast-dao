@@ -8,12 +8,13 @@ import com.fast.db.template.mapper.FastMapperUtil;
 import com.fast.db.template.mapper.TableMapper;
 import com.fast.db.template.utils.FastValueUtil;
 import com.fast.db.template.utils.page.PageInfo;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * ORM执行器
+ *
  * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 public class DaoTemplate<T> {
@@ -33,10 +34,11 @@ public class DaoTemplate<T> {
 
     /**
      * 初始化
+     *
      * @param <T> 操作对象的泛型信息
      * @return ORM执行器
      */
-    public static  <T>DaoTemplate<T> init(){
+    public static <T> DaoTemplate<T> init() {
         FastMapperUtil<T> fastMapperUtil = FastMapperUtil.get();
         DaoTemplate<T> daoTemplate = fastMapperUtil.getDaoTemplate();
         daoTemplate.setFastExample(fastMapperUtil.getFastExample());
@@ -50,6 +52,7 @@ public class DaoTemplate<T> {
 
     /**
      * 新增操作
+     *
      * @param pojo 需要新增的数据
      * @return 新增结果
      */
@@ -65,6 +68,7 @@ public class DaoTemplate<T> {
 
     /**
      * 单条数据查询
+     *
      * @return 查询结果
      */
     public T findOne() {
@@ -78,6 +82,7 @@ public class DaoTemplate<T> {
 
     /**
      * 列表数据查询
+     *
      * @return 查询结果
      */
     public List<T> findAll() {
@@ -98,11 +103,12 @@ public class DaoTemplate<T> {
 
     /**
      * 数据条数查询
+     *
      * @return 查询结果
      */
     public Integer findCount() {
         if (AutomaticParameterAttributes.isOpenCache && tableMapper.getCacheType() != null) {
-            Integer one =  DataCache.<Integer>init().getCount();
+            Integer one = DataCache.<Integer>init().getCount();
             if (one != null) {
                 return one;
             }
@@ -118,15 +124,16 @@ public class DaoTemplate<T> {
 
     /**
      * 分页查询
-     * @param pageNum 页数
-     * @param pageSize 每页条数
+     *
+     * @param pageNum       页数
+     * @param pageSize      每页条数
      * @param navigatePages 显示页数
      * @return 查询结果
      */
     public PageInfo<T> findPage(int pageNum, int pageSize, int navigatePages) {
         Integer count = findCount();
         if (count == null || count < 1) {
-            return new PageInfo<>(0, pageNum, pageSize, new ArrayList<>(), navigatePages);
+            return new PageInfo<>(0, pageNum, pageSize, new ArrayList<T>(), navigatePages);
         }
         if (pageNum == 1) {
             this.fastExample.conditionPackages().setPage(0);
@@ -144,7 +151,8 @@ public class DaoTemplate<T> {
 
     /**
      * 数据更新
-     * @param pojo 需要更新的数据
+     *
+     * @param pojo        需要更新的数据
      * @param isSelective 是否对null值属性不操作
      * @return 更新条数
      */
@@ -155,6 +163,7 @@ public class DaoTemplate<T> {
 
     /**
      * 删除数据
+     *
      * @param isDiskDelete 是否启用逻辑删除,如果启用逻辑删除的话必须开启逻辑删除功能
      * @return 删除条数
      */
@@ -178,6 +187,7 @@ public class DaoTemplate<T> {
 
     /**
      * 缓存刷新
+     *
      * @param updateCount SQL执行结果
      * @return SQL执行结果
      */
