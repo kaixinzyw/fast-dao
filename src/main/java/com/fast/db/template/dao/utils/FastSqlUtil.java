@@ -6,7 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSONObject;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.mapper.TableMapper;
 import com.fast.db.template.template.ConditionPackages;
 import com.fast.db.template.template.FastCondition;
@@ -30,7 +30,7 @@ public class FastSqlUtil {
      * @param o SQL执行结果
      */
     public static void printSql(FastDaoParam param, Object o) {
-        if (AutomaticParameterAttributes.isSqlPrint) {
+        if (FastParams.isSqlPrint) {
             Map<String, Object> paramMap = param.getParamMap();
             String sql = param.getSql();
             if (CollUtil.isNotEmpty(paramMap)) {
@@ -58,7 +58,7 @@ public class FastSqlUtil {
             }
 
             String result = "";
-            if (AutomaticParameterAttributes.isSqlPrintResult) {
+            if (FastParams.isSqlPrintResult) {
                 result = "执行结果: " + StrUtil.CRLF + JSONObject.toJSONString(o) + StrUtil.CRLF;
             }
             Log log = LogFactory.get(param.getTableMapper().getObjClass());
@@ -144,15 +144,15 @@ public class FastSqlUtil {
      */
     public static void whereSql(ConditionPackages select, FastSQL fastSQL, Map<String, Object> paramMap, TableMapper tableMapper) {
         if (select == null) {
-            if (AutomaticParameterAttributes.isOpenLogicDelete) {
-                fastSQL.AND().WHERE("`" + AutomaticParameterAttributes.deleteTableField + "` = " + !AutomaticParameterAttributes.defaultDeleteValue);
+            if (FastParams.isOpenLogicDelete) {
+                fastSQL.AND().WHERE("`" + FastParams.deleteTableColumnName + "` = " + !FastParams.defaultDeleteValue);
             }
             return;
         }
 
         if (select.getLogicDeleteProtect()) {
-            if (AutomaticParameterAttributes.isOpenLogicDelete) {
-                fastSQL.AND().WHERE("`" + AutomaticParameterAttributes.deleteTableField + "` = " + !AutomaticParameterAttributes.defaultDeleteValue);
+            if (FastParams.isOpenLogicDelete) {
+                fastSQL.AND().WHERE("`" + FastParams.deleteTableColumnName + "` = " + !FastParams.defaultDeleteValue);
             }
         }
 
@@ -255,7 +255,7 @@ public class FastSqlUtil {
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
 
         for (String fieldName : fieldNames) {
-            if (AutomaticParameterAttributes.isAutoSetCreateTime && fieldName.equals(AutomaticParameterAttributes.createTimeField)) {
+            if (FastParams.isAutoSetCreateTime && fieldName.equals(FastParams.createTimeFieldName)) {
                 continue;
             }
             Object fieldValue = BeanUtil.getFieldValue(obj, fieldName);
@@ -263,7 +263,7 @@ public class FastSqlUtil {
                 if (isSelective) {
                     continue;
                 }
-                if (AutomaticParameterAttributes.isOpenLogicDelete && fieldName.equals(AutomaticParameterAttributes.deleteField)) {
+                if (FastParams.isOpenLogicDelete && fieldName.equals(FastParams.deleteFieldName)) {
                     continue;
                 }
             }

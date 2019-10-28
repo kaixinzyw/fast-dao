@@ -3,7 +3,8 @@ package com.fast.db.template.utils;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import cn.hutool.core.util.StrUtil;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.config.PrimaryKeyType;
 
 import java.util.Date;
@@ -11,30 +12,30 @@ import java.util.Date;
 public class FastValueUtil {
 
     public static void setCreateTime(Object o) {
-        if (AutomaticParameterAttributes.isAutoSetCreateTime && o != null) {
-            BeanUtil.setFieldValue(o, AutomaticParameterAttributes.createTimeField, new Date());
+        if (FastParams.isAutoSetCreateTime && o != null) {
+            BeanUtil.setFieldValue(o, FastParams.createTimeFieldName, new Date());
         }
     }
 
     public static void setUpdateTime(Object o) {
-        if (AutomaticParameterAttributes.isAutoSetUpdateTime && o != null) {
-            BeanUtil.setFieldValue(o, AutomaticParameterAttributes.updateTimeField, new Date());
+        if (FastParams.isAutoSetUpdateTime && o != null) {
+            BeanUtil.setFieldValue(o, FastParams.updateTimeFieldName, new Date());
         }
     }
 
 
     public static void setPrimaryKey(Object o, Object primaryKey) {
-        if (AutomaticParameterAttributes.isAutoSetPrimaryKey && o != null) {
-            BeanUtil.setFieldValue(o, AutomaticParameterAttributes.primaryKeyField, primaryKey);
+        if (FastParams.isAutoSetPrimaryKey && o != null) {
+            BeanUtil.setFieldValue(o, FastParams.primaryKeyFieldName, primaryKey);
         }
     }
 
     public static void setPrimaryKey(Object o) {
-        if (AutomaticParameterAttributes.isAutoSetPrimaryKey) {
-            if (AutomaticParameterAttributes.primaryKeyType.equals(PrimaryKeyType.UUID) && o != null) {
-                Object primaryKey = BeanUtil.getFieldValue(o, AutomaticParameterAttributes.primaryKeyField);
+        if (FastParams.isAutoSetPrimaryKey) {
+            if (FastParams.primaryKeyType.equals(PrimaryKeyType.UUID) && o != null) {
+                Object primaryKey = BeanUtil.getFieldValue(o, FastParams.primaryKeyFieldName);
                 if (primaryKey == null) {
-                    BeanUtil.setFieldValue(o, AutomaticParameterAttributes.primaryKeyField, UUID.randomUUID().toString(true));
+                    BeanUtil.setFieldValue(o, FastParams.primaryKeyFieldName, UUID.randomUUID().toString(true));
                 }
             }
         }
@@ -44,22 +45,40 @@ public class FastValueUtil {
         if (o == null) {
             return null;
         }
-        Object primaryKey = BeanUtil.getFieldValue(o, AutomaticParameterAttributes.primaryKeyField);
+        Object primaryKey = BeanUtil.getFieldValue(o, FastParams.primaryKeyFieldName);
         return primaryKey;
     }
 
 
     public static void setDeleted(Object o) {
-        if (AutomaticParameterAttributes.isOpenLogicDelete && o != null) {
-            BeanUtil.setFieldValue(o, AutomaticParameterAttributes.deleteField, AutomaticParameterAttributes.defaultDeleteValue);
+        if (FastParams.isOpenLogicDelete && o != null) {
+            BeanUtil.setFieldValue(o, FastParams.deleteFieldName, FastParams.defaultDeleteValue);
         }
     }
 
     public static void setNoDelete(Object o) {
-        if (AutomaticParameterAttributes.isOpenLogicDelete && o != null) {
-            BeanUtil.setFieldValue(o, AutomaticParameterAttributes.deleteField, !AutomaticParameterAttributes.defaultDeleteValue);
+        if (FastParams.isOpenLogicDelete && o != null) {
+            BeanUtil.setFieldValue(o, FastParams.deleteFieldName, !FastParams.defaultDeleteValue);
         }
     }
+
+    /**
+     * 驼峰转换
+     * 例如：hello_world=》helloWorld
+     *
+     * @param val 需要转换的值
+     * @return 转换后的值
+     */
+    public static String toCamelCase(String val) {
+        if (val == null) {
+            return val;
+        }
+        if (FastParams.isToCamelCase) {
+            val = StrUtil.toCamelCase(val);
+        }
+        return val;
+    }
+
 
 
 }

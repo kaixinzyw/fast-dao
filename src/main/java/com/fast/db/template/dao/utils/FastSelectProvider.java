@@ -1,7 +1,6 @@
 package com.fast.db.template.dao.utils;
 
 import cn.hutool.core.util.StrUtil;
-import com.fast.db.template.config.AutomaticParameterAttributes;
 import com.fast.db.template.mapper.TableMapper;
 import com.fast.db.template.template.ConditionPackages;
 import com.fast.db.template.template.FastDaoParam;

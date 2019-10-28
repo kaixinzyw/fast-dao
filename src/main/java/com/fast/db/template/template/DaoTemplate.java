@@ -2,7 +2,7 @@ package com.fast.db.template.template;
 
 import cn.hutool.core.collection.CollUtil;
 import com.fast.db.template.cache.DataCache;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.dao.DaoActuator;
 import com.fast.db.template.mapper.FastMapperUtil;
 import com.fast.db.template.mapper.TableMapper;
@@ -86,7 +86,7 @@ public class DaoTemplate<T> {
      * @return 查询结果
      */
     public List<T> findAll() {
-        if (AutomaticParameterAttributes.isOpenCache && tableMapper.getCacheType() != null) {
+        if (FastParams.isOpenCache && tableMapper.getCacheType() != null) {
             List<T> list = DataCache.<T>init().getList();
             if (list != null) {
                 return list;
@@ -95,7 +95,7 @@ public class DaoTemplate<T> {
 
         List<T> query = daoActuator.findAll();
 
-        if (AutomaticParameterAttributes.isOpenCache && tableMapper.getCacheType() != null && query != null) {
+        if (FastParams.isOpenCache && tableMapper.getCacheType() != null && query != null) {
             DataCache.<T>init().setList(query);
         }
         return query;
@@ -107,7 +107,7 @@ public class DaoTemplate<T> {
      * @return 查询结果
      */
     public Integer findCount() {
-        if (AutomaticParameterAttributes.isOpenCache && tableMapper.getCacheType() != null) {
+        if (FastParams.isOpenCache && tableMapper.getCacheType() != null) {
             Integer one = DataCache.<Integer>init().getCount();
             if (one != null) {
                 return one;
@@ -116,7 +116,7 @@ public class DaoTemplate<T> {
 
         Integer count = daoActuator.findCount();
 
-        if (AutomaticParameterAttributes.isOpenCache && tableMapper.getCacheType() != null && count != null) {
+        if (FastParams.isOpenCache && tableMapper.getCacheType() != null && count != null) {
             DataCache.<Integer>init().setCount(count);
         }
         return count;
@@ -168,11 +168,11 @@ public class DaoTemplate<T> {
      * @return 删除条数
      */
     public Integer delete(boolean isDiskDelete) {
+        if (!isDiskDelete && !FastParams.isOpenLogicDelete) {
+            throw new RuntimeException("fast-db-template未启用逻辑删除功能,如需使用请在配置文件中添加fast.db.set.delete=指定表列名,指定列数据类型只能使用bit");
+        }
         if (isDiskDelete) {
             return updateCache(daoActuator.delete());
-        }
-        if (!AutomaticParameterAttributes.isOpenLogicDelete) {
-            throw new RuntimeException("未启用逻辑删除!!!");
         }
         try {
             T pojo = tableMapper.getObjClass().newInstance();
@@ -192,7 +192,7 @@ public class DaoTemplate<T> {
      * @return SQL执行结果
      */
     private int updateCache(Integer updateCount) {
-        if (updateCount < 1 || !AutomaticParameterAttributes.isOpenCache) {
+        if (updateCount < 1 || !FastParams.isOpenCache) {
             return updateCount;
         }
         DataCache.upCacheVersion(tableMapper);

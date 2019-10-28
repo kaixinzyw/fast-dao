@@ -6,14 +6,9 @@ package ${table.pojoTemplatePackPath};
 
 import ${table.pojoFieldsClassPackPath};
 import ${table.pojoClassPackPath};
-import com.alibaba.fastjson.JSONObject;
-import com.fast.db.template.config.AutomaticParameterAttributes;
-import com.fast.db.template.utils.FastValueUtil;
 import com.fast.db.template.base.BaseTemplate;
 import com.fast.db.template.template.FastDao;
 import com.fast.db.template.template.FastExample;
-import com.fast.db.template.utils.page.PageInfo;
-import java.util.List;
 <#list table.packages as package>
 ${package}
 </#list>

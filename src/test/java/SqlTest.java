@@ -1,3 +1,4 @@
+//import cn.hutool.core.util.StrUtil;
 //import com.alibaba.druid.pool.DruidDataSource;
 //import com.alibaba.fastjson.JSONObject;
 //import com.db.test.pojo.UserTest;
@@ -5,12 +6,16 @@
 //import com.db.test.pojo.template.UserTest2Template;
 //import com.db.test.pojo.template.UserTestTemplate;
 //import com.fast.db.template.dao.jdbc.SpringJDBCMySqlImpl;
+//import com.fast.db.template.utils.SpringUtil;
 //import com.fast.db.template.utils.page.PageInfo;
 //import org.junit.FixMethodOrder;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.junit.runners.MethodSorters;
+//import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.core.env.Environment;
+//import org.springframework.data.redis.core.StringRedisTemplate;
 //import org.springframework.test.context.junit4.SpringRunner;
 //
 //import javax.sql.DataSource;
@@ -32,6 +37,17 @@
 //    private static Long id19;
 //    private static Long id20;
 //
+//    @Autowired
+//    private StringRedisTemplate redisTemplate;
+//
+//    @Test
+//    public void autowiredTest(){
+//        Environment env = SpringUtil.getBean(Environment.class);
+//        System.out.println(env.getProperty("fsdff.sdfasdf",Long.class));
+//        System.out.println(StrUtil.equalsIgnoreCase(env.getProperty("fast.db.impl"),"SPRING-JDB1C"));
+//
+//    }
+//
 //    public DataSource zywTest2() {
 //        DruidDataSource dataSource = new DruidDataSource();
 //        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/zyw_test2?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
@@ -41,6 +57,8 @@
 //        return dataSource;
 //
 //    }
+//
+//
 //
 //    //    @Test
 //    public void test_aa_insert() throws InterruptedException {
@@ -147,19 +165,22 @@
 //        testTemplate2.age().orderByAsc();
 //
 //
-//        for (int i = 0; i < 200; i++) {
-//            new Thread(() -> {
-//                UserTest one = testTemplate.dao().findOne();
-//                if (!one.getName().equals("张亚伟10")) {
-//                    throw new RuntimeException("查询错误");
-//                }
-//                UserTest2 one2 = testTemplate2.dao().findOne();
-//                if (!one2.getName().equals("UserTest2张亚伟10")) {
-//                    throw new RuntimeException("查询错误");
-//                }
-//            }).start();
+//        for (int i = 0; i < 100; i++) {
+////            new Thread(() -> {
+//            UserTest one = testTemplate.dao().findOne();
+//            if (!one.getName().equals("张亚伟10")) {
+//                throw new RuntimeException("查询错误");
+//            }
+//            UserTest2 one2 = testTemplate2.dao().findOne();
+//            if (!one2.getName().equals("UserTest2张亚伟10")) {
+//                throw new RuntimeException("查询错误");
+//            }
+//            if (i == 50) {
+//                UserTestTemplate.create().id(one.getId()).dao().update(one);
+//            }
+////            }).start();
 //        }
-//        Thread.sleep(1000);
+////        Thread.sleep(1000);
 //
 //
 //    }
@@ -273,7 +294,7 @@
 //        UserTestTemplate userTestTemplate = UserTestTemplate.create();
 //        userTestTemplate.name().like("%张亚伟%");
 //        userTestTemplate.age().lessOrEqual(100);
-//        userTestTemplate.age().orderByAsc();
+//        userTestTemplate.age().orderByDesc();
 //        PageInfo<UserTest> page = userTestTemplate.dao().findPage(1, 2);
 ////        PageInfo<UserTest> page = UserTestTemplate.UnconditionalOperating.findPage(1, 2);
 //        System.out.println("findPage执行成功,查询到的数据为" + JSONObject.toJSONString(page, true));

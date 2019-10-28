@@ -2,7 +2,7 @@ package com.fast.db.template.dao.mybatis;
 
 import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.config.PrimaryKeyType;
 import com.fast.db.template.dao.DaoActuator;
 import com.fast.db.template.dao.utils.*;
@@ -27,7 +27,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
         param.setPojo(pojo);
         FastInsertProvider.insert(param);
         Integer insertCount;
-        if (AutomaticParameterAttributes.isAutoSetPrimaryKey && AutomaticParameterAttributes.primaryKeyType.equals(PrimaryKeyType.AUTO)) {
+        if (FastParams.isAutoSetPrimaryKey && FastParams.primaryKeyType.equals(PrimaryKeyType.AUTO)) {
             insertCount = FastMyBatisConnection.getMapper().insertPrimaryKeyAuto(param);
             if (insertCount > 0) {
                 FastValueUtil.setPrimaryKey(pojo, param.getPrimaryKeyValue());

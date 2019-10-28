@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.kaixinzyw</groupId>
     <artifactId>fast-db-template</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
 
     <name>fast-db-template</name>
     <url>https://github.com/kaixinzyw/fast-db-template</url>

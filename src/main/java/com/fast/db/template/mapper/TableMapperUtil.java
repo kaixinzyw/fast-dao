@@ -5,7 +5,7 @@ import com.fast.db.template.cache.DataCacheType;
 import com.fast.db.template.cache.FastRedisCache;
 import com.fast.db.template.cache.FastRedisLocalCache;
 import com.fast.db.template.cache.FastStatisCache;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -61,7 +61,7 @@ public class TableMapperUtil {
         } else {
             tableMapper.setTableName(StrUtil.toUnderlineCase(tableMapper.getClassName()));
         }
-        if (AutomaticParameterAttributes.isOpenCache) {
+        if (FastParams.isOpenCache) {
             if (clazz.isAnnotationPresent(FastRedisLocalCache.class)) {
                 FastRedisLocalCache fastLocalCache = clazz.getAnnotation(FastRedisLocalCache.class);
                 tableMapper.setCacheType(DataCacheType.RedisLocalCache);
@@ -72,8 +72,8 @@ public class TableMapperUtil {
                     tableMapper.setCacheTime(fastLocalCache.cacheTime());
                     tableMapper.setCacheTimeType(fastLocalCache.cacheTimeType());
                 } else {
-                    tableMapper.setCacheTime(AutomaticParameterAttributes.defaultCacheTime);
-                    tableMapper.setCacheTimeType(AutomaticParameterAttributes.defaultCacheTimeType);
+                    tableMapper.setCacheTime(FastParams.defaultCacheTime);
+                    tableMapper.setCacheTimeType(FastParams.defaultCacheTimeType);
                 }
             } else if (clazz.isAnnotationPresent(FastRedisCache.class)) {
                 FastRedisCache redisCache = clazz.getAnnotation(FastRedisCache.class);
@@ -85,8 +85,8 @@ public class TableMapperUtil {
                     tableMapper.setCacheTime(redisCache.cacheTime());
                     tableMapper.setCacheTimeType(redisCache.cacheTimeType());
                 } else {
-                    tableMapper.setCacheTime(AutomaticParameterAttributes.defaultCacheTime);
-                    tableMapper.setCacheTimeType(AutomaticParameterAttributes.defaultCacheTimeType);
+                    tableMapper.setCacheTime(FastParams.defaultCacheTime);
+                    tableMapper.setCacheTimeType(FastParams.defaultCacheTimeType);
                 }
             } else if (clazz.isAnnotationPresent(FastStatisCache.class)) {
                 FastStatisCache statisCache = clazz.getAnnotation(FastStatisCache.class);
@@ -98,8 +98,8 @@ public class TableMapperUtil {
                     tableMapper.setCacheTime(statisCache.cacheTime());
                     tableMapper.setCacheTimeType(statisCache.cacheTimeType());
                 } else {
-                    tableMapper.setCacheTime(AutomaticParameterAttributes.defaultCacheTime);
-                    tableMapper.setCacheTimeType(AutomaticParameterAttributes.defaultCacheTimeType);
+                    tableMapper.setCacheTime(FastParams.defaultCacheTime);
+                    tableMapper.setCacheTimeType(FastParams.defaultCacheTimeType);
                 }
             }
         }
@@ -122,7 +122,7 @@ public class TableMapperUtil {
                 Column name = field.getAnnotation(Column.class);
                 tabFieldName = name.name();
             } else {
-                if (AutomaticParameterAttributes.isToCamelCase) {
+                if (FastParams.isToCamelCase) {
                     tabFieldName = StrUtil.toUnderlineCase(field.getName());
                 } else {
                     tabFieldName = field.getName();

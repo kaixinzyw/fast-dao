@@ -1,6 +1,9 @@
+//package com.db.test;
+//
 //import com.alibaba.fastjson.JSONObject;
 //import com.db.test.dto.UserTest2Dto;
 //import com.fast.db.template.template.FastCustomSqlDao;
+//import com.fast.db.template.template.FastDao;
 //import com.fast.db.template.utils.page.PageInfo;
 //import org.junit.FixMethodOrder;
 //import org.junit.Test;
@@ -29,6 +32,7 @@
 //                "AND u2.name = #{u2Name}";
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("u2Name", "UserTest2张亚伟11");
+//        FastCustomSqlDao.create(UserTest2Dto.class, sql, params);
 //        List<UserTest2Dto> all = FastCustomSqlDao.create(UserTest2Dto.class, sql, params).findAll();
 //        UserTest2Dto one = FastCustomSqlDao.create(UserTest2Dto.class, sql, params).findOne();
 //        PageInfo<UserTest2Dto> page = FastCustomSqlDao.create(UserTest2Dto.class, sql, params).findPage(1, 1);

@@ -1,7 +1,7 @@
 package com.fast.db.template.base;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.template.FastDao;
 import com.fast.db.template.template.FastExample;
 import com.fast.db.template.utils.FastValueUtil;
@@ -43,7 +43,7 @@ public class FastBaseDao<T> {
      * @return 查询到的数据结果
      */
     public T findByPrimaryKey(Object primaryKey) {
-        return new FastExample<>(clazz).field(AutomaticParameterAttributes.primaryKeyField).valEqual(primaryKey).dao().findOne();
+        return new FastExample<>(clazz).field(FastParams.primaryKeyFieldName).valEqual(primaryKey).dao().findOne();
     }
     /**
      * 通过查询条件查询一条数据
@@ -124,7 +124,7 @@ public class FastBaseDao<T> {
         if (primaryKeyVal == null) {
             throw new RuntimeException("updateByPrimaryKey-主键值不存在: " + JSONObject.toJSONString(pojo));
         }
-        return new FastExample<>(clazz).field(AutomaticParameterAttributes.primaryKeyField).valEqual(primaryKeyVal).dao().update(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
+        return new FastExample<>(clazz).field(FastParams.primaryKeyFieldName).valEqual(primaryKeyVal).dao().update(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
     /**
      * 通过对象中的主键更新数据,参数为空则也进行更新
@@ -137,7 +137,7 @@ public class FastBaseDao<T> {
         if (primaryKeyVal == null) {
             throw new RuntimeException("updateByPrimaryKey-主键值不存在: " + JSONObject.toJSONString(pojo));
         }
-        return new FastExample<>(clazz).field(AutomaticParameterAttributes.primaryKeyField).valEqual(primaryKeyVal).dao().updateOverwrite(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
+        return new FastExample<>(clazz).field(FastParams.primaryKeyFieldName).valEqual(primaryKeyVal).dao().updateOverwrite(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
     /**
      * 通过条件更新数据,参数为空则的字段也会进行更新
@@ -185,7 +185,7 @@ public class FastBaseDao<T> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKey(Object primaryKey) {
-        return new FastExample<>(clazz).field(AutomaticParameterAttributes.primaryKeyField).valEqual(primaryKey).dao().delete() > 0 ? Boolean.TRUE : Boolean.FALSE;
+        return new FastExample<>(clazz).field(FastParams.primaryKeyFieldName).valEqual(primaryKey).dao().delete() > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
     /**
      * 通过主键物理删除标记
@@ -194,7 +194,7 @@ public class FastBaseDao<T> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKeyDisk(Object primaryKey) {
-        return new FastExample<>(clazz).field(AutomaticParameterAttributes.primaryKeyField).valEqual(primaryKey).dao().deleteDisk() > 0 ? Boolean.TRUE : Boolean.FALSE;
+        return new FastExample<>(clazz).field(FastParams.primaryKeyFieldName).valEqual(primaryKey).dao().deleteDisk() > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
 }

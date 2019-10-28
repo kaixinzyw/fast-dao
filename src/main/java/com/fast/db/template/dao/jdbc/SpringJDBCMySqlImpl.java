@@ -1,6 +1,6 @@
 package com.fast.db.template.dao.jdbc;
 
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.config.PrimaryKeyType;
 import com.fast.db.template.dao.DaoActuator;
 import com.fast.db.template.dao.utils.*;
@@ -28,7 +28,7 @@ public class SpringJDBCMySqlImpl<T> implements DaoActuator<T> {
         FastInsertProvider.insert(param);
         String jdbcSql = param.getSql().replaceAll("[#][{](paramMap.)(\\w*)[}]", ":$2");
         int insertCount;
-        if (AutomaticParameterAttributes.isAutoSetPrimaryKey && AutomaticParameterAttributes.primaryKeyType.equals(PrimaryKeyType.AUTO)) {
+        if (FastParams.isAutoSetPrimaryKey && FastParams.primaryKeyType.equals(PrimaryKeyType.AUTO)) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             insertCount = SpringJDBCMySqlDBConnection.getJdbcTemplate().update(jdbcSql, new MapSqlParameterSource(param.getParamMap()), keyHolder);
             FastValueUtil.setPrimaryKey(pojo, Objects.requireNonNull(keyHolder.getKey()).longValue());

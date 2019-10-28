@@ -1,7 +1,7 @@
 package com.fast.db.template.mapper;
 
 import com.fast.db.template.cache.DataCache;
-import com.fast.db.template.config.AutomaticParameterAttributes;
+import com.fast.db.template.config.FastParams;
 import com.fast.db.template.dao.DaoActuator;
 import com.fast.db.template.template.FastDaoParam;
 import com.fast.db.template.template.*;
@@ -106,11 +106,11 @@ public class FastMapperUtil<Pojo> {
         fastMapperUtil.daoParam = new FastDaoParam<>();
         fastMapperUtil.fastDao = new FastDao<>();
         fastMapperUtil.fastCustomSqlDao = new FastCustomSqlDao<>();
-        if (AutomaticParameterAttributes.isOpenCache) {
+        if (FastParams.isOpenCache) {
             fastMapperUtil.dataCache = new DataCache<>();
         }
         try {
-            fastMapperUtil.daoActuator = AutomaticParameterAttributes.getDBActuator().newInstance();
+            fastMapperUtil.daoActuator = FastParams.getDBActuator().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

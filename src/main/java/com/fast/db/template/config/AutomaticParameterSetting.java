@@ -6,10 +6,11 @@ import com.fast.db.template.dao.DaoActuator;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 框架配置
+ * 已过期,请使用最新的FastConfig进行配置
  *
  * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
+@Deprecated
 public class AutomaticParameterSetting {
 
     /**
@@ -23,7 +24,7 @@ public class AutomaticParameterSetting {
      */
     public AutomaticParameterSetting(Class<? extends DaoActuator> mapperImpl, String primaryKeyField, PrimaryKeyType keyType) {
         openAutoSetPrimaryKey(primaryKeyField, keyType);
-        AutomaticParameterAttributes.setDBActuator(mapperImpl);
+        FastParams.setDBActuator(mapperImpl);
     }
 
 
@@ -47,8 +48,8 @@ public class AutomaticParameterSetting {
      * @param isPrintResult 是否打印SQL执行结果
      */
     public void openSqlPrint(Boolean isPrint, Boolean isPrintResult) {
-        AutomaticParameterAttributes.isSqlPrint = isPrint;
-        AutomaticParameterAttributes.isSqlPrintResult = isPrintResult;
+        FastParams.isSqlPrint = isPrint;
+        FastParams.isSqlPrintResult = isPrintResult;
     }
 
     /**
@@ -56,9 +57,9 @@ public class AutomaticParameterSetting {
      * @param createTimeField 需要设置的字段名
      */
     public void openAutoSetCreateTime(String createTimeField) {
-        AutomaticParameterAttributes.isAutoSetCreateTime = Boolean.TRUE;
-        AutomaticParameterAttributes.createTimeField = createTimeField;
-        AutomaticParameterAttributes.createTimeTableField = getToUnderlineCase(createTimeField);
+        FastParams.isAutoSetCreateTime = Boolean.TRUE;
+        FastParams.createTimeFieldName = createTimeField;
+        FastParams.createTimeTableColumnName = getToUnderlineCase(createTimeField);
     }
 
     /**
@@ -66,9 +67,9 @@ public class AutomaticParameterSetting {
      * @param updateTimeField 需要设置的字段名
      */
     public void openAutoSetUpdateTime(String updateTimeField) {
-        AutomaticParameterAttributes.isAutoSetUpdateTime = Boolean.TRUE;
-        AutomaticParameterAttributes.updateTimeField = updateTimeField;
-        AutomaticParameterAttributes.updateTimeTableField = getToUnderlineCase(updateTimeField);
+        FastParams.isAutoSetUpdateTime = Boolean.TRUE;
+        FastParams.updateTimeFieldName = updateTimeField;
+        FastParams.updateTimeTableColumnName = getToUnderlineCase(updateTimeField);
     }
 
     /**
@@ -77,10 +78,10 @@ public class AutomaticParameterSetting {
      * @param keyType 主键类型
      */
     public void openAutoSetPrimaryKey(String primaryKeyField, PrimaryKeyType keyType) {
-        AutomaticParameterAttributes.isAutoSetPrimaryKey = Boolean.TRUE;
-        AutomaticParameterAttributes.primaryKeyField = primaryKeyField;
-        AutomaticParameterAttributes.primaryKeyType = keyType;
-        AutomaticParameterAttributes.primaryKeyTableField = getToUnderlineCase(primaryKeyField);
+        FastParams.isAutoSetPrimaryKey = Boolean.TRUE;
+        FastParams.primaryKeyFieldName = primaryKeyField;
+        FastParams.primaryKeyType = keyType;
+        FastParams.primaryKeyTableColumnName = getToUnderlineCase(primaryKeyField);
     }
 
     /**
@@ -89,10 +90,10 @@ public class AutomaticParameterSetting {
      * @param defaultDeleteValue 逻辑删除默认值
      */
     public void openLogicDelete(String deleteField, Boolean defaultDeleteValue) {
-        AutomaticParameterAttributes.isOpenLogicDelete = Boolean.TRUE;
-        AutomaticParameterAttributes.deleteField = deleteField;
-        AutomaticParameterAttributes.deleteTableField = getToUnderlineCase(deleteField);
-        AutomaticParameterAttributes.defaultDeleteValue = defaultDeleteValue;
+        FastParams.isOpenLogicDelete = Boolean.TRUE;
+        FastParams.deleteFieldName = deleteField;
+        FastParams.deleteTableColumnName = getToUnderlineCase(deleteField);
+        FastParams.defaultDeleteValue = defaultDeleteValue;
     }
 
     /**
@@ -101,20 +102,20 @@ public class AutomaticParameterSetting {
      * @param defaultCacheTimeType 默认全局缓存时间类型
      */
     public void openCache(Long defaultCacheTime, TimeUnit defaultCacheTimeType) {
-        AutomaticParameterAttributes.isOpenCache = Boolean.TRUE;
-        AutomaticParameterAttributes.defaultCacheTime = defaultCacheTime;
-        AutomaticParameterAttributes.defaultCacheTimeType = defaultCacheTimeType;
+        FastParams.isOpenCache = Boolean.TRUE;
+        FastParams.defaultCacheTime = defaultCacheTime;
+        FastParams.defaultCacheTimeType = defaultCacheTimeType;
     }
 
     /**
      * 开启字段驼峰转换 例 user_name = userName
      */
     public void openToCamelCase() {
-        AutomaticParameterAttributes.isToCamelCase = Boolean.TRUE;
-        AutomaticParameterAttributes.primaryKeyTableField = getToUnderlineCase(AutomaticParameterAttributes.primaryKeyTableField);
-        AutomaticParameterAttributes.createTimeTableField = getToUnderlineCase(AutomaticParameterAttributes.createTimeTableField);
-        AutomaticParameterAttributes.updateTimeTableField = getToUnderlineCase(AutomaticParameterAttributes.updateTimeTableField);
-        AutomaticParameterAttributes.deleteTableField = getToUnderlineCase(AutomaticParameterAttributes.deleteTableField);
+        FastParams.isToCamelCase = Boolean.TRUE;
+        FastParams.primaryKeyTableColumnName = getToUnderlineCase(FastParams.primaryKeyTableColumnName);
+        FastParams.createTimeTableColumnName = getToUnderlineCase(FastParams.createTimeTableColumnName);
+        FastParams.updateTimeTableColumnName = getToUnderlineCase(FastParams.updateTimeTableColumnName);
+        FastParams.deleteTableColumnName = getToUnderlineCase(FastParams.deleteTableColumnName);
     }
 
     /**
@@ -126,7 +127,7 @@ public class AutomaticParameterSetting {
         if (val == null) {
             return val;
         }
-        if (AutomaticParameterAttributes.isToCamelCase) {
+        if (FastParams.isToCamelCase) {
             val = StrUtil.toUnderlineCase(val);
         }
         return val;

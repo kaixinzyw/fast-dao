@@ -44,7 +44,7 @@ public class FileCreateConfig {
     /**
      * 需要生成模型的表名
      */
-    private Set<String> createTables = new HashSet<>();
+    private Set<String> createTables = CollUtil.newHashSet("all");
     /**
      * 生成文件时候是否过滤表前缀信息，ord_orders = orders
      */
@@ -64,7 +64,7 @@ public class FileCreateConfig {
     /**
      * 是否要强制创建文件,使用此设置会覆盖旧的文件
      */
-    private Boolean replaceFile = Boolean.FALSE;
+    private Boolean replaceFile = Boolean.TRUE;
     /**
      * 是否使用Lombok插件,极力推荐,会有很不错的代码简洁度提升
      * 需配置,本框架已经引用
@@ -84,7 +84,7 @@ public class FileCreateConfig {
     /**
      * 需要生成的类型,CodeCreateModule枚举中定义的参数
      */
-    private Set<String> needModules = new HashSet<>();
+    private Set<String> needModules = CollUtil.newHashSet(CodeCreateModule.Base.codeModule);
 
     /**
      * 数据库连写信息
@@ -100,6 +100,7 @@ public class FileCreateConfig {
      * @param tables 多个表用逗号隔开,如果需要生成数据库中所有的表,参数为all
      */
     public void setCreateTables(String... tables) {
+        createTables = new HashSet<>();
         for (String table : tables) {
             createTables.add(table);
         }
@@ -111,6 +112,7 @@ public class FileCreateConfig {
      * @param modules 模板文件类型
      */
     public void setNeedModules(CodeCreateModule... modules) {
+        needModules = new HashSet<>();
         for (CodeCreateModule module : modules) {
             needModules.add(module.codeModule);
         }
