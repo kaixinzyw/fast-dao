@@ -6,6 +6,7 @@ import com.fast.db.template.cache.FastRedisCache;
 import com.fast.db.template.cache.FastRedisLocalCache;
 import com.fast.db.template.cache.FastStatisCache;
 import com.fast.db.template.config.FastParams;
+import com.fast.db.template.config.PrimaryKeyType;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -30,8 +31,9 @@ public class TableMapperUtil {
 
     /**
      * 获取类映射关系
+     *
      * @param clazz 类信息
-     * @param <T> 操作的类泛型
+     * @param <T>   操作的类泛型
      * @return 结果
      */
     public static <T> TableMapper<T> getTableMappers(Class<T> clazz) {
@@ -44,8 +46,9 @@ public class TableMapperUtil {
 
     /**
      * 创建类映射关系
+     *
      * @param clazz 类信息
-     * @param <T> 操作的类泛型
+     * @param <T>   操作的类泛型
      * @return 创建结果
      */
     private static synchronized <T> TableMapper<T> createRowMapper(Class<T> clazz) {
@@ -131,7 +134,12 @@ public class TableMapperUtil {
             if (isId) {
                 tableMapper.setPrimaryKeyField(field.getName());
                 tableMapper.setPrimaryKeyTableField(tabFieldName);
-                tableMapper.setPrimaryKeyType(field.getType());
+                tableMapper.setPrimaryKeyClass(field.getType());
+                if (field.getType() == String.class) {
+                    tableMapper.setPrimaryKeyType(PrimaryKeyType.UUID);
+                }else {
+                    tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
+                }
             }
             fieldNames.add(field.getName());
             fieldTypes.put(field.getName(), field.getType());

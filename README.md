@@ -10,10 +10,10 @@
 ## 功能简介
 ----
 ```java
-    PageInfo<Demo> page = DemoTemplate..create().dao().findPage(1, 10); //例-分页查询: 
-    Boolean success = DemoTemplate.create().dao().insert(demo); //例-新增数据: 
-    Integer updateCount = DemoTemplate.create().id(1).dao().update(demo); //例-更新id为1的数据:
-    Integer delCount = DemoTemplate.create().id(1).dao().delete(); //例-删除id为1的数据:
+PageInfo<Demo> page = DemoTemplate..create().dao().findPage(1, 10); //例-分页查询: 
+Boolean success = DemoTemplate.create().dao().insert(demo); //例-新增数据: 
+Integer updateCount = DemoTemplate.create().id(1).dao().update(demo); //例-更新id为1的数据:
+Integer delCount = DemoTemplate.create().id(1).dao().delete(); //例-删除id为1的数据:
 ```
 1. 极·简化数据库操作，大幅度提高编码效率,此框架核心价值所在,上手难度非常低;
 
@@ -44,35 +44,30 @@
 <dependency>
     <groupId>com.github.kaixinzyw</groupId>
     <artifactId>fast-db-template</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
 </dependency>
 ```
 
 ### 1.2 框架配置
-如果你使用的是自增ID,无需任何配置
-也可通过properties配置方式指定
-```bash
-#数据库主键设置,默认参数:id
-fast.db.primary.key=id
 
-#数据库主键类型设置,<auto,uuid> 默认参数:auto
-fast.db.primary.type=auto
+只需正常设置数据库连接信息即可
+```bash
+#例:
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=utf-8
+spring.datasource.username=root
+spring.datasource.password=123456
+spring.datasource.druid.driver-class-name=com.mysql.cj.jdbc.Driver
 ```
 
 ### 1.3 模板文件生成
-会默认生成Bean,BeanTemplate,BeanFields
-例:表user会生成<User.java> <UserTemplate.java>  <UserFields.java> 三个文件
-其中UserTemplate可以对表中每一列进行操作
+
 ```java
+public static void main(String[] args) {
     FileCreateConfig config= new FileCreateConfig();
-    
-    //数据库连 例:("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8","root","123456","com.mysql.jdbc.Driver");
-    config.setDBInfo("数据库连接","用户名","密码","驱动");
-    
-    //文件生成的包路径 例:("com.db.test")
-    config.setBasePackage("包路径");
-    //生成代码
-    TableFileCreateUtils.create(config);
+    config.setDBInfo("数据库连接","用户名","密码","驱动"); //数据库连 例:("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8","root","123456","com.mysql.jdbc.Driver");
+    config.setBasePackage("包路径"); //文件生成的包路径 例:("com.db.test")
+    TableFileCreateUtils.create(config); //生成代码
+}
 ```
 ----
 ## 2. 使用说明
@@ -133,13 +128,12 @@ List<User> list = UserTemplate.create().userName().isNull().dao().findAll();
 
  #### 2.3 自定义SQL
  
-
-```java
 多表等复杂SQL操作,可以使用自定义SQL执行器实现,框架会自动进行对象和表进行映射
 
 FastCustomSqlDao<操作类> dao = FastCustomSqlDao.create(操作类, SQL语句, 参数)
 
-例:
+```java
+//例:
 String sql = "SELECT u2.`name` as u2Name, u1.`name` as u1Name " +
              "FROM user_test2 u2 LEFT JOIN user_test u1 " +
              "WHERE u2.`AND u1.id = u2.user_test_id " +
@@ -152,8 +146,10 @@ List<UserTest2Dto> all = FastCustomSqlDao.create(UserTest2Dto.class, sql, params
 ```
 
 #### 2.4 缓存使用
-```java
+
 开启缓存功能后,可以操作类上添加注解的方式使用三种不同的缓存使用
+
+```java
 /**
  * Redis缓存,当开启缓存并操作对象配置此注解时,会将查询到的数据缓存到redis中
  * 当进行使用此框架模板进行操作新增,更新,删除操作时,会自动刷新Redis缓存中的数据
@@ -191,12 +187,12 @@ List<UserTest2Dto> all = FastCustomSqlDao.create(UserTest2Dto.class, sql, params
 ```
 
 #### 2.5 数据源切换
+
 可以在任意一次执行时进行数据源更换,更换数据源只对当前线程影响
 
 ```java
 //例
-SpringJDBCMySqlImpl.dataSource(getDataSource());
-//如果使用mybatis实现需要使用FastMyBatisImpl.dataSource(getDataSource())
+SpringJDBCMySqlImpl.dataSource(getDataSource());//如果使用mybatis实现需要使用FastMyBatisImpl.dataSource(getDataSource())
 public DataSource getDataSource() {
     DruidDataSource dataSource = new DruidDataSource();
     dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/demo2");
@@ -214,17 +210,14 @@ public DataSource getDataSource() {
 |功能说明| KEY |限定值|默认值 |示例|
 |--|--|--|--|--|
 |Dao实现配置,框架对Spring-Jdbc和MyBatis进行封装|fast.db.impl|spring-jdbc<br>mybatis|spring-jdbc|fast.db.impl=spring-jdbc=mybatis|
-|全局表主键列名设置|fast.db.primary.key|无|id|fast.db.primary.key=my_id|
-|全局表主键类型设置,可设置32位UUID和主键自增|fast.db.primary.type|auto<br>uuid|auto|fast.db.primary.type=uuid|
 |将下划线方式命名的表列名转换为Java驼峰式字段<br>例如:列名=user_name<br>转换成Java字段名=userName |fast.db.camel|true<br>false|true|fast.db.camel=false|
-|逻辑删除标记|fast.db.set.delete.val|true<br>false|true|fast.db.set.delete.val=false|
 |打印SQL执行日志|fast.db.sql.log|true<br>false|false|fast.db.sql.log=true|
 |打印SQL执行结果日志|fast.db.sql.log.result|true<br>false|false|fast.db.sql.log.result=true
 |开启缓存功能并设置时间,单位为秒|fast.db.cache.time|Long类型|无|fast.db.cache.time=60|
 |自动设置数据创建时间列,只支持datetime类型,<br>默认不进行操作|fast.db.set.create|无|无|fast.db.set.create=my_create_time|
 |自动设置数据更新时间列,只支持datetime类型|fast.db.set.update|无|无|fast.db.set.update=my_update_time|
 |开启逻辑删除功能列,只支持bit类型<br>默认无法使用逻辑删除功能|fast.db.set.delete|无|无|fast.db.set.delete=my_deleted|
-
+|逻辑删除标记|fast.db.set.delete.val|true<br>false|true|fast.db.set.delete.val=false|
 #### 3.2 模板文件生成设置详解
 
 ```java

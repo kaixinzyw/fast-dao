@@ -4,8 +4,10 @@ package com.fast.db.template.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fast.db.template.config.FastParams;
 import com.fast.db.template.config.PrimaryKeyType;
+import com.fast.db.template.mapper.TableMapper;
 
 import java.util.Date;
 
@@ -24,29 +26,28 @@ public class FastValueUtil {
     }
 
 
-    public static void setPrimaryKey(Object o, Object primaryKey) {
-        if (FastParams.isAutoSetPrimaryKey && o != null) {
-            BeanUtil.setFieldValue(o, FastParams.primaryKeyFieldName, primaryKey);
-        }
+    public static void setPrimaryKey(Object o, Object val, TableMapper tableMapper) {
+        BeanUtil.setFieldValue(o, tableMapper.getPrimaryKeyField(), val);
     }
 
-    public static void setPrimaryKey(Object o) {
-        if (FastParams.isAutoSetPrimaryKey) {
-            if (FastParams.primaryKeyType.equals(PrimaryKeyType.UUID) && o != null) {
-                Object primaryKey = BeanUtil.getFieldValue(o, FastParams.primaryKeyFieldName);
-                if (primaryKey == null) {
-                    BeanUtil.setFieldValue(o, FastParams.primaryKeyFieldName, UUID.randomUUID().toString(true));
-                }
+    public static void setPrimaryKey(Object o, TableMapper tableMapper) {
+        if (tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.UUID) && o != null) {
+            Object primaryKey = BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
+            if (primaryKey == null) {
+                BeanUtil.setFieldValue(o, tableMapper.getPrimaryKeyField(), UUID.randomUUID().toString(true));
             }
         }
     }
 
-    public static Object getPrimaryKeyValue(Object o) {
+    public static Object getPrimaryKeyValue(Object o, TableMapper tableMapper) {
         if (o == null) {
             return null;
         }
-        Object primaryKey = BeanUtil.getFieldValue(o, FastParams.primaryKeyFieldName);
-        return primaryKey;
+        Object primaryKeyVal = BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
+        if (primaryKeyVal == null) {
+            throw new RuntimeException("主键值不存在: " + JSONObject.toJSONString(o));
+        }
+        return primaryKeyVal;
     }
 
 
@@ -78,7 +79,6 @@ public class FastValueUtil {
         }
         return val;
     }
-
 
 
 }

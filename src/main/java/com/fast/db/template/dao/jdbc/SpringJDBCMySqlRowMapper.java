@@ -55,7 +55,10 @@ public class SpringJDBCMySqlRowMapper<T> implements RowMapper<T> {
             for (int i = 1; i <= columnLength; i++) {
                 String columnName = metaData.getColumnName(i);
                 String fieldName = tableFieldNames.get(columnName);
-                jsonObject.put(fieldName, rs.getObject(fieldName));
+                Object val = rs.getObject(fieldName);
+                if (val != null) {
+                    jsonObject.put(fieldName, val);
+                }
             }
             return jsonObject.toJavaObject(mapper.getObjClass());
         } catch (Exception e) {

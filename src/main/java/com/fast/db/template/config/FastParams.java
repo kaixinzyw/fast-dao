@@ -47,23 +47,6 @@ public class FastParams {
      */
     public static String updateTimeTableColumnName;
 
-    /**
-     * 是否自动设置指定主键信息,目前强制使用
-     */
-    public static Boolean isAutoSetPrimaryKey = Boolean.TRUE;
-
-    /**
-     * 主键类型,参考枚举PrimaryKeyType 目前有32位UUID和自增
-     */
-    public static PrimaryKeyType primaryKeyType = PrimaryKeyType.AUTO;
-    /**
-     * 指定设置的主键字段名称
-     */
-    public static String primaryKeyFieldName = "id";
-    /**
-     * 指定设置主键的表名称
-     */
-    public static String primaryKeyTableColumnName = "id";
 
     /**
      * 是否启用逻辑删除,目前只支持Boolean

@@ -58,12 +58,21 @@ public class DaoTemplate<T> {
      */
     public Integer insert(T pojo) {
         if (pojo != null) {
-            FastValueUtil.setPrimaryKey(pojo);
+            FastValueUtil.setPrimaryKey(pojo, tableMapper);
             FastValueUtil.setCreateTime(pojo);
             FastValueUtil.setNoDelete(pojo);
         }
         Integer insert = daoActuator.insert(pojo);
         return updateCache(insert);
+    }
+
+    public T findByPrimaryKey(Object primaryKeyValue) {
+        this.fastExample.field(tableMapper.getPrimaryKeyField()).valEqual(primaryKeyValue);
+        List<T> pojos = findAll();
+        if (CollUtil.isNotEmpty(pojos)) {
+            return pojos.get(0);
+        }
+        return null;
     }
 
     /**
@@ -161,6 +170,11 @@ public class DaoTemplate<T> {
         return updateCache(daoActuator.update(pojo, isSelective));
     }
 
+    public Integer updateByPrimaryKey(T pojo, boolean isSelective) {
+        this.fastExample.field(tableMapper.getPrimaryKeyField()).valEqual(FastValueUtil.getPrimaryKeyValue(pojo, tableMapper));
+        return update(pojo, isSelective);
+    }
+
     /**
      * 删除数据
      *
@@ -182,7 +196,11 @@ public class DaoTemplate<T> {
             e.printStackTrace();
         }
         return 0;
+    }
 
+    public Integer deleteByPrimaryKey(Object val, boolean isDiskDelete) {
+        this.fastExample.field(tableMapper.getPrimaryKeyField()).valEqual(val);
+        return delete(isDiskDelete);
     }
 
     /**

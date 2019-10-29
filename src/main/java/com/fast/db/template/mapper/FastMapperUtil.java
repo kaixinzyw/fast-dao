@@ -118,6 +118,11 @@ public class FastMapperUtil<Pojo> {
         return fastMapperUtil;
     }
 
+    public static <T> DaoTemplate<T> daoTemplate(Class<T> clazz){
+        FastMapperUtil<T> dataUtil = FastMapperUtil.init(clazz, new FastExample<>(clazz));
+        return DaoTemplate.init();
+    }
+
     /**
      * 模板所有执行器初始化
      * @param clazz 执行器操作的Class

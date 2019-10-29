@@ -69,20 +69,6 @@ public class FastConfig {
     }
 
     /**
-     * 开启 设置模板操作的主键信息,默契在创建框架配置时候强制开启,暂无需单独设置
-     *
-     * @param primaryKeyTableColumnName 对应数据库中的列名
-     * @param keyType                   主键类型
-     */
-    public void openAutoSetPrimaryKey(String primaryKeyTableColumnName, PrimaryKeyType keyType) {
-        FastParams.isAutoSetPrimaryKey = Boolean.TRUE;
-        FastParams.primaryKeyType = keyType;
-
-        FastParams.primaryKeyTableColumnName = primaryKeyTableColumnName;
-        FastParams.primaryKeyFieldName = FastValueUtil.toCamelCase(primaryKeyTableColumnName);
-    }
-
-    /**
      * 开启逻辑删除功能,开启后会对逻辑删除标记的数据在 更新|删除|查询 时进行保护,可通过模板进行单次操作逻辑删除保护的关闭
      *
      * @param deleteTableColumnName 对应数据库中的列名

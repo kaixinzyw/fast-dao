@@ -1,6 +1,7 @@
 package com.fast.db.template.mapper;
 
 import com.fast.db.template.cache.DataCacheType;
+import com.fast.db.template.config.PrimaryKeyType;
 
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,11 @@ public class TableMapper<T> {
     /**
      * 操作主键类型
      */
-    private Class primaryKeyType;
+    private Class primaryKeyClass;
+    /**
+     *
+     */
+    private PrimaryKeyType primaryKeyType;
 
 
     public String getClassName() {
@@ -195,11 +200,19 @@ public class TableMapper<T> {
         this.tableFieldNames = tableFieldNames;
     }
 
-    public Class getPrimaryKeyType() {
+    public Class getPrimaryKeyClass() {
+        return primaryKeyClass;
+    }
+
+    public void setPrimaryKeyClass(Class primaryKeyClass) {
+        this.primaryKeyClass = primaryKeyClass;
+    }
+
+    public PrimaryKeyType getPrimaryKeyType() {
         return primaryKeyType;
     }
 
-    public void setPrimaryKeyType(Class primaryKeyType) {
+    public void setPrimaryKeyType(PrimaryKeyType primaryKeyType) {
         this.primaryKeyType = primaryKeyType;
     }
 }

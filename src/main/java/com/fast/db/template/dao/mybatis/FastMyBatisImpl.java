@@ -27,10 +27,10 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
         param.setPojo(pojo);
         FastInsertProvider.insert(param);
         Integer insertCount;
-        if (FastParams.isAutoSetPrimaryKey && FastParams.primaryKeyType.equals(PrimaryKeyType.AUTO)) {
+        if (param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO)) {
             insertCount = FastMyBatisConnection.getMapper().insertPrimaryKeyAuto(param);
             if (insertCount > 0) {
-                FastValueUtil.setPrimaryKey(pojo, param.getPrimaryKeyValue());
+                FastValueUtil.setPrimaryKey(pojo, param.getPrimaryKeyValue(), param.getTableMapper());
             }
         } else {
             insertCount = FastMyBatisConnection.getMapper().insert(param);
@@ -87,6 +87,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     /**
      * 切换数据源
+     *
      * @param dataSource 需要切换的数据源信息,可设置为null切换到默认数据源
      */
     public static void dataSource(DataSource dataSource) {

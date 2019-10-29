@@ -44,24 +44,6 @@ public class SpringBootConfig {
             }
         }
 
-        //主键设置,默认值为ID
-        String primaryKey = env.getProperty("fast.db.primary.key", String.class);
-        if (StrUtil.isNotEmpty(primaryKey)) {
-            FastParams.primaryKeyFieldName = primaryKey;
-            FastParams.primaryKeyTableColumnName = FastValueUtil.toCamelCase(primaryKey);
-        }
-
-        //设置主键类型
-        String primaryType = env.getProperty("fast.db.primary.type", String.class);
-        if (StrUtil.isNotEmpty(primaryType)) {
-            if (StrUtil.equalsIgnoreCase(primaryType, "uuid")) {
-                FastParams.primaryKeyType = PrimaryKeyType.UUID;
-            } else if (StrUtil.equalsIgnoreCase(primaryType, "auto")) {
-                FastParams.primaryKeyType = PrimaryKeyType.AUTO;
-            } else {
-                throw new RuntimeException("请设置正确的Fast框架主键类型,uuid | auto");
-            }
-        }
 
         //自动设置数据创建时间
         String createTimeTableColumnName = env.getProperty("fast.db.set.create", String.class);
