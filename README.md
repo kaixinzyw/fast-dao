@@ -1,23 +1,24 @@
-# FastDao使用说明
 
-----
-#### Java ORM框架 大幅度提高开发效率 减少编码量
-### GitHub: https://github.com/kaixinzyw/fast-dao
+>主页: [http://www.fast-dao.com/](http://www.fast-dao.com/) 
+>
+>GitHub: [https://github.com/kaixinzyw/fast-dao](https://github.com/kaixinzyw/fast-dao/) 
+>
+>作者: 张亚伟
+>
+>邮箱: 398850094@qq.com
+>
+>QQ交流群: 554127796
 
-#### 作者: 张亚伟
-#### 邮箱: 398850094@qq.com
-#### QQ交流群: 554127796
+@[toc]
 
 ---
- 功能简介
-----
-1. 极·简化DAO操作，大幅度提高编码效率;
+ Java ORM框架 Dao层框架 大幅度提高开发效率 减少编码量
+---- 
+- 极·简化DAO操作，大幅度提高编码效率
+- 支持自定义SQL,自动映射
+- 支持Redis缓存和内存缓存,自动更新缓存
+- 支持MyBatis
 
-2. 支持自定义SQL,自动映射;
-
-3. 支持Redis缓存和内存缓存,自动更新缓存;
-
-5. 支持MyBatis
 ----
 示例
 ```java
@@ -27,9 +28,10 @@ Integer updateCount = UserFastDao.create().id(1).dao().update(user); //改,操�
 PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页查询
 ```
 ----
-## 1. 快速开始
 
-### 1.1 安装
+## 1. 框架安装
+----
+### 1.1 Maven
 ```xml
 <dependency>
     <groupId>com.fast-dao</groupId>
@@ -37,19 +39,186 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
     <version>4.0.0</version>
 </dependency>
 ```
+#### 1.1.1 依赖
+```xml
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.2.0.RELEASE</version>
+        </dependency>
 
-### 1.2 文件生成
+
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+```
+### 1.2 配置
+#### 1.2.1 SpringBoot配置方式
+
+```bash
+#数据源配置
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=123456
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+#redis配置
+spring.redis.database=0
+spring.redis.host=127.0.0.1
+spring.redis.port=6379
+
+#Dao实现,<spring-jdbc,mybatis> 默认参数:spring-jdbc
+fast.db.impl=mybatis
+
+#列名驼峰转换字段名,<true,false> 默认参数:true
+fast.db.camel=true
+
+#自动设置数据创建时间列,只支持datetime类型,默认参数:null 不进行任何操作
+fast.db.set.create=create_time
+
+#自动设置数据更新时间列,只支持datetime类型,默认参数:null 不进行任何操作
+fast.db.set.update=update_time
+
+#开启逻辑删除功能列,只支持bit类型,默认参数:null 不开启逻辑删除功能
+fast.db.set.delete=deleted
+#逻辑删除标记,<true.false> 默认参数:true
+fast.db.set.delete.val=true
+
+#开启缓存功能并设置时间,单位为秒,Long类型
+fast.db.cache.time=60
+
+#SQL执行日志,<true,false>默认参数:false
+fast.db.sql.log=true
+#SQL执行结果日志,<true,false>默认参数:false
+fast.db.sql.log.result=true
+```
+#### 1.2.2 Java Bean配置方式
+
 ```java
-public static void main(String[] args) {
-    FileCreateConfig config= new FileCreateConfig();
-    config.setDBInfo("数据库连接","用户名","密码","驱动"); //数据库连 例:("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC","root","123456","com.mysql.jdbc.Driver");
-    config.setBasePackage("包路径"); //文件生成的包路径 例:("com.dao.test")
-    TableFileCreateUtils.create(config); //生成代码
+public void fastDaoConfig() {
+
+    /**
+     * 配置框架模式,默认SpringJDBCMySqlImpl.class
+     */
+    FastDaoConfig.daoActuator(FastMyBatisImpl.class);
+
+    /**
+     * 数据源配置
+     */
+    FastDaoConfig.dataSource(getDataSource());
+
+    /**
+     * redis配置
+     */
+    FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
+
+    /**
+     * 字段驼峰转换 例 user_name = userName
+     */
+    FastDaoConfig.openToCamelCase();
+    /**
+     * 框架使用的是INFO级别
+     * 参数1: 是否打印SQL日志
+     * 参数2: 是否打印SQL执行结果
+     */
+    FastDaoConfig.openSqlPrint(true, true);
+    /**
+     * 开启自动对数据 新增操作 进行创建时间设置
+     * 参数1: 需要设置创建时间的字段名
+     */
+    FastDaoConfig.openAutoSetCreateTime("create_time");
+    /**
+     * 开启自动对数据 更新操作/逻辑删除操作 进行更新时间设置
+     * 参数1: 需要设置更新时间的字段名
+     */
+    FastDaoConfig.openAutoSetUpdateTime("update_time");
+
+    /**
+     * 开启逻辑删除功能,开启后会对逻辑删除标记的数据在 更新|删除|查询 时进行保护,可通过模板进行单次操作逻辑删除保护的关闭
+     * 参数1:  逻辑删除字段名
+     * 参数2:  逻辑删除标记默认值
+     */
+    FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
+
+    /**
+     * 开启缓存功能,三种缓存模式<本地缓存，Redis缓存，本地和Redis结合缓存>,支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
+     * 参数1:  默认缓存时间
+     * 参数2:  默认缓存时间类型
+     */
+    FastDaoConfig.openCache(10L, TimeUnit.SECONDS);
+
 }
+
+private static DataSource getDataSource() {
+    DruidDataSource dataSource = new DruidDataSource();
+    dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC");
+    dataSource.setUsername("root");
+    dataSource.setPassword("123456");
+    dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+    return dataSource;
+}
+
+private static RedisConnectionFactory getRedisConnectionFactory() {
+    RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+    redisConfig.setHostName("127.0.0.1");
+    redisConfig.setPort(6379);
+    redisConfig.setDatabase(1);
+    return new JedisConnectionFactory(redisConfig);
+}
+```
+
+
+### 1.3 文件生成
+```java
+    public static void main(String[] args) {
+        FileCreateConfig config = new FileCreateConfig();
+        //数据库连接
+        config.setDBInfo("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC","root","123456","com.mysql.cj.jdbc.Driver");
+        //文件生成的包路径
+        config.setBasePackage("com.fast.dao.test");
+        //是否过滤表前缀
+        config.setPrefix(false,false,null);
+        //是否使用lombok插件,默认false
+        config.setUseLombok(false);
+        //列名驼峰转换字段名,默认true
+        config.setUnderline2CamelStr(true);
+        //是否覆盖原文件,默认true
+        config.setReplaceFile(false);
+        //项目多模块路径,项目如果使用了多模块,需要在这里设置文件生成到具体哪个模块中
+        //config.setChildModuleName("service");
+        //需要生成的表名,多个表用逗号隔开 (参数 all 生成所有表)
+        config.setCreateTables("all");
+        //生成代码
+        TableFileCreateUtils.create(config);
+    }
 ```
 ----
 ## 2. 使用说明
-
+----
 ### 2.1 条件设置
 
 ```java
@@ -101,7 +270,7 @@ FastDao<User> dao = UserTemplate.create().dao();
 |物理删除|Integer deleteDisk()|删除id等于12的用户<br>`Integer count = UserTemplate.create().id(12).dao().deleteDisk()`|
 
 
-#### 2.3 自定义SQL
+### 2.3 自定义SQL
  
 多表等复杂SQL操作,可以使用自定义SQL执行器实现,框架会自动进行对象和表进行映射
 
@@ -117,15 +286,14 @@ params.put("userName","%张亚伟%");
 List<User> all = FastCustomSqlDao.create(User.class, sql, params).findAll();
 ```
 
-#### 2.4 缓存使用
+### 2.4 缓存使用
 
-开启缓存功能后,可以操作类上添加注解的方式使用三种不同的缓存使用
+开启缓存功能后,可以Bean添加注解的方式启用缓存
 
 ```java
 /**
  * Redis缓存
  * 当进行使用此框架模板进行操作新增,更新,删除操作时,会自动刷新Redis缓存中的数据
- * 此实现使用了StringRedisTemplate 依赖spring-boot-starter-data-redis
  * 默认参数为框架设置的缓存时间和类型
  * 缓存可选参数
  * FastRedisCache(Long 秒) 如@FastRedisCache(60L) 缓存60秒
@@ -145,7 +313,7 @@ List<User> all = FastCustomSqlDao.create(User.class, sql, params).findAll();
 @FastStatisCache
 ```
 
-#### 2.5 数据源切换
+### 2.5 数据源切换
 
 可以在任意一次执行时进行数据源更换,更换数据源只对当前线程影响
 
@@ -154,9 +322,9 @@ List<User> all = FastCustomSqlDao.create(User.class, sql, params).findAll();
 FastDaoConfig.dataSource(getDataSource());//更换全局数据源
 FastDaoConfig.dataSourceThreadLocal(getDataSource());//更换本线程数据源
 
-public DataSource getDataSource() {
+private static DataSource getDataSource() {
     DruidDataSource dataSource = new DruidDataSource();
-    dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/demo2");
+    dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC");
     dataSource.setUsername("root");
     dataSource.setPassword("123456");
     dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -164,53 +332,5 @@ public DataSource getDataSource() {
 }
 ```
 ----
-
-### 3. 详细配置介绍
-----
-#### 3.1 框架可选配置说明
-|功能说明| KEY |限定值|默认值 |示例|Bean配置方式|
-|---|---|---|---|---|---|
-|框架模式,框架对Jdbc和MyBatis进行封装<br>默认使用JDBC|fast.db.impl|spring-jdbc<br>mybatis|spring-jdbc|fast.db.impl=spring-jdbc=mybatis|FastDaoConfig.daoActuator(FastMyBatisImpl.class)|
-|将表列名下划线方式命名的表列名转换为Java驼峰式字段<br>例如:user_name=userName |fast.db.camel|true<br>false|true|fast.db.camel=false|FastDaoConfig.openToCamelCase()|
-|打印SQL执行日志|fast.db.sql.log|true<br>false|false|fast.db.sql.log=true|FastDaoConfig.openSqlPrint(true, false)|
-|打印SQL执行结果日志|fast.db.sql.log.result|true<br>false|false|fast.db.sql.log.result=true|FastDaoConfig.openSqlPrint(true, true)|
-|开启缓存功能并设置时间,单位为秒|fast.db.cache.time|Long类型|无|fast.db.cache.time=60|FastDaoConfig.openCache(10L, TimeUnit.SECONDS)|
-|自动设置数据创建时间,只支持datetime类型,<br>默认不进行操作|fast.db.set.create|无|无|fast.db.set.create=my_create_time|FastDaoConfig.openAutoSetCreateTime("create_time")|
-|自动设置数据更新时间,只支持datetime类型|fast.db.set.update|无|无|fast.db.set.update=my_update_time|FastDaoConfig.openAutoSetUpdateTime("update_time")|
-|开启逻辑删除功能列,只支持bit类型<br>默认无法使用逻辑删除功能|fast.db.set.delete|无|无|fast.db.set.delete=my_deleted|FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE)|
-|逻辑删除标记|fast.db.set.delete.val|true<br>false|true|fast.db.set.delete.val=false|FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE)|
-
-#### 3.2 文件生成可选配置说明
-
-```java
-public static void main(String[] args) {
-
-    FileCreateConfig config = new FileCreateConfig();
-    
-    //数据库连接
-    config.setDBInfo("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8","root","123456","com.mysql.jdbc.Driver");
-    
-    //文件生成的包路径
-    config.setBasePackage("com.db.test");
-    
-    //是否过滤表前缀
-    config.setPrefix(false,false,null);
-    
-    //是否使用lombok插件
-    config.setUseLombok(true);
-    
-    //是否下划线转大小写,默认true
-    config.setUnderline2CamelStr(true);
-    
-    //项目多模块路径
-    config.setChildModuleName("service");
-    
-    //需要生成的表名 (可选值,具体表名或all)
-    config.setCreateTables("user");
-    
-    //生成代码
-    TableFileCreateUtils.create(config);
-}
-```
 
 **感谢使用,希望您能提出宝贵的建议,我会不断改进更新**
