@@ -1,4 +1,5 @@
-[toc]
+# FastDao使用说明
+
 ----
 #### Java ORM框架 大幅度提高开发效率 减少编码量
 ### GitHub: https://github.com/kaixinzyw/fast-dao
@@ -26,7 +27,7 @@ Integer updateCount = UserFastDao.create().id(1).dao().update(user); //改,操�
 PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页查询
 ```
 ----
-
+[toc]
 ## 1. 快速开始
 
 ### 1.1 安装
