@@ -1,5 +1,4 @@
 [toc]
-Fast-Dao
 ----
 #### Java ORM框架 大幅度提高开发效率 减少编码量
 ### GitHub: https://github.com/kaixinzyw/fast-dao
