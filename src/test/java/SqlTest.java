@@ -1,24 +1,16 @@
-//import cn.hutool.core.util.StrUtil;
-//import com.alibaba.druid.pool.DruidDataSource;
+//package com.my.test;
+//
 //import com.alibaba.fastjson.JSONObject;
-//import com.db.test.pojo.UserTest;
-//import com.db.test.pojo.UserTest2;
-//import com.db.test.pojo.template.UserTest2Template;
-//import com.db.test.pojo.template.UserTestTemplate;
-//import com.fast.db.template.dao.jdbc.SpringJDBCMySqlImpl;
-//import com.fast.db.template.utils.SpringUtil;
-//import com.fast.db.template.utils.page.PageInfo;
+//import com.fast.utils.page.PageInfo;
+//import com.my.test.pojo.User;
+//import com.my.test.pojo.fast.dao.UserFastDao;
 //import org.junit.FixMethodOrder;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.junit.runners.MethodSorters;
-//import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.core.env.Environment;
-//import org.springframework.data.redis.core.StringRedisTemplate;
 //import org.springframework.test.context.junit4.SpringRunner;
 //
-//import javax.sql.DataSource;
 //import java.util.HashMap;
 //import java.util.List;
 //import java.util.Map;
@@ -28,109 +20,22 @@
 //@FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 //public class SqlTest {
 //
-//    private static Long id1;
-//    private static Long id2;
-//    private static Long id3;
-//    private static Long id4;
-//    private static Long id5;
-//    private static Long id6;
-//    private static Long id19;
-//    private static Long id20;
 //
-//    @Autowired
-//    private StringRedisTemplate redisTemplate;
-//
-//    @Test
-//    public void autowiredTest(){
-//        Environment env = SpringUtil.getBean(Environment.class);
-//        System.out.println(env.getProperty("fsdff.sdfasdf",Long.class));
-//        System.out.println(StrUtil.equalsIgnoreCase(env.getProperty("fast.db.impl"),"SPRING-JDB1C"));
-//
-//    }
-//
-//    public DataSource zywTest2() {
-//        DruidDataSource dataSource = new DruidDataSource();
-//        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/zyw_test2?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
-//        dataSource.setUsername("root");
-//        dataSource.setPassword("kaixin001");
-//        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-//        return dataSource;
-//
-//    }
-//
-//
-//
-//    //    @Test
-//    public void test_aa_insert() throws InterruptedException {
-//
-//        for (int i = 1; i <= 100; i++) {
-//
-//            new Thread(() -> {
-//                UserTest user = new UserTest();
-//                user.setName("张亚伟Thread");
-//                user.setAge(-1);
-//                UserTestTemplate.create().dao().insert(user);
-//
-//                SpringJDBCMySqlImpl.dataSource(zywTest2());
-//
-//                UserTest2 user2 = new UserTest2();
-//                user2.setName("UserTest2张亚伟Thread");
-//                user2.setAge(-1);
-//                UserTest2Template.create().dao().insert(user2);
-//            }).start();
-//        }
-//        Thread.sleep(10000);
-//    }
 //
 //    @Test
 //    public void test_a_insert() {
-//
-//        int x = 0;
 //        for (int i = 1; i <= 20; i++) {
-//            UserTest user = new UserTest();
-//            user.setName("张亚伟" + i);
+//            User user = new User();
+//            user.setUserName("张亚伟" + i);
 //            user.setAge(i);
-//            UserTestTemplate.create().dao().insert(user);
-//
-//
-//            UserTest2 user2 = new UserTest2();
-//            user2.setName("UserTest2张亚伟" + i);
-//            user2.setAge(i);
-//            Boolean success = UserTest2Template.create().dao().insert(user2);
-//            if (i == 1) {
-//                id1 = user.getId();
-//            }
-//            if (i == 2) {
-//                id2 = user.getId();
-//            }
-//            if (i == 3) {
-//                id3 = user.getId();
-//            }
-//            if (i == 4) {
-//                id4 = user.getId();
-//            }
-//            if (i == 5) {
-//                id5 = user.getId();
-//            }
-//            if (i == 6) {
-//                id6 = user.getId();
-//            }
-//
-//            if (i == 19) {
-//                id19 = user.getId();
-//            }
-//            if (i == 20) {
-//                id20 = user.getId();
-//            }
-//            x++;
+//            UserFastDao.create().dao().insert(user);
 //        }
 //
 //    }
 //
 //    @Test
 //    public void test_b_findByPrimaryKey() {
-//        UserTest one = UserTestTemplate.create().id(id1).dao().findOne();
-//
+//        User one = UserFastDao.create().age().orderByAsc().dao().findOne();
 //    }
 //
 //
@@ -141,42 +46,34 @@
 //            params.put("userName", "张亚伟19");
 //            params.put("age", 20);
 //
-//            UserTestTemplate testTemplate = UserTestTemplate.create();
-//            testTemplate.andSql("name = #{userName}", params);
+//            UserFastDao testTemplate = UserFastDao.create();
+//            testTemplate.andSql("userName = #{userName}", params);
 //            testTemplate.orSQL("age = #{age}", params);
 //            testTemplate.age().orderByDesc();
 //            testTemplate.closeLogicDeleteProtect();
-//            UserTest one = testTemplate.dao().findOne();
+//            User one = testTemplate.dao().findOne();
 //        }
 //    }
 //
 //    @Test
 //    public void test_c_findOne() throws InterruptedException {
-//        UserTest userTest = new UserTest();
-//        userTest.setName("张亚伟10");
-//        UserTestTemplate testTemplate = UserTestTemplate.create();
-//        testTemplate.equalPojo(userTest);
+//        User User = new User();
+//        User.setUserName("张亚伟10");
+//        UserFastDao testTemplate = UserFastDao.create();
+//        testTemplate.equalPojo(User);
 //        testTemplate.age().orderByAsc();
 //
-//        UserTest2 userTest2 = new UserTest2();
-//        userTest2.setName("UserTest2张亚伟10");
-//        UserTest2Template testTemplate2 = UserTest2Template.create();
-//        testTemplate2.equalPojo(userTest2);
-//        testTemplate2.age().orderByAsc();
 //
 //
 //        for (int i = 0; i < 100; i++) {
 ////            new Thread(() -> {
-//            UserTest one = testTemplate.dao().findOne();
-//            if (!one.getName().equals("张亚伟10")) {
+//            User one = testTemplate.age(1).dao().findOne();
+//            if (!one.getUserName().equals("张亚伟10")) {
 //                throw new RuntimeException("查询错误");
 //            }
-//            UserTest2 one2 = testTemplate2.dao().findOne();
-//            if (!one2.getName().equals("UserTest2张亚伟10")) {
-//                throw new RuntimeException("查询错误");
-//            }
+//
 //            if (i == 50) {
-//                UserTestTemplate.create().id(one.getId()).dao().update(one);
+//                UserFastDao.create().id(one.getId()).dao().update(one);
 //            }
 ////            }).start();
 //        }
@@ -187,30 +84,27 @@
 //
 //    @Test
 //    public void test_d_findByIn() {
-//
-//        List<UserTest> byIn = UserTestTemplate.create().name().in("张亚伟2", "张亚伟3", "张亚伟4").dao().findAll();
-//
-//
+//        List<User> byIn = UserFastDao.create().userName().in("张亚伟11", "张亚伟12", "张亚伟13").dao().findAll();
 //    }
 //
 //
 //    @Test
 //    public void test_e_updateByPrimaryKeyOverwrite() {
-//
-//        UserTest userTest = new UserTest();
-//        userTest.setId(id1);
-//        userTest.setName("updateByPrimaryKeyOverwrite");
-//        Integer updateCount = UserTestTemplate.create().id(userTest.getId()).dao().updateOverwrite(userTest);
+//        User one = UserFastDao.create().age(1).dao().findOne();
+//        User u = new User();
+//        u.setId(one.getId());
+//        u.setUserName("updateByPrimaryKeyOverwrite");
+//        Integer updateCount = UserFastDao.create().id(u.getId()).dao().updateOverwrite(u);
 //
 //    }
 //
 //    @Test
 //    public void test_f_updateByPrimaryKey() {
-//
-//        UserTest userTest = new UserTest();
-//        userTest.setId(id2);
-//        userTest.setName("updateByPrimaryKey");
-//        Integer updateCount = UserTestTemplate.create().id(userTest.getId()).dao().update(userTest);
+//        User one = UserFastDao.create().age(2).dao().findOne();
+//        User u = new User();
+//        u.setId(one.getId());
+//        u.setUserName("updateByPrimaryKey");
+//        Integer updateCount = UserFastDao.create().id(u.getId()).dao().update(u);
 //
 //
 //    }
@@ -218,26 +112,24 @@
 //
 //    @Test
 //    public void test_g_updateOverwrite() {
+//        User one = UserFastDao.create().age(3).dao().findOne();
 //
-//        UserTest userTest = new UserTest();
-//        userTest.setName("updateOverwrite");
-//        userTest.setId(id3);
-//        UserTestTemplate template = UserTestTemplate.create();
-//        template.id().valEqual(id3);
-//        Integer update = template.dao().updateOverwrite(userTest);
+//        User u = new User();
+//        u.setUserName("updateOverwrite");
+//        u.setId(one.getId());
 //
-//
+//        Integer update = UserFastDao.create().id(one.getId()).dao().updateOverwrite(u);
 //    }
 //
 //
 //    @Test
 //    public void test_h_update() {
+//        User one = UserFastDao.create().age(4).dao().findOne();
 //
-//        UserTest userTest = new UserTest();
-//        userTest.setName("update");
-//        UserTestTemplate template = UserTestTemplate.create();
-//        template.id().valEqual(id4);
-//        Integer update = template.dao().update(userTest);
+//        User u = new User();
+//        u.setUserName("update");
+//
+//        Integer update = UserFastDao.create().id(one.getId()).dao().update(u);
 //
 //
 //    }
@@ -245,7 +137,7 @@
 //    @Test
 //    public void test_i_deleteByPrimaryKey() {
 //
-//        Integer delCount = UserTestTemplate.create().id(id5).dao().delete();
+//        Integer delCount = UserFastDao.create().age(5).dao().delete();
 //
 //
 //    }
@@ -253,7 +145,7 @@
 //    @Test
 //    public void test_g_deleteByPrimaryKeyDisk() {
 //
-//        UserTestTemplate.create().id(id6).dao().deleteDisk();
+//        UserFastDao.create().age(6).dao().deleteDisk();
 //
 //
 //    }
@@ -261,27 +153,20 @@
 //    @Test
 //    public void test_k_delete() {
 //
-//        UserTestTemplate template = UserTestTemplate.create();
-//        template.name().valEqual("张亚伟7");
-//        Integer delete = template.dao().delete();
+//        Integer delete = UserFastDao.create().userName("张亚伟7").dao().delete();
 //
 //
 //    }
 //
 //    @Test
 //    public void test_l_deleteDisk() {
-//
-//        UserTestTemplate template = UserTestTemplate.create();
-//        template.name().like("%张亚伟8%");
-//        Integer delete = template.dao().deleteDisk();
-//
-//
+//        Integer delete =  UserFastDao.create().userName("张亚伟8").dao().deleteDisk();
 //    }
 //
 //    @Test
 //    public void test_m_findAll() {
 //
-//        List<UserTest> all = UserTestTemplate.create().dao().findAll();
+//        List<User> all = UserFastDao.create().dao().findAll();
 //
 //
 //    }
@@ -290,13 +175,12 @@
 //    @Test
 //    public void test_n_findPage() {
 //
-//
-//        UserTestTemplate userTestTemplate = UserTestTemplate.create();
-//        userTestTemplate.name().like("%张亚伟%");
-//        userTestTemplate.age().lessOrEqual(100);
-//        userTestTemplate.age().orderByDesc();
-//        PageInfo<UserTest> page = userTestTemplate.dao().findPage(1, 2);
-////        PageInfo<UserTest> page = UserTestTemplate.UnconditionalOperating.findPage(1, 2);
+//        UserFastDao fastDao = UserFastDao.create();
+//        fastDao.userName().like("%张亚伟%");
+//        fastDao.age().lessOrEqual(100);
+//        fastDao.age().orderByDesc();
+//        PageInfo<User> page = fastDao.dao().findPage(1, 2);
+////        PageInfo<User> page = fastDao.UnconditionalOperating.findPage(1, 2);
 //        System.out.println("findPage执行成功,查询到的数据为" + JSONObject.toJSONString(page, true));
 //
 //    }
@@ -304,26 +188,26 @@
 //
 //    @Test
 //    public void test_o_FieldOperating() {
-//        UserTest up = UserTestTemplate.create().id(id19).dao().findOne();
-//        up.setName("FieldOperatingUpDate");
-//        UserTestTemplate.create().age(up.getAge()).dao().updateOverwrite(up);
+//        User up = UserFastDao.create().age(19).dao().findOne();
+//        up.setUserName("FieldUpDate");
+//        UserFastDao.create().age(up.getAge()).dao().update(up);
 //
-//        UserTest del = UserTestTemplate.create().id(id20).dao().findOne();
-//        UserTestTemplate.create().age().valEqual(del.getAge()).dao().findAll();
-//        UserTestTemplate.create().name().like("%" + del.getName() + "%").hideField().dao().findAll();
+//        User del = UserFastDao.create().age(20).dao().findOne();
+//        UserFastDao.create().age().valEqual(del.getAge()).dao().findAll();
+//        UserFastDao.create().userName().like("%" + del.getUserName() + "%").hideField().dao().findAll();
 //
 //
-//        UserTestTemplate.create().name().like("%" + del.getName() + "%").showField().dao().findAll();
+//        UserFastDao.create().userName().like("%" + del.getUserName() + "%").showField().dao().findAll();
 //
-//        UserTestTemplate.create().id(del.getId()).dao().delete();
+//        UserFastDao.create().id(del.getId()).dao().delete();
 //
-//        UserTestTemplate.create().name().like("%" + del.getName() + "%").hideField().dao().findAll();
+//        UserFastDao.create().userName().like("%" + del.getUserName() + "%").hideField().dao().findAll();
 //
-//        UserTestTemplate template = UserTestTemplate.create();
+//        UserFastDao template = UserFastDao.create();
 //        template.closeLogicDeleteProtect();
-//        template.name().like("%" + del.getName() + "%").hideField().dao().findAll();
+//        template.userName().like("%" + del.getUserName() + "%").hideField().dao().findAll();
 //
-//        UserTestTemplate.create().name().like("%" + del.getName() + "%").showField().dao().deleteDisk();
+//        UserFastDao.create().userName().like("%" + del.getUserName() + "%").showField().dao().deleteDisk();
 //
 //
 //    }

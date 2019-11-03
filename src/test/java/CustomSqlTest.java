@@ -2,9 +2,9 @@
 //
 //import com.alibaba.fastjson.JSONObject;
 //import com.db.test.dto.UserTest2Dto;
-//import com.fast.db.template.template.FastCustomSqlDao;
-//import com.fast.db.template.template.FastDao;
-//import com.fast.db.template.utils.page.PageInfo;
+//import com.fast.template.FastCustomSqlDao;
+//import com.fast.template.FastDao;
+//import com.fast.utils.page.PageInfo;
 //import org.junit.FixMethodOrder;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;

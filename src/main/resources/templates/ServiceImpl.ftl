@@ -3,11 +3,9 @@
 package ${table.servicePackPath};
 
 import ${table.iserviceClassPackPath};
-import ${table.pojoClassPackPath};
-import com.fast.db.template.base.FastBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ${table.serviceName} extends FastBaseServiceImpl<${beanName}> implements ${table.iserviceName} {
+public class ${table.serviceName} implements ${table.iserviceName}{
 
 }

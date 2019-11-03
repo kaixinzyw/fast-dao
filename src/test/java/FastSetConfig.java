@@ -1,8 +1,8 @@
-//import com.fast.db.template.config.AutomaticParameterSetting;
-//import com.fast.db.template.config.FastConfig;
-//import com.fast.db.template.config.PrimaryKeyType;
-//import com.fast.db.template.dao.jdbc.SpringJDBCMySqlImpl;
-//import com.fast.db.template.dao.mybatis.FastMyBatisImpl;
+//import com.fast.config.AutomaticParameterSetting;
+//import com.fast.config.FastConfig;
+//import com.fast.config.PrimaryKeyType;
+//import com.fast.dao.jdbc.SpringJDBCMySqlImpl;
+//import com.fast.dao.mybatis.FastMyBatisImpl;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.stereotype.Component;
 //

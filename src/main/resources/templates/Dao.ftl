@@ -3,9 +3,9 @@ package ${table.daoPackPath};
 
 import ${table.pojoClassPackPath};
 import org.springframework.stereotype.Repository;
-import com.fast.db.template.base.FastBaseDao;
+import com.fast.base.BaseDao;
 
 @Repository
-public class ${table.daoName} extends FastBaseDao<${beanName}> {
+public class ${table.daoName} extends BaseDao<${beanName}> {
 
 }

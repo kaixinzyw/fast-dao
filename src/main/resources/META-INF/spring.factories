@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.fast.db.template.utils.SpringUtil
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.fast.utils.SpringUtil

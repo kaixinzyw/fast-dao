@@ -1,5 +1,5 @@
-//import com.fast.db.template.code.TableFileCreateUtils;
-//import com.fast.db.template.code.bean.FileCreateConfig;
+//import com.fast.code.TableFileCreateUtils;
+//import com.fast.code.bean.FileCreateConfig;
 //import freemarker.template.TemplateException;
 //
 //import java.io.IOException;
