@@ -30,7 +30,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 ----
 
 ## 1. 框架安装
-----
+
 ### 1.1 Maven
 ```xml
 <dependency>
@@ -218,7 +218,7 @@ private static RedisConnectionFactory getRedisConnectionFactory() {
 ```
 ----
 ## 2. 使用说明
-----
+
 ### 2.1 条件设置
 
 ```java
