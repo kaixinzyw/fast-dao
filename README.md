@@ -167,7 +167,7 @@ public DataSource getDataSource() {
 
 ### 3. 详细配置介绍
 ----
-#### 3.1 框架可选
+#### 3.1 框架可选配置说明
 |功能说明| KEY |限定值|默认值 |示例|Bean配置方式|
 |---|---|---|---|---|---|
 |框架模式,框架对Jdbc和MyBatis进行封装<br>默认使用JDBC|fast.db.impl|spring-jdbc<br>mybatis|spring-jdbc|fast.db.impl=spring-jdbc=mybatis|FastDaoConfig.daoActuator(FastMyBatisImpl.class)|
@@ -180,7 +180,7 @@ public DataSource getDataSource() {
 |开启逻辑删除功能列,只支持bit类型<br>默认无法使用逻辑删除功能|fast.db.set.delete|无|无|fast.db.set.delete=my_deleted|FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE)|
 |逻辑删除标记|fast.db.set.delete.val|true<br>false|true|fast.db.set.delete.val=false|FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE)|
 
-#### 3.2 文件生成可选配置
+#### 3.2 文件生成可选配置说明
 
 ```java
 public static void main(String[] args) {
