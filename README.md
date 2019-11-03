@@ -38,7 +38,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 </dependency>
 ```
 
-### 1.3 文件生成
+### 1.2 文件生成
 ```java
 public static void main(String[] args) {
     FileCreateConfig config= new FileCreateConfig();
