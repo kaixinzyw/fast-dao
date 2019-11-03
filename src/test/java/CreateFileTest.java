@@ -1,9 +1,5 @@
 //import com.fast.code.TableFileCreateUtils;
 //import com.fast.code.bean.FileCreateConfig;
-//import freemarker.template.TemplateException;
-//
-//import java.io.IOException;
-//import java.sql.SQLException;
 //
 //public class CreateFileTest {
 //    public static void main(String[] args) {
