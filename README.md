@@ -222,52 +222,52 @@ private static RedisConnectionFactory getRedisConnectionFactory() {
 ### 2.1 条件设置
 
 ```java
-UserTemplate template = UserTemplate.create();
+UserFastDao fastDao = UserFastDao.create();
 ```
 
 
 |功能|方法|示例|
 |---|---|---|
-|相等条件设置| template.fieldName(参数...)<br>template.fieldName().notValEqual(参数)|`template.userName(张三,李四)`<br>`template.userName().notValEqual("张三")`|
-|模糊匹配条件设置 |template.fieldName().like(参数)<br>template.fieldName().likeLeft(参数)<br>template.fieldName().likeRight(参数)<br><br>template.fieldName().notLike(参数)<br>template.fieldName().notLikeLeft(参数)<br>template.fieldName().notLikeRight(参数)|`template.userName().like("张")`<br>`template.userName().likeLeft("张")`<br>`template.userName().likeRight("三")`<br><br>`template.userName().notLike("张")`<br>`template.userName().notLikeLeft("张")`<br>`template.userName().notLikeRight("三")`|
-|IN条件设置|template.fieldName().in("参数1"...) <br>template.fieldName().notIn("参数1"...)|`template.userName().in("张三","李四")`<br>`template.userName().notIn("张三","李四")` |
-|范围条件设置|template.fieldName().between(min, max)<br>template.fieldName().notBetween(min, max)|`template.age().between(20, 30)`<br>`template.age().notBetween(20, 30)`|
-|大于条件设置|template.fieldName().greater(参数)|`template.age().greater(30)`|
-|大于等于条件设置|template.fieldName().greaterOrEqual(参数)|`template.age().greaterOrEqual(30)`|
-|小于条件设置|template.fieldName().less(参数)|`template.age().less(10)`|
-|小于等于条件设置|template.fieldName().lessOrEqual(参数)|`template.age().lessOrEqual(10)`|
-|IsNull条件设置|template.fieldName().isNull()|`template.userName().isNull()`|
-|NotNull条件设置|template.fieldName().notNull()|`template.userName().notNull()`|
-|排序设置-升序|template.fieldName().orderByAsc()|`template.age().orderByAsc()`|
-|排序设置-降序|template.fieldName().orderByDesc()|`template.age().orderByDesc()`|
-|对象条件设置|template.equalPojo(对象)|`User user = new User;`<br>`user.setName("张三");`<br>`template.equalPojo(user )`<br>|
-|查询指定字段设置|template.fieldName().showField()|执行查询操作时只查询指定字段,可设置多个<br>`template.id().showField();`<br>`template.userName().showField();`|
-|过滤字段设置|template.fieldName().hideField()|查询操作时不查询指定字段,可设置多个<br>`template.password().hideField();`<br>`template.mail().hideField();`|
-|字段去重复设置|template.fieldName().distinctField()|`template.userName().distinctField()`|
-|自定义SQL条件设置|template.andSql(SQL语句,参数)<br>template.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需 要使用 #{参数名}占位<br>在参数值MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`template.andSql("userName = #{userName}",params)`|
-|关闭逻辑删除保护|template.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
-|OR条件设置|template.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`template.userName().valEqual("张三").or().isNull()`
+|相等条件设置| fastDao.fieldName(参数...)<br>fastDao.fieldName().notValEqual(参数)|`fastDao.userName(张三,李四)`<br>`fastDao.userName().notValEqual("张三")`|
+|模糊匹配条件设置 |fastDao.fieldName().like(参数)<br>fastDao.fieldName().likeLeft(参数)<br>fastDao.fieldName().likeRight(参数)<br><br>fastDao.fieldName().notLike(参数)<br>fastDao.fieldName().notLikeLeft(参数)<br>fastDao.fieldName().notLikeRight(参数)|`fastDao.userName().like("张")`<br>`fastDao.userName().likeLeft("张")`<br>`fastDao.userName().likeRight("三")`<br><br>`fastDao.userName().notLike("张")`<br>`fastDao.userName().notLikeLeft("张")`<br>`fastDao.userName().notLikeRight("三")`|
+|IN条件设置|fastDao.fieldName().in("参数1"...) <br>fastDao.fieldName().notIn("参数1"...)|`fastDao.userName().in("张三","李四")`<br>`fastDao.userName().notIn("张三","李四")` |
+|范围条件设置|fastDao.fieldName().between(min, max)<br>fastDao.fieldName().notBetween(min, max)|`fastDao.age().between(20, 30)`<br>`fastDao.age().notBetween(20, 30)`|
+|大于条件设置|fastDao.fieldName().greater(参数)|`fastDao.age().greater(30)`|
+|大于等于条件设置|fastDao.fieldName().greaterOrEqual(参数)|`fastDao.age().greaterOrEqual(30)`|
+|小于条件设置|fastDao.fieldName().less(参数)|`fastDao.age().less(10)`|
+|小于等于条件设置|fastDao.fieldName().lessOrEqual(参数)|`fastDao.age().lessOrEqual(10)`|
+|IsNull条件设置|fastDao.fieldName().isNull()|`fastDao.userName().isNull()`|
+|NotNull条件设置|fastDao.fieldName().notNull()|`fastDao.userName().notNull()`|
+|排序设置-升序|fastDao.fieldName().orderByAsc()|`fastDao.age().orderByAsc()`|
+|排序设置-降序|fastDao.fieldName().orderByDesc()|`fastDao.age().orderByDesc()`|
+|对象条件设置|fastDao.equalPojo(对象)|`User user = new User;`<br>`user.setName("张三");`<br>`fastDao.equalPojo(user )`<br>|
+|查询指定字段设置|fastDao.fieldName().showField()|执行查询操作时只查询指定字段,可设置多个<br>`fastDao.id().showField();`<br>`fastDao.userName().showField();`|
+|过滤字段设置|fastDao.fieldName().hideField()|查询操作时不查询指定字段,可设置多个<br>`fastDao.password().hideField();`<br>`fastDao.mail().hideField();`|
+|字段去重复设置|fastDao.fieldName().distinctField()|`fastDao.userName().distinctField()`|
+|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需 要使用 #{参数名}占位<br>在参数值MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
+|关闭逻辑删除保护|fastDao.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
+|OR条件设置|fastDao.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`fastDao.userName().valEqual("张三").or().isNull()`
 
 
 
 ### 2.2 Dao执行器
 Dao执行器调用:
 ```java
-FastDao<User> dao = UserTemplate.create().dao();
+FastDao<User> dao = UserFastDao.create().dao();
 ```
 执行器方法:
 
 |说明|方法名 |示例|
 |---|---|---|
-|新增|Boolean insert(Pojo pojo)|新增一个用户,新增成功后会进行对象主键字段赋值<br>`Boolean success = UserTemplate.create().dao().insert(user)`|
-|查询单条数据|Pojo findOne()|查询用户名为张三的信息<br>`User user = UserTemplate.create().userName("张三").dao().findOne()`|
-|查询多条数据|List<Pojo> findAll()|查询年龄在20-30间的所有用户<br>`List<User> list = UserTemplate.create().age().between(20,30).dao().findAll()`|
-|查询数量|Integer findCount()|查询一共有多少用户<br>`Integer count = UserTemplate.create().dao().findCount()`|
-|分页查询|PageInfo<Pojo> findPage(int pageNum, int pageSize)|分页查询用户,并对年龄进行排序<br>`PageInfo<User> page = UserTemplate.create().age().orderByDesc().findPage(1, 10)`|
-|更新数据,对象中参数为空的属性不进行更新|Integer update(Pojo pojo)|更新姓名为张三和李四的用户<br>`Integer count = UserTemplate.create().userName().in("张三","李四").dao().update(user)`|
-|更新数据,对象中参数为空的属性也进行更新|Integer updateOverwrite(Pojo pojo)|更新年龄小于30,并且姓张的用户<br>`UserTemplate template = UserTemplate.create();`<br>`template.age().less(30);`<br>`template.userName().like("张");`<br>`Integer count = template.updateOverwrite(user)`|
-|逻辑删除<br>本操作会自动将数据进行逻辑删除标记<br>SpringBoot环境需要在properties中配置<br>fast.db.set.delete=列名<br>其他环境使用Bean配置<br>FastDaoConfig.openLogicDelete("deleted",true);<br>重要!!!如果不进行设置将使用物理删除方式|Integer delete()|删除年龄大于80或为null的用户<br>`Integer count = UserTemplate.create().age().greater(80).or().isNull().delete()`
-|物理删除|Integer deleteDisk()|删除id等于12的用户<br>`Integer count = UserTemplate.create().id(12).dao().deleteDisk()`|
+|新增|Boolean insert(Pojo pojo)|新增一个用户,新增成功后会进行对象主键字段赋值<br>`Boolean success = UserFastDao.create().dao().insert(user)`|
+|查询单条数据|Pojo findOne()|查询用户名为张三的信息<br>`User user = UserFastDao.create().userName("张三").dao().findOne()`|
+|查询多条数据|List<Pojo> findAll()|查询年龄在20-30间的所有用户<br>`List<User> list = UserFastDao.create().age().between(20,30).dao().findAll()`|
+|查询数量|Integer findCount()|查询一共有多少用户<br>`Integer count = UserFastDao.create().dao().findCount()`|
+|分页查询|PageInfo<Pojo> findPage(int pageNum, int pageSize)|分页查询用户,并对年龄进行排序<br>`PageInfo<User> page = UserFastDao.create().age().orderByDesc().findPage(1, 10)`|
+|更新数据,对象中参数为空的属性不进行更新|Integer update(Pojo pojo)|更新姓名为张三和李四的用户<br>`Integer count = UserFastDao.create().userName().in("张三","李四").dao().update(user)`|
+|更新数据,对象中参数为空的属性也进行更新|Integer updateOverwrite(Pojo pojo)|更新年龄小于30,并且姓张的用户<br>`UserFastDao fastDao = UserFastDao.create();`<br>`fastDao.age().less(30);`<br>`fastDao.userName().like("张");`<br>`Integer count = fastDao.updateOverwrite(user)`|
+|逻辑删除<br>本操作会自动将数据进行逻辑删除标记<br>SpringBoot环境需要在properties中配置<br>fast.db.set.delete=列名<br>其他环境使用Bean配置<br>FastDaoConfig.openLogicDelete("deleted",true);<br>重要!!!如果不进行设置将使用物理删除方式|Integer delete()|删除年龄大于80或为null的用户<br>`Integer count = UserFastDao.create().age().greater(80).or().isNull().delete()`
+|物理删除|Integer deleteDisk()|删除id等于12的用户<br>`Integer count = UserFastDao.create().id(12).dao().deleteDisk()`|
 
 
 ### 2.3 自定义SQL
