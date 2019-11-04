@@ -3,7 +3,6 @@ package com.fast.mapper;
 import cn.hutool.core.util.StrUtil;
 import com.fast.cache.DataCacheType;
 import com.fast.cache.FastRedisCache;
-import com.fast.cache.FastRedisLocalCache;
 import com.fast.cache.FastStatisCache;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
@@ -52,6 +51,7 @@ public class TableMapperUtil {
      * @return 创建结果
      */
     private static synchronized <T> TableMapper<T> createRowMapper(Class<T> clazz) {
+        long l = System.currentTimeMillis();
         if (tableMappers.get(clazz.getSimpleName()) != null) {
             return tableMappers.get(clazz.getSimpleName());
         }
@@ -65,20 +65,7 @@ public class TableMapperUtil {
             tableMapper.setTableName(StrUtil.toUnderlineCase(tableMapper.getClassName()));
         }
         if (FastDaoAttributes.isOpenCache) {
-            if (clazz.isAnnotationPresent(FastRedisLocalCache.class)) {
-                FastRedisLocalCache fastLocalCache = clazz.getAnnotation(FastRedisLocalCache.class);
-                tableMapper.setCacheType(DataCacheType.RedisLocalCache);
-                if (fastLocalCache.value() != 0L) {
-                    tableMapper.setCacheTime(fastLocalCache.value());
-                    tableMapper.setCacheTimeType(fastLocalCache.cacheTimeType());
-                } else if (fastLocalCache.cacheTime() != 0L) {
-                    tableMapper.setCacheTime(fastLocalCache.cacheTime());
-                    tableMapper.setCacheTimeType(fastLocalCache.cacheTimeType());
-                } else {
-                    tableMapper.setCacheTime(FastDaoAttributes.defaultCacheTime);
-                    tableMapper.setCacheTimeType(FastDaoAttributes.defaultCacheTimeType);
-                }
-            } else if (clazz.isAnnotationPresent(FastRedisCache.class)) {
+            if (clazz.isAnnotationPresent(FastRedisCache.class)) {
                 FastRedisCache redisCache = clazz.getAnnotation(FastRedisCache.class);
                 tableMapper.setCacheType(DataCacheType.RedisCache);
                 if (redisCache.value() != 0L) {
@@ -156,6 +143,7 @@ public class TableMapperUtil {
         tableMapper.setTableFieldNames(tableFieldNames);
         tableMapper.setShowAllTableNames(selectAllShowField.substring(0, selectAllShowField.length() - 2));
         tableMappers.put(clazz.getSimpleName(), tableMapper);
+        System.out.println("创建映射使用时间: " + (System.currentTimeMillis() - l));
         return tableMapper;
     }
 

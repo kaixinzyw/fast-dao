@@ -36,7 +36,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
 </dependency>
 ```
 #### 1.1.1 依赖
@@ -60,20 +60,6 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
             <version>2.0.3</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-            <version>2.2.0.RELEASE</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>3.1.0</version>
         </dependency>
 ```
 ### 1.2 配置
@@ -108,7 +94,7 @@ fast.db.set.delete=deleted
 #逻辑删除标记,<true.false> 默认参数:true
 fast.db.set.delete.val=true
 
-#开启缓存功能并设置时间,单位为秒,Long类型
+#设置全局缓存时间,单位为秒,Long类型
 fast.db.cache.time=60
 
 #SQL执行日志,<true,false>默认参数:false
@@ -132,7 +118,7 @@ public void fastDaoConfig() {
     FastDaoConfig.dataSource(getDataSource());
 
     /**
-     * redis配置
+     * redis配置,如果使用Redis需要进行此配置
      */
     FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
 
@@ -165,7 +151,7 @@ public void fastDaoConfig() {
     FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
 
     /**
-     * 开启缓存功能,三种缓存模式<本地缓存，Redis缓存，本地和Redis结合缓存>,支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
+     * 设置全局缓存时间,支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
      * 参数1:  默认缓存时间
      * 参数2:  默认缓存时间类型
      */

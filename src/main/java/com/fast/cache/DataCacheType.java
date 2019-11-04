@@ -8,5 +8,5 @@ public enum DataCacheType {
     /**
      * 缓存类型
      */
-    RedisLocalCache, RedisCache, StatisCache
+    RedisCache, StatisCache
 }

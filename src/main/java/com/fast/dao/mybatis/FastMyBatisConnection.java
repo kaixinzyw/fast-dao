@@ -1,8 +1,8 @@
 package com.fast.dao.mybatis;
 
-import com.fast.mapper.FastDaoThreadLocalAttributes;
+import com.fast.config.FastDaoAttributes;
+import io.netty.util.concurrent.FastThreadLocal;
 import org.apache.ibatis.binding.BindingException;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 
@@ -15,16 +15,26 @@ import javax.sql.DataSource;
  */
 public class FastMyBatisConnection {
 
+    private static final FastThreadLocal<FastMyBatisMapper> mapperThreadLocal = new FastThreadLocal<>();
+
     /**
      * 获取Mapper
      *
      * @return 从线程缓存中获取FastMyBatisMapper
      */
     public static FastMyBatisMapper getMapper() {
-        return FastDaoThreadLocalAttributes.get().getMyBatisMapper();
+        FastMyBatisMapper fastMyBatisMapper = mapperThreadLocal.get();
+        if (fastMyBatisMapper == null) {
+            fastMyBatisMapper = dataSource(null);
+        }
+        return fastMyBatisMapper;
     }
 
-    public static FastMyBatisMapper mapperPack(DataSource dataSource) {
+    public static FastMyBatisMapper dataSource(DataSource dataSource) {
+        mapperThreadLocal.remove();
+        if (dataSource == null) {
+            dataSource = FastDaoAttributes.getDataSource();
+        }
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
 
@@ -32,23 +42,24 @@ public class FastMyBatisConnection {
         try {
             template = new SqlSessionTemplate(sqlSessionFactoryBean.getObject());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         FastMyBatisMapper mapper;
         try {
             mapper = template.getMapper(FastMyBatisMapper.class);
-        }catch (BindingException e1){
+        } catch (BindingException e1) {
             synchronized (FastMyBatisConnection.class) {
                 try {
                     mapper = template.getMapper(FastMyBatisMapper.class);
-                }catch (BindingException e2) {
+                } catch (BindingException e2) {
                     template.getConfiguration().addMapper(FastMyBatisMapper.class);
                     mapper = template.getMapper(FastMyBatisMapper.class);
                 }
 
             }
         }
+        mapperThreadLocal.set(mapper);
         return mapper;
     }
 

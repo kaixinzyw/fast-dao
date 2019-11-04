@@ -1,7 +1,10 @@
 package com.fast.config;
 
 import com.fast.dao.DaoActuator;
-import com.fast.mapper.FastDaoThreadLocalAttributes;
+import com.fast.dao.jdbc.SpringJDBCMySqlDBConnection;
+import com.fast.dao.jdbc.SpringJDBCMySqlImpl;
+import com.fast.dao.mybatis.FastMyBatisConnection;
+import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.utils.FastValueUtil;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -35,7 +38,11 @@ public class FastDaoConfig {
      * @param dataSource 数据源
      */
     public static void dataSourceThreadLocal(DataSource dataSource){
-        FastDaoThreadLocalAttributes.get().setDataSourceThreadLocal(dataSource);
+        if (FastDaoAttributes.getDaoActuator().getClass() == FastMyBatisImpl.class) {
+            FastMyBatisConnection.dataSource(dataSource);
+        } else if (FastDaoAttributes.getDaoActuator().getClass() == SpringJDBCMySqlImpl.class) {
+            SpringJDBCMySqlDBConnection.dataSource(dataSource);
+        }
     }
 
 
@@ -96,13 +103,12 @@ public class FastDaoConfig {
     }
 
     /**
-     * 开启框架缓存功能,开启后可使用@FastRedisCache,@FastRedisLocalCache,@FastStatisCache 三种数据缓存类型
+     * 设置全局缓存时间,开启后可使用@FastRedisCache,@FastStatisCache 两种数据缓存类型
      *
      * @param defaultCacheTime     默认全局缓存时间
      * @param defaultCacheTimeType 默认全局缓存时间类型
      */
     public static void openCache(Long defaultCacheTime, TimeUnit defaultCacheTimeType) {
-        FastDaoAttributes.isOpenCache = Boolean.TRUE;
         FastDaoAttributes.defaultCacheTime = defaultCacheTime;
         FastDaoAttributes.defaultCacheTimeType = defaultCacheTimeType;
     }

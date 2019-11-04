@@ -1,7 +1,6 @@
 package com.fast.example;
 
 import cn.hutool.core.util.ArrayUtil;
-import com.fast.mapper.FastDaoThreadLocalAttributes;
 
 import java.util.Collection;
 import java.util.Map;
@@ -14,13 +13,9 @@ import java.util.Map;
  */
 public class FastExample<T> {
 
-    /**
-     * 条件拼接工具
-     */
-    private Criteria<T> criteria;
 
-    private FastExample() {
-    }
+
+    private FastExample(){}
 
     /**
      * 初始化创建
@@ -32,17 +27,9 @@ public class FastExample<T> {
     }
 
     /**
-     * 初始化创建
-     *
-     * @param pojoClass 操作的类
-     * @param t         如果对象不为空,会将对象中参数不为null的字段作为AND条件
+     * 条件拼接工具
      */
-    public FastExample(Class<T> pojoClass, T t) {
-        criteria = new Criteria<>(pojoClass, this);
-        if (t != null) {
-            this.equalPojo(t);
-        }
-    }
+    private Criteria<T> criteria;
 
     /**
      * 设置操作字段
@@ -235,6 +222,7 @@ public class FastExample<T> {
             conditionPackages.addLikeQuery(fieldName, "%" + value);
             return this;
         }
+
         /**
          * 值模糊查询条件
          *
@@ -262,6 +250,7 @@ public class FastExample<T> {
             conditionPackages.addLikeQuery(fieldName, value + "%");
             return this;
         }
+
         /**
          * 值模糊查询条件
          *
@@ -286,6 +275,7 @@ public class FastExample<T> {
             conditionPackages.addInQuery(fieldName, inValues);
             return this;
         }
+
         /**
          * 不包含条件
          *
@@ -307,6 +297,7 @@ public class FastExample<T> {
             conditionPackages.addInQuery(fieldName, inValues);
             return this;
         }
+
         /**
          * 不包含查询
          *
@@ -332,6 +323,7 @@ public class FastExample<T> {
             conditionPackages.addBetweenQuery(fieldName, betweenMin, betweenMax);
             return this;
         }
+
         /**
          * 排除范围条件
          *
@@ -434,7 +426,6 @@ public class FastExample<T> {
         }
 
 
-
         /**
          * 查询特定字段
          *
@@ -492,7 +483,7 @@ public class FastExample<T> {
          * @return Dao执行器
          */
         public FastDao<P> dao() {
-            return FastDaoThreadLocalAttributes.fastDao(pojoClass, fastExample);
+            return FastDao.<P>init(pojoClass,fastExample);
         }
 
     }

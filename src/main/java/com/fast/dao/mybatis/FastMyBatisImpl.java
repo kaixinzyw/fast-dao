@@ -21,7 +21,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer insert(T pojo) {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         param.setPojo(pojo);
         FastInsertProvider.insert(param);
         Integer insertCount;
@@ -40,7 +40,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     @Override
     public List<T> findAll() {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
         List<Map<String, Object>> pojoMap = FastMyBatisConnection.getMapper().findAll(param);
         if (CollUtil.isEmpty(pojoMap)) {
@@ -54,7 +54,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer findCount() {
-        FastDaoParam param = FastDaoParam.init();
+        FastDaoParam param = FastDaoParam.get();
         FastSelectProvider.findCount(param);
         Integer count = FastMyBatisConnection.getMapper().findCount(param);
         FastSqlUtil.printSql(param, count);
@@ -64,7 +64,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer update(T pojo, boolean isSelective) {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         param.setPojo(pojo);
         param.setSelective(isSelective);
         FastUpdateProvider.update(param);
@@ -76,7 +76,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer delete() {
-        FastDaoParam param = FastDaoParam.init();
+        FastDaoParam param = FastDaoParam.get();
         FastDeleteProvider.delete(param);
         Integer delCount = FastMyBatisConnection.getMapper().delete(param);
         FastSqlUtil.printSql(param, delCount);

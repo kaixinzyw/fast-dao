@@ -58,9 +58,8 @@ public class SpringJDBCMySqlRowMapper<T> implements RowMapper<T> {
             }
             return jsonObject.toJavaObject(mapper.getObjClass());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
 }

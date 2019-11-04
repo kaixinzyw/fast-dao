@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 框架配置参数
+ *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class FastDaoAttributes {
@@ -71,11 +72,11 @@ public class FastDaoAttributes {
     /**
      * 是否开启缓存功能
      */
-    public static Boolean isOpenCache = Boolean.FALSE;
+    public static Boolean isOpenCache = Boolean.TRUE;
     /**
      * 缓存时间
      */
-    public static Long defaultCacheTime;
+    public static Long defaultCacheTime = 10L;
     /**
      * 缓存时间类型
      */
@@ -91,13 +92,19 @@ public class FastDaoAttributes {
      * 参数
      * SpringJDBCMySqlImpl.class:使用SpringJDBC实现
      * FastMyBatisImpl.class: 使用MyBatis实现
-     *
+     * <p>
      * 如果需要自定义扩展,可以实现DaoActuator接口进行自定义扩展
      */
     private static Class<? extends DaoActuator> daoActuator = SpringJDBCMySqlImpl.class;
-    public static Class<? extends DaoActuator> getDaoActuator() {
-        return daoActuator;
+
+    public static <T> DaoActuator<T> getDaoActuator() {
+        try {
+            return daoActuator.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
     public static void setDaoActuator(Class<? extends DaoActuator> dbActuator) {
         FastDaoAttributes.daoActuator = dbActuator;
     }
@@ -106,6 +113,7 @@ public class FastDaoAttributes {
      * 数据源
      */
     private static DataSource dataSource;
+
     public static DataSource getDataSource() {
         DataSource ds = FastDaoAttributes.dataSource;
         if (ds == null) {
@@ -116,14 +124,16 @@ public class FastDaoAttributes {
         }
         return ds;
     }
+
     public static void setDataSource(DataSource dataSource) {
         FastDaoAttributes.dataSource = dataSource;
     }
 
     /**
-     *Redis
+     * Redis
      */
     private static RedisConnectionFactory redisConnectionFactory;
+
     public static RedisConnectionFactory getRedisConnectionFactory() {
         RedisConnectionFactory rcf = FastDaoAttributes.redisConnectionFactory;
         if (rcf == null) {
@@ -134,6 +144,7 @@ public class FastDaoAttributes {
         }
         return rcf;
     }
+
     public static void setRedisConnectionFactory(RedisConnectionFactory redisConnectionFactory) {
         FastDaoAttributes.redisConnectionFactory = redisConnectionFactory;
     }

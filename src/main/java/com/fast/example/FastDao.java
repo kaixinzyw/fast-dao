@@ -1,40 +1,36 @@
 package com.fast.example;
 
-import com.fast.mapper.FastDaoThreadLocalAttributes;
 import com.fast.utils.page.PageInfo;
+import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.List;
 
 /**
  * Dao执行类
  * 创建可执行Dao必须使用FastDao.create
+ *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class FastDao<Pojo> {
 
-    public FastDao() {
+    private FastDao() {
     }
 
-    /**
-     * 无初始条件的Dao创建
-     * @param clazz 需要操作的类
-     * @param <T> 操作类的泛型信息
-     * @return FastDao
-     */
-    public static <T> FastDao<T> create(Class<T> clazz) {
-        return FastDaoThreadLocalAttributes.fastDao(clazz);
+    private static final FastThreadLocal<FastDao> fastDaoThreadLocal = new FastThreadLocal<>();
+
+    public static <Pojo> FastDao<Pojo> init(Class<Pojo> clazz, FastExample<Pojo> fastExample) {
+        FastDao<Pojo> fastDao = fastDaoThreadLocal.get();
+        if (fastDao == null) {
+            fastDao = new FastDao<>();
+            fastDaoThreadLocal.set(fastDao);
+        }
+        fastDao.clazz = clazz;
+        fastDao.fastExample = fastExample;
+        return fastDao;
     }
 
-    /**
-     * 有初始条件的Dao创建
-     * @param clazz 需要操作的类
-     * @param fastExample 条件信息
-     * @param <T> 操作类的泛型信息
-     * @return FastDao
-     */
-    public static <T> FastDao<T> create(Class<T> clazz, FastExample<T> fastExample) {
-        return FastDaoThreadLocalAttributes.fastDao(clazz, fastExample);
-    }
+    private Class<Pojo> clazz;
+    private FastExample<Pojo> fastExample;
 
     /**
      * 新增数据
@@ -43,7 +39,7 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public Boolean insert(Pojo pojo) {
-        return DaoTemplate.<Pojo>init().insert(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
+        return DaoTemplate.init(clazz, fastExample).insert(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     /**
@@ -52,7 +48,7 @@ public class FastDao<Pojo> {
      * @return 数据结果
      */
     public Pojo findOne() {
-        return DaoTemplate.<Pojo>init().findOne();
+        return DaoTemplate.init(clazz, fastExample).findOne();
     }
 
     /**
@@ -61,7 +57,7 @@ public class FastDao<Pojo> {
      * @return 数据结果
      */
     public List<Pojo> findAll() {
-        return DaoTemplate.<Pojo>init().findAll();
+        return DaoTemplate.init(clazz, fastExample).findAll();
     }
 
     /**
@@ -70,7 +66,7 @@ public class FastDao<Pojo> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.<Pojo>init().findCount();
+        return DaoTemplate.init(clazz, fastExample).findCount();
     }
 
     /**
@@ -82,7 +78,7 @@ public class FastDao<Pojo> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<Pojo> findPage(int pageNum, int pageSize, int navigatePages) {
-        return DaoTemplate.<Pojo>init().findPage(pageNum, pageSize, navigatePages);
+        return DaoTemplate.init(clazz, fastExample).findPage(pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -93,7 +89,7 @@ public class FastDao<Pojo> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<Pojo> findPage(int pageNum, int pageSize) {
-        return DaoTemplate.<Pojo>init().findPage(pageNum, pageSize, 9);
+        return DaoTemplate.init(clazz, fastExample).findPage(pageNum, pageSize, 9);
     }
 
     /**
@@ -103,7 +99,7 @@ public class FastDao<Pojo> {
      * @return 更新影响到的数据
      */
     public Integer update(Pojo pojo) {
-        return DaoTemplate.<Pojo>init().update(pojo, true);
+        return DaoTemplate.init(clazz, fastExample).update(pojo, true);
     }
 
     /**
@@ -113,7 +109,7 @@ public class FastDao<Pojo> {
      * @return 更新影响到的数据
      */
     public Integer updateOverwrite(Pojo pojo) {
-        return DaoTemplate.<Pojo>init().update(pojo, false);
+        return DaoTemplate.init(clazz, fastExample).update(pojo, false);
     }
 
     /**
@@ -122,7 +118,7 @@ public class FastDao<Pojo> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.<Pojo>init().delete(false);
+        return DaoTemplate.init(clazz, fastExample).delete(false);
     }
 
     /**
@@ -131,7 +127,7 @@ public class FastDao<Pojo> {
      * @return 删除影响到的数据条数
      */
     public Integer deleteDisk() {
-        return DaoTemplate.<Pojo>init().delete(true);
+        return DaoTemplate.init(clazz, fastExample).delete(true);
     }
 
 }

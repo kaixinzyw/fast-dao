@@ -1,8 +1,8 @@
 package com.fast.example;
 
 import cn.hutool.core.util.StrUtil;
-import com.fast.mapper.FastDaoThreadLocalAttributes;
 import com.fast.mapper.TableMapper;
+import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,23 +57,29 @@ public class FastDaoParam<T> {
     private Integer page;
     private Integer size;
 
+    private FastDaoParam(){}
+
     /**
      * ORM实现参数封装类初始化
      * 如果使用自定义SQL,会直接进行SQL语句的封装,不进行模板条件拼接
      * @param <T> 操作类
      * @return 初始化结果
      */
-    public static <T> FastDaoParam<T> init() {
-        FastDaoThreadLocalAttributes<T> dataUtil = FastDaoThreadLocalAttributes.get();
-        FastDaoParam<T> daoParam = dataUtil.getDaoParam();
+    private static final FastThreadLocal<FastDaoParam> fastDaoParamThreadLocal = new FastThreadLocal<>();
+    public static <T> FastDaoParam<T> init(TableMapper<T> mapper,FastExample<T> example) {
+        FastDaoParam<T> daoParam = fastDaoParamThreadLocal.get();
+        if (daoParam == null) {
+            daoParam = new FastDaoParam<>();
+            fastDaoParamThreadLocal.set(daoParam);
+        }
         daoParam.sqlStartTime = System.currentTimeMillis();
-        daoParam.tableMapper = dataUtil.getTableMapper();
-        daoParam.fastExample = dataUtil.getFastExample();
+        daoParam.fastExample = example;
         if (StrUtil.isNotEmpty(daoParam.fastExample.conditionPackages().getCustomSql())) {
             daoParam.sql = daoParam.fastExample.conditionPackages().getCustomSql();
             daoParam.paramMap = daoParam.fastExample.conditionPackages().getCustomSqlParams();
             return daoParam;
         }
+        daoParam.tableMapper = mapper;
         daoParam.sql = null;
         daoParam.pojo = null;
         daoParam.primaryKey = null;
@@ -83,6 +89,10 @@ public class FastDaoParam<T> {
         daoParam.size = null;
         daoParam.selective = Boolean.FALSE;
         return daoParam;
+    }
+
+    public static <T>FastDaoParam<T> get(){
+        return fastDaoParamThreadLocal.get();
     }
 
     public TableMapper<T> getTableMapper() {

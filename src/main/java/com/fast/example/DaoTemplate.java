@@ -4,10 +4,11 @@ import cn.hutool.core.collection.CollUtil;
 import com.fast.cache.DataCache;
 import com.fast.config.FastDaoAttributes;
 import com.fast.dao.DaoActuator;
-import com.fast.mapper.FastDaoThreadLocalAttributes;
 import com.fast.mapper.TableMapper;
+import com.fast.mapper.TableMapperUtil;
 import com.fast.utils.FastValueUtil;
 import com.fast.utils.page.PageInfo;
+import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,23 +33,29 @@ public class DaoTemplate<T> {
      */
     private TableMapper<T> tableMapper;
 
+    private DaoTemplate(){}
+
     /**
      * 初始化
      *
      * @param <T> 操作对象的泛型信息
      * @return ORM执行器
      */
-    public static <T> DaoTemplate<T> init() {
-        FastDaoThreadLocalAttributes<T> fastDaoThreadLocalAttributes = FastDaoThreadLocalAttributes.get();
-        DaoTemplate<T> daoTemplate = fastDaoThreadLocalAttributes.getDaoTemplate();
-        daoTemplate.fastExample = fastDaoThreadLocalAttributes.getFastExample();
-        daoTemplate.tableMapper = fastDaoThreadLocalAttributes.getTableMapper();
-        return daoTemplate;
+    private static final FastThreadLocal<DaoTemplate> daoTemplateThreadLocal = new FastThreadLocal<>();
+
+    public static <T> DaoTemplate<T> init(Class<T> clazz,FastExample<T> fastExample){
+        DaoTemplate<T> template = daoTemplateThreadLocal.get();
+        if (template == null) {
+            template = new DaoTemplate<>();
+            template.daoActuator = FastDaoAttributes.getDaoActuator();
+            daoTemplateThreadLocal.set(template);
+        }
+        template.fastExample = fastExample;
+        template.tableMapper = TableMapperUtil.getTableMappers(clazz);
+        FastDaoParam.init(template.tableMapper,template.fastExample);
+        return template;
     }
 
-    public DaoTemplate(DaoActuator<T> daoActuator) {
-        this.daoActuator = daoActuator;
-    }
 
     /**
      * 新增操作
@@ -63,7 +70,7 @@ public class DaoTemplate<T> {
             FastValueUtil.setNoDelete(pojo);
         }
         Integer insert = daoActuator.insert(pojo);
-        return DataCache.upCacheVersion(insert,tableMapper);
+        return DataCache.upCache(insert,tableMapper);
     }
 
 
@@ -88,7 +95,7 @@ public class DaoTemplate<T> {
      */
     public List<T> findAll() {
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null) {
-            List<T> list = DataCache.<T>init().getList();
+            List<T> list = DataCache.<T>init(tableMapper,fastExample).getList();
             if (list != null) {
                 return list;
             }
@@ -97,7 +104,7 @@ public class DaoTemplate<T> {
         List<T> query = daoActuator.findAll();
 
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null && query != null) {
-            DataCache.<T>init().setList(query);
+            DataCache.<T>init(tableMapper,fastExample).setList(query);
         }
         return query;
     }
@@ -109,7 +116,7 @@ public class DaoTemplate<T> {
      */
     public Integer findCount() {
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null) {
-            Integer one = DataCache.<Integer>init().getCount();
+            Integer one = DataCache.<Integer>init(tableMapper,fastExample).getCount();
             if (one != null) {
                 return one;
             }
@@ -118,7 +125,7 @@ public class DaoTemplate<T> {
         Integer count = daoActuator.findCount();
 
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null && count != null) {
-            DataCache.<Integer>init().setCount(count);
+            DataCache.<Integer>init(tableMapper,fastExample).setCount(count);
         }
         return count;
     }
@@ -142,7 +149,7 @@ public class DaoTemplate<T> {
             this.fastExample.conditionPackages().setPage((pageNum - 1) * pageSize);
         }
         this.fastExample.conditionPackages().setSize(pageSize);
-
+        FastDaoParam.get().setSql(null);
         List<T> list = findAll();
         if (list == null) {
             list = new ArrayList<>();
@@ -159,7 +166,7 @@ public class DaoTemplate<T> {
      */
     public Integer update(T pojo, boolean isSelective) {
         FastValueUtil.setUpdateTime(pojo);
-        return DataCache.upCacheVersion(daoActuator.update(pojo, isSelective),tableMapper);
+        return DataCache.upCache(daoActuator.update(pojo, isSelective),tableMapper);
     }
 
 
@@ -174,16 +181,15 @@ public class DaoTemplate<T> {
             isDiskDelete = true;
         }
         if (isDiskDelete) {
-            return DataCache.upCacheVersion(daoActuator.delete(),tableMapper);
+            return DataCache.upCache(daoActuator.delete(),tableMapper);
         }
         try {
             T pojo = tableMapper.getObjClass().newInstance();
             FastValueUtil.setDeleted(pojo);
             return update(pojo, Boolean.TRUE);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return 0;
     }
 
 }

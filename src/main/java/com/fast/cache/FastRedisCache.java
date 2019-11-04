@@ -10,7 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Redis缓存,当开启缓存并操作对象配置此注解时,会将查询到的数据缓存到redis中
  * 当进行使用此框架模板进行操作新增,更新,删除操作时,会自动刷新Redis缓存中的数据
- * 此方法使用了StringRedisTemplate,需要存在于Spring容器中
  * 默认参数为框架设置的缓存时间和类型
  * 缓存可选参数
  * 1:(Long 秒) 如@FastRedisCache(60L) 缓存60秒

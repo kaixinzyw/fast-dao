@@ -6,7 +6,6 @@ package ${table.pojoFastDaoPackPath};
 
 import ${table.pojoClassPackPath};
 import com.fast.base.BaseFastDao;
-import com.fast.example.BeanFactory;
 import com.fast.example.FastExample;
 <#list table.packages as package>
 ${package}
@@ -17,9 +16,9 @@ ${package}
 */
 public class ${table.pojoFastDaoName} extends BaseFastDao<${beanName}> {
 
-    public static ${table.pojoFastDaoName} create(){return BeanFactory.getBean(${table.pojoFastDaoName}.class);}
+    public static ${table.pojoFastDaoName} create(){return new ${table.pojoFastDaoName}();}
     public static ${table.pojoFastDaoName} create(${beanName} ${beanName?uncap_first}) {
-        ${table.pojoFastDaoName} fastDao = BeanFactory.getBean(${table.pojoFastDaoName}.class);
+        ${table.pojoFastDaoName} fastDao = new ${table.pojoFastDaoName}();
         fastDao.equalPojo(${beanName?uncap_first});
         return fastDao;
     }

@@ -21,7 +21,7 @@ public class SpringJDBCMySqlImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer insert(T pojo) {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         param.setPojo(pojo);
         FastInsertProvider.insert(param);
         String jdbcSql = param.getSql().replaceAll("[#][{](paramMap.)(\\w*)[}]", ":$2");
@@ -40,7 +40,7 @@ public class SpringJDBCMySqlImpl<T> implements DaoActuator<T> {
 
     @Override
     public List<T> findAll() {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
         String jdbcSql = param.getSql().replaceAll("[#][{](paramMap.)(\\w*)[}]", ":$2");
         List<T> query = SpringJDBCMySqlDBConnection.getJdbcTemplate().query(jdbcSql, param.getParamMap(), SpringJDBCMySqlRowMapper.init(param));
@@ -50,7 +50,7 @@ public class SpringJDBCMySqlImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer findCount() {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findCount(param);
         String jdbcSql = param.getSql().replaceAll("[#][{](paramMap.)(\\w*)[}]", ":$2");
         try {
@@ -58,14 +58,13 @@ public class SpringJDBCMySqlImpl<T> implements DaoActuator<T> {
             FastSqlUtil.printSql(param, count);
             return count;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public Integer update(T pojo, boolean isSelective) {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         param.setPojo(pojo);
         param.setSelective(isSelective);
         FastUpdateProvider.update(param);
@@ -77,7 +76,7 @@ public class SpringJDBCMySqlImpl<T> implements DaoActuator<T> {
 
     @Override
     public Integer delete() {
-        FastDaoParam<T> param = FastDaoParam.init();
+        FastDaoParam<T> param = FastDaoParam.get();
         FastDeleteProvider.delete(param);
         String jdbcSql = param.getSql().replaceAll("[#][{](paramMap.)(\\w*)[}]", ":$2");
         int delCount = SpringJDBCMySqlDBConnection.getJdbcTemplate().update(jdbcSql, param.getParamMap());
