@@ -41,12 +41,7 @@ public class DataCache<T> {
     private TableMapper<T> tableMapper;
 
     private static final FastThreadLocal<DataCache> dataCacheThreadLocal = new FastThreadLocal<>();
-    /**
-     * 初始化缓存
-     *
-     * @param <T> 缓存操作对象泛型
-     * @return 缓存类初始化
-     */
+
     public static <T> DataCache<T> init(TableMapper tableMapper, FastExample fastExample) {
         DataCache<T> dataCache = dataCacheThreadLocal.get();
         if (dataCache == null) {

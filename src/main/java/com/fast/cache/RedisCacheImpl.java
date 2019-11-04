@@ -24,11 +24,6 @@ public class RedisCacheImpl {
         return redisTemplate;
     }
 
-    /**
-     * 从缓存中回去列表数据
-     *
-     * @return 查询结果
-     */
     public static <T> List<T> get(TableMapper tableMapper, String keyName) {
         StringRedisTemplate redisTemplate = redisTemplate();
         String ostr = redisTemplate.opsForValue().get(keyName);
@@ -38,21 +33,11 @@ public class RedisCacheImpl {
         return JSONObject.parseArray(ostr, tableMapper.getObjClass());
     }
 
-    /**
-     * 设置缓存
-     *
-     * @param ts 设置的参数
-     */
     public static  <T> void set(List<T> ts, TableMapper tableMapper, String keyName) {
         StringRedisTemplate redisTemplate = redisTemplate();
         redisTemplate.opsForValue().set(keyName, JSONObject.toJSONString(ts), tableMapper.getCacheTime(), tableMapper.getCacheTimeType());
     }
 
-    /**
-     * 更新缓存,对象的缓存信息
-     * @param tableMapper 数据操作对象映射信息
-     * @return 更新条数
-     */
     public static void update(TableMapper tableMapper) {
         StringRedisTemplate redisTemplate = redisTemplate();
         Set keys = redisTemplate.keys("fast_cache_" + tableMapper.getTableName() + ":*");
