@@ -43,7 +43,7 @@ public class FastDaoParam<T> {
     private List<T> insertList;
 
     /**
-     * 主键值,主键自增操作后返回的主键信息
+     * MyBatis单条数据新增后,如果主键类型是自增,会在此赋值
      */
     private Long primaryKeyValue;
 
