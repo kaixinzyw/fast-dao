@@ -36,12 +36,12 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>4.0.1</version>
+    <version>4.2.0</version>
 </dependency>
 ```
 #### 1.1.1 依赖
 ```xml
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+        <!-- JDBC模式下依赖 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -49,13 +49,13 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+        <!-- MyBatis模式下依赖 -->
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
             <version>3.5.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+        <!-- MyBatis模式下依赖 -->
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
@@ -77,7 +77,7 @@ spring.redis.database=0
 spring.redis.host=127.0.0.1
 spring.redis.port=6379
 
-#Dao实现,<spring-jdbc,mybatis> 默认参数:spring-jdbc
+#Dao实现,<jdbc,mybatis> 默认参数:jdbc
 fast.db.impl=mybatis
 
 #列名驼峰转换字段名,<true,false> 默认参数:true
@@ -108,7 +108,7 @@ fast.db.sql.log.result=true
 public void fastDaoConfig() {
 
     /**
-     * 配置框架模式,默认SpringJDBCMySqlImpl.class
+     * 配置框架模式,默认JdbcImpl.class
      */
     FastDaoConfig.daoActuator(FastMyBatisImpl.class);
 

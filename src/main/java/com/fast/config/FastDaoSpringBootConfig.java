@@ -2,7 +2,7 @@ package com.fast.config;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
-import com.fast.dao.jdbc.SpringJDBCMySqlImpl;
+import com.fast.dao.jdbc.JdbcImpl;
 import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.dao.mybatis.FastMyBatisMapper;
 import com.fast.utils.FastValueUtil;
@@ -35,16 +35,16 @@ public class FastDaoSpringBootConfig {
             FastDaoAttributes.isToCamelCase = Boolean.FALSE;
         }
 
-        //框架实现设置,默认使用spring-jdbc
+        //框架实现设置,默认使用jdbc
         String impl = env.getProperty("fast.db.impl", String.class);
         if (StrUtil.isNotEmpty(impl)) {
             if (StrUtil.equalsIgnoreCase(impl, "mybatis")) {
                 loadMyBatisMapper();
                 FastDaoAttributes.setDaoActuator(FastMyBatisImpl.class);
-            } else if (StrUtil.equalsIgnoreCase(impl, "spring-jdbc")) {
-                FastDaoAttributes.setDaoActuator(SpringJDBCMySqlImpl.class);
+            } else if (StrUtil.equalsIgnoreCase(impl, "jdbc")) {
+                FastDaoAttributes.setDaoActuator(JdbcImpl.class);
             } else {
-                throw new RuntimeException("请设置正确的Fast框架实现,可选值为mybatis | spring-jdbc");
+                throw new RuntimeException("请设置正确的Fast框架实现,可选值为mybatis | jdbc");
             }
         }
 

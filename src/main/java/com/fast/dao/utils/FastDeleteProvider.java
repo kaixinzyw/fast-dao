@@ -2,7 +2,7 @@ package com.fast.dao.utils;
 
 import cn.hutool.core.util.StrUtil;
 import com.fast.mapper.TableMapper;
-import com.fast.example.FastDaoParam;
+import com.fast.fast.FastDaoParam;
 import com.fast.utils.FastSQL;
 
 /**
@@ -14,14 +14,13 @@ public class FastDeleteProvider {
 
     public static void delete(FastDaoParam param) {
         if (StrUtil.isNotEmpty(param.getSql())) {
-            param.setSql(param.getSql().replaceAll("[#][{]", "#{paramMap."));
             return;
         }
         TableMapper tableMapper = param.getTableMapper();
         FastSQL fastSQL = new FastSQL();
         fastSQL.DELETE_FROM(tableMapper.getTableName());
         FastSqlUtil.whereSql(param.getFastExample().conditionPackages(), fastSQL, param.getParamMap(), tableMapper);
-        param.setSql(fastSQL.toString() + ";");
+        param.setSql(fastSQL.toString());
 
     }
 }

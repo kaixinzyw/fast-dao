@@ -1,8 +1,8 @@
 package com.fast.config;
 
 import com.fast.dao.DaoActuator;
-import com.fast.dao.jdbc.SpringJDBCMySqlDBConnection;
-import com.fast.dao.jdbc.SpringJDBCMySqlImpl;
+import com.fast.dao.jdbc.JdbcConnection;
+import com.fast.dao.jdbc.JdbcImpl;
 import com.fast.dao.mybatis.FastMyBatisConnection;
 import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.utils.FastValueUtil;
@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class FastDaoConfig {
 
     /**
-     * @param daoImpl 使用的ORM实现 ,框架自身可选值,不设置优先使用spring-jdbc实现
-     *                   1:SpringJDBCMySqlImpl.class:使用SpringJDBC框架模式
+     * @param daoImpl 使用的ORM实现 ,框架自身可选值,不设置优先使用jdbc实现
+     *                   1:JdbcImpl.class:使用JDBC框架模式
      *                   2:FastMyBatisImpl.class: 使用MyBatis插件模式
      */
     public static void daoActuator(Class<? extends DaoActuator> daoImpl) {
@@ -40,8 +40,8 @@ public class FastDaoConfig {
     public static void dataSourceThreadLocal(DataSource dataSource){
         if (FastDaoAttributes.getDaoActuator().getClass() == FastMyBatisImpl.class) {
             FastMyBatisConnection.dataSource(dataSource);
-        } else if (FastDaoAttributes.getDaoActuator().getClass() == SpringJDBCMySqlImpl.class) {
-            SpringJDBCMySqlDBConnection.dataSource(dataSource);
+        } else if (FastDaoAttributes.getDaoActuator().getClass() == JdbcImpl.class) {
+            JdbcConnection.dataSource(dataSource);
         }
     }
 

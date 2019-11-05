@@ -1,10 +1,13 @@
-package com.fast.example;
+package com.fast.fast;
 
 import cn.hutool.core.util.StrUtil;
+import com.fast.condition.FastExample;
 import com.fast.mapper.TableMapper;
 import io.netty.util.concurrent.FastThreadLocal;
+import org.checkerframework.checker.signature.qual.IdentifierOrArray;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,21 +26,27 @@ public class FastDaoParam<T> {
      */
     private FastExample<T> fastExample;
     /**
-     * Dao调用的开始时间
+     * SQL执行时间
      */
-    private Long sqlStartTime;
+    private Long sqlTime;
     /**
      * 操作所用到的对象信息
      */
-    private T pojo;
+    private T update;
     /**
-     * 主键信息
+     * 操作所用到的对象信息
      */
-    private Object primaryKey;
+    private T insert;
     /**
-     * 主键值
+     * 操作所用到的对象集合信息
+     */
+    private List<T> insertList;
+
+    /**
+     * 主键值,主键自增操作后返回的主键信息
      */
     private Long primaryKeyValue;
+
     /**
      * 拼接后的SQL语句
      */
@@ -50,12 +59,6 @@ public class FastDaoParam<T> {
      * 更新操作是否对不进行参数为null的字段进行操作
      */
     private Boolean selective;
-    /**
-     * 查询条数信息及分页信息
-     */
-    private Integer limit;
-    private Integer page;
-    private Integer size;
 
     private FastDaoParam(){}
 
@@ -72,21 +75,20 @@ public class FastDaoParam<T> {
             daoParam = new FastDaoParam<>();
             fastDaoParamThreadLocal.set(daoParam);
         }
-        daoParam.sqlStartTime = System.currentTimeMillis();
+
+        daoParam.tableMapper = mapper;
         daoParam.fastExample = example;
         if (StrUtil.isNotEmpty(daoParam.fastExample.conditionPackages().getCustomSql())) {
             daoParam.sql = daoParam.fastExample.conditionPackages().getCustomSql();
             daoParam.paramMap = daoParam.fastExample.conditionPackages().getCustomSqlParams();
             return daoParam;
         }
-        daoParam.tableMapper = mapper;
         daoParam.sql = null;
-        daoParam.pojo = null;
-        daoParam.primaryKey = null;
         daoParam.paramMap = new HashMap<>();
-        daoParam.limit = null;
-        daoParam.page = null;
-        daoParam.size = null;
+        daoParam.update = null;
+        daoParam.insert = null;
+        daoParam.insertList = null;
+        daoParam.primaryKeyValue = null;
         daoParam.selective = Boolean.FALSE;
         return daoParam;
     }
@@ -99,44 +101,28 @@ public class FastDaoParam<T> {
         return tableMapper;
     }
 
-    public T getPojo() {
-        return pojo;
+    public T getUpdate() {
+        return update;
     }
 
-    public void setPojo(T pojo) {
-        this.pojo = pojo;
+    public void setUpdate(T update) {
+        this.update = update;
     }
 
-    public Object getPrimaryKey() {
-        return primaryKey;
+    public T getInsert() {
+        return insert;
     }
 
-    public void setPrimaryKey(Object primaryKey) {
-        this.primaryKey = primaryKey;
+    public void setInsert(T insert) {
+        this.insert = insert;
     }
 
-    public Integer getLimit() {
-        return limit;
+    public List<T> getInsertList() {
+        return insertList;
     }
 
-    public void setLimit(Integer limit) {
-        this.limit = limit;
-    }
-
-    public Integer getPage() {
-        return page;
-    }
-
-    public void setPage(Integer page) {
-        this.page = page;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
+    public void setInsertList(List<T> insertList) {
+        this.insertList = insertList;
     }
 
     public Boolean getSelective() {
@@ -163,8 +149,12 @@ public class FastDaoParam<T> {
         this.sql = sql;
     }
 
-    public Long getSqlStartTime() {
-        return sqlStartTime;
+    public Long getSqlTime() {
+        return sqlTime;
+    }
+
+    public void setSqlTime(Long sqlTime) {
+        this.sqlTime = sqlTime;
     }
 
     public Long getPrimaryKeyValue() {
@@ -186,4 +176,5 @@ public class FastDaoParam<T> {
     public void setFastExample(FastExample<T> fastExample) {
         this.fastExample = fastExample;
     }
+
 }

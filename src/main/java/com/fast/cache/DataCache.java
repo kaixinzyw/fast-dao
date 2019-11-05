@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.fast.config.FastDaoAttributes;
 import com.fast.mapper.TableMapper;
-import com.fast.example.FastExample;
+import com.fast.condition.FastExample;
 import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.*;

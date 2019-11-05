@@ -1,6 +1,7 @@
-package com.fast.example;
+package com.fast.condition;
 
 import cn.hutool.core.util.ArrayUtil;
+import com.fast.fast.FastDao;
 
 import java.util.Collection;
 import java.util.Map;

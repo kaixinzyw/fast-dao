@@ -1,7 +1,7 @@
 package com.fast.config;
 
 import com.fast.dao.DaoActuator;
-import com.fast.dao.jdbc.SpringJDBCMySqlImpl;
+import com.fast.dao.jdbc.JdbcImpl;
 import com.fast.utils.SpringUtil;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -95,7 +95,7 @@ public class FastDaoAttributes {
      * <p>
      * 如果需要自定义扩展,可以实现DaoActuator接口进行自定义扩展
      */
-    private static Class<? extends DaoActuator> daoActuator = SpringJDBCMySqlImpl.class;
+    private static Class<? extends DaoActuator> daoActuator = JdbcImpl.class;
 
     public static <T> DaoActuator<T> getDaoActuator() {
         try {
@@ -103,6 +103,10 @@ public class FastDaoAttributes {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Class<? extends DaoActuator> getDaoActuatorClass() {
+        return FastDaoAttributes.daoActuator;
     }
 
     public static void setDaoActuator(Class<? extends DaoActuator> dbActuator) {

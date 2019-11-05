@@ -1,5 +1,6 @@
-package com.fast.example;
+package com.fast.fast;
 
+import com.fast.condition.FastExample;
 import com.fast.utils.page.PageInfo;
 
 import java.util.List;

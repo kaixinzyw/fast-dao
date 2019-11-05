@@ -3,7 +3,7 @@ package com.fast.dao.jdbc;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fast.mapper.TableMapper;
-import com.fast.example.FastDaoParam;
+import com.fast.fast.FastDaoParam;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -17,21 +17,21 @@ import java.util.Map;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class SpringJDBCMySqlRowMapper<T> implements RowMapper<T> {
+public class JdbcRowMapper<T> implements RowMapper<T> {
 
-    private static FastThreadLocal<SpringJDBCMySqlRowMapper> rowMapperThread = new FastThreadLocal<>();
+    private static FastThreadLocal<JdbcRowMapper> rowMapperThread = new FastThreadLocal<>();
 
-    public static <T> SpringJDBCMySqlRowMapper<T> init(FastDaoParam<T> param) {
-        SpringJDBCMySqlRowMapper<T> rowMapper = rowMapperThread.get();
+    public static <T> JdbcRowMapper<T> init(FastDaoParam<T> param) {
+        JdbcRowMapper<T> rowMapper = rowMapperThread.get();
         if (rowMapper == null) {
-            rowMapper = new SpringJDBCMySqlRowMapper<>();
+            rowMapper = new JdbcRowMapper<>();
             rowMapperThread.set(rowMapper);
         }
         rowMapper.mapper = param.getTableMapper();
         return rowMapper;
     }
 
-    private SpringJDBCMySqlRowMapper() {
+    private JdbcRowMapper() {
     }
 
     private TableMapper<T> mapper;

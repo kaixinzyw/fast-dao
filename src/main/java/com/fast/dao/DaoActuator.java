@@ -9,13 +9,15 @@ import java.util.List;
  */
 public interface DaoActuator<T> {
 
-    Integer insert(T pojo);
+    Integer insert();
+
+    Integer insertList();
 
     List<T> findAll();
 
     Integer findCount();
 
-    Integer update(T pojo, boolean isSelective);
+    Integer update();
 
     Integer delete();
 }

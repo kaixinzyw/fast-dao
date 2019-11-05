@@ -11,7 +11,7 @@ import javax.sql.DataSource;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class SpringJDBCMySqlDBConnection {
+public class JdbcConnection {
 
     private static final FastThreadLocal<NamedParameterJdbcTemplate> jdbcTemplateThreadLocal = new FastThreadLocal<>();
 

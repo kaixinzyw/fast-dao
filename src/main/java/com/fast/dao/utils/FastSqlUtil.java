@@ -6,11 +6,13 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSONObject;
+import com.fast.condition.ConditionPackages;
+import com.fast.condition.FastCondition;
 import com.fast.config.FastDaoAttributes;
+import com.fast.dao.jdbc.JdbcImpl;
+import com.fast.dao.mybatis.FastMyBatisImpl;
+import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
-import com.fast.example.ConditionPackages;
-import com.fast.example.FastCondition;
-import com.fast.example.FastDaoParam;
 import com.fast.utils.FastSQL;
 
 import java.text.SimpleDateFormat;
@@ -31,40 +33,45 @@ public class FastSqlUtil {
      * @param o     SQL执行结果
      */
     public static void printSql(FastDaoParam param, Object o) {
-        if (FastDaoAttributes.isSqlPrint) {
-            Map<String, Object> paramMap = param.getParamMap();
-            String sql = param.getSql();
-            if (CollUtil.isNotEmpty(paramMap)) {
-                for (String key : paramMap.keySet()) {
-                    Object value = paramMap.get(key);
-                    String sqlValue;
-                    if (value == null) {
-                        sqlValue = "null";
-                    } else if ("String".equals(value.getClass().getSimpleName())) {
-                        sqlValue = "\'" + value + "\'";
-                    } else if ("Date".equals(value.getClass().getSimpleName())) {
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        sqlValue = "\'" + formatter.format(value) + "\'";
-                    } else if ("Boolean".equals(value.getClass().getSimpleName())) {
-                        if ((Boolean) value) {
-                            sqlValue = "true";
-                        } else {
-                            sqlValue = "false";
-                        }
+        if (!FastDaoAttributes.isSqlPrint) {
+            return;
+        }
+        Map<String, Object> paramMap = param.getParamMap();
+        String sql = param.getSql();
+        if (CollUtil.isNotEmpty(paramMap)) {
+            for (String key : paramMap.keySet()) {
+                Object value = paramMap.get(key);
+                String sqlValue;
+                if (value == null) {
+                    sqlValue = "null";
+                } else if ("String".equals(value.getClass().getSimpleName())) {
+                    sqlValue = "\'" + value + "\'";
+                } else if ("Date".equals(value.getClass().getSimpleName())) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    sqlValue = "\'" + formatter.format(value) + "\'";
+                } else if ("Boolean".equals(value.getClass().getSimpleName())) {
+                    if ((Boolean) value) {
+                        sqlValue = "true";
                     } else {
-                        sqlValue = value.toString();
+                        sqlValue = "false";
                     }
+                } else {
+                    sqlValue = value.toString();
+                }
+                if (FastDaoAttributes.getDaoActuatorClass().equals(FastMyBatisImpl.class)) {
                     sql = sql.replaceAll("[#][{](paramMap.)(" + key + ")[}]", sqlValue);
+                } else if (FastDaoAttributes.getDaoActuatorClass().equals(JdbcImpl.class)) {
+                    sql = sql.replaceAll("[:](" + key + ")([,]|[)]|[\\s]|[;])", sqlValue + "$2");
                 }
             }
-
-            String result = "";
-            if (FastDaoAttributes.isSqlPrintResult) {
-                result = "执行结果: " + StrUtil.CRLF + JSONObject.toJSONString(o) + StrUtil.CRLF;
-            }
-            Log log = LogFactory.get(param.getTableMapper().getObjClass());
-            log.info(sql.substring(0, sql.indexOf(" ")) + " -> " + param.getTableMapper().getTableName() + ": SQL执行报告↓ " + StrUtil.CRLF + sql + StrUtil.CRLF + "本次执行耗时:" + (System.currentTimeMillis() - param.getSqlStartTime()) + "毫秒" + StrUtil.CRLF + result);
         }
+
+        String result = "";
+        if (FastDaoAttributes.isSqlPrintResult) {
+            result = "执行结果: " + StrUtil.CRLF + JSONObject.toJSONString(o) + StrUtil.CRLF;
+        }
+        Log log = LogFactory.get(param.getTableMapper().getObjClass());
+        log.info(sql.substring(0, sql.indexOf(" ")) + " -> " + param.getTableMapper().getTableName() + ": SQL执行报告↓ " + StrUtil.CRLF + sql + StrUtil.CRLF + "本次执行耗时:" + param.getSqlTime() + "毫秒" + StrUtil.CRLF + result);
     }
 
     /**
@@ -118,7 +125,7 @@ public class FastSqlUtil {
     private static String pageParam(Map<String, Object> paramMap, Object value, ParamIndex paramIndex) {
         String paramKey = "where_param_" + paramIndex.get();
         paramMap.put(paramKey, value);
-        String s = "#{paramMap." + paramKey + "}";
+        String s = "#{" + paramKey + "}";
         paramIndex.add();
         return s;
     }
@@ -217,7 +224,7 @@ public class FastSqlUtil {
                 } else {
                     fastSQL.OR();
                 }
-                fastSQL.WHERE(condition.getSql().replaceAll("[#][{]", "#{paramMap."));
+                fastSQL.WHERE(condition.getSql());
                 if (CollUtil.isNotEmpty(condition.getParams())) {
                     paramMap.putAll(condition.getParams());
                 }
@@ -269,7 +276,7 @@ public class FastSqlUtil {
                 }
             }
             String paramKey = "update_param_" + updateIndex;
-            fastSQL.SET(fieldTableNames.get(fieldName) + " = " + "#{paramMap." + paramKey + "}");
+            fastSQL.SET(fieldTableNames.get(fieldName) + " = " + "#{" + paramKey + "}");
             paramMap.put(paramKey, fieldValue);
             updateIndex++;
         }
@@ -292,6 +299,15 @@ public class FastSqlUtil {
                 }
             }
         }
+    }
+
+    public static String sqlConversion(String sql) {
+        if (FastDaoAttributes.getDaoActuatorClass().equals(FastMyBatisImpl.class)) {
+            return sql.replaceAll("[#][{]", "#{paramMap.");
+        } else if (FastDaoAttributes.getDaoActuatorClass().equals(JdbcImpl.class)) {
+            return sql.replaceAll("[#][{](\\w*)[}]", ":$1");
+        }
+        return sql;
     }
 
 }

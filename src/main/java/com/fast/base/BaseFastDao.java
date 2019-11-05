@@ -1,8 +1,8 @@
 package com.fast.base;
 
 import cn.hutool.core.util.ClassUtil;
-import com.fast.example.FastDao;
-import com.fast.example.FastExample;
+import com.fast.fast.FastDao;
+import com.fast.condition.FastExample;
 
 import java.util.Map;
 

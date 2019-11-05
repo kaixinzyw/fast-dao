@@ -2,8 +2,8 @@ package com.fast.dao.utils;
 
 import cn.hutool.core.util.StrUtil;
 import com.fast.mapper.TableMapper;
-import com.fast.example.ConditionPackages;
-import com.fast.example.FastDaoParam;
+import com.fast.condition.ConditionPackages;
+import com.fast.fast.FastDaoParam;
 import com.fast.utils.FastSQL;
 
 import java.util.Map;
@@ -19,7 +19,6 @@ public class FastSelectProvider {
         String sql;
         ConditionPackages conditionPackages = param.getFastExample().conditionPackages();
         if (StrUtil.isNotEmpty(param.getSql())) {
-            param.setSql(param.getSql().replaceAll("[#][{]", "#{paramMap."));
             sql = param.getSql();
         } else {
             TableMapper tableMapper = param.getTableMapper();
@@ -34,20 +33,20 @@ public class FastSelectProvider {
         if (conditionPackages != null) {
             Map<String, Object> paramMap = param.getParamMap();
             if (conditionPackages.getPage() != null && conditionPackages.getSize() != null) {
-                sql += " limit #{paramMap.page} , #{paramMap.size} ";
+                sql += " limit #{page} , #{size} ";
                 paramMap.put("page", conditionPackages.getPage());
                 paramMap.put("size", conditionPackages.getSize());
             } else if (conditionPackages.getLimit() != null) {
-                sql += " limit #{paramMap.limit} ";
+                sql += " limit #{limit} ";
                 paramMap.put("limit", conditionPackages.getLimit());
             }
         }
-        param.setSql(sql + ";");
+        param.setSql(sql);
     }
 
     public static void findCount(FastDaoParam param) {
         if (StrUtil.isNotEmpty(param.getSql())) {
-            param.setSql(countQueryInfoReplace(param.getSql().replaceAll("[#][{]", "#{paramMap.")));
+            param.setSql(countQueryInfoReplace(param.getSql()));
             return;
         }
         TableMapper tableMapper = param.getTableMapper();

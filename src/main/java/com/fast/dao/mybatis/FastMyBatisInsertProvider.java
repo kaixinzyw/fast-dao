@@ -1,6 +1,7 @@
 package com.fast.dao.mybatis;
 
-import com.fast.example.FastDaoParam;
+
+import com.fast.fast.FastDaoParam;
 
 public class FastMyBatisInsertProvider {
 

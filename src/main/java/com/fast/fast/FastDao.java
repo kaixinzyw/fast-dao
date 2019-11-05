@@ -1,5 +1,6 @@
-package com.fast.example;
+package com.fast.fast;
 
+import com.fast.condition.FastExample;
 import com.fast.utils.page.PageInfo;
 import io.netty.util.concurrent.FastThreadLocal;
 
@@ -40,6 +41,16 @@ public class FastDao<Pojo> {
      */
     public Boolean insert(Pojo pojo) {
         return DaoTemplate.init(clazz, fastExample).insert(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    /**
+     * 新增数据
+     *
+     * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
+     * @return 是否新增成功
+     */
+    public Integer insertList(List<Pojo> pojos) {
+        return DaoTemplate.init(clazz, fastExample).insertList(pojos);
     }
 
     /**

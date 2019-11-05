@@ -6,7 +6,7 @@ package ${table.pojoFastDaoPackPath};
 
 import ${table.pojoClassPackPath};
 import com.fast.base.BaseFastDao;
-import com.fast.example.FastExample;
+import com.fast.condition.FastExample;
 <#list table.packages as package>
 ${package}
 </#list>

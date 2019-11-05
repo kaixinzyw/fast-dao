@@ -1,4 +1,4 @@
-package com.fast.example;
+package com.fast.condition;
 
 import java.util.*;
 
