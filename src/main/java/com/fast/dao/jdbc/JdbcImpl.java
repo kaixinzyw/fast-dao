@@ -20,7 +20,7 @@ import java.util.Objects;
 public class JdbcImpl<T> implements DaoActuator<T> {
 
     @Override
-    public Integer insert() {
+    public Object insert() {
         FastDaoParam<T> param = FastDaoParam.get();
         String jdbcSql = param.getSql();
         int insertCount;
@@ -31,12 +31,11 @@ public class JdbcImpl<T> implements DaoActuator<T> {
         } else {
             insertCount = JdbcConnection.getJdbcTemplate().update(jdbcSql, param.getParamMap());
         }
-        return insertCount;
-
+        return insertCount > 0 ? param.getInsert() : null;
     }
 
     @Override
-    public Integer insertList() {
+    public Object insertList() {
         FastDaoParam<T> param = FastDaoParam.get();
         String jdbcSql = param.getSql();
         int insertCount;
@@ -50,7 +49,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
         } else {
             insertCount = JdbcConnection.getJdbcTemplate().update(jdbcSql, param.getParamMap());
         }
-        return insertCount;
+        return insertCount > 0 ? param.getInsertList() : null;
     }
 
     @Override
@@ -78,7 +77,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
     @Override
     public Integer delete() {
         FastDaoParam<T> param = FastDaoParam.get();
-        return JdbcConnection.getJdbcTemplate().update( param.getSql(), param.getParamMap());
+        return JdbcConnection.getJdbcTemplate().update(param.getSql(), param.getParamMap());
     }
 
 }

@@ -2,6 +2,8 @@ package com.fast.aspect;
 
 import com.fast.fast.FastDaoParam;
 
+import java.util.List;
+
 public interface FastDaoExpander {
 
     /**
@@ -19,6 +21,11 @@ public interface FastDaoExpander {
      */
     void after(FastDaoParam param);
 
+    /**
+     * 执行场景
+     * @return INSERT,SELECT,UPDATE,DELETE
+     */
+    List<ExpanderOccasion> occasion();
 
 
 }

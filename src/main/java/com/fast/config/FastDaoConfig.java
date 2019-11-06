@@ -1,5 +1,7 @@
 package com.fast.config;
 
+import com.fast.aspect.FastDaoExpander;
+import com.fast.aspect.FastDaoExpanderRunner;
 import com.fast.dao.DaoActuator;
 import com.fast.dao.jdbc.JdbcConnection;
 import com.fast.dao.jdbc.JdbcImpl;
@@ -15,8 +17,8 @@ public class FastDaoConfig {
 
     /**
      * @param daoImpl 使用的ORM实现 ,框架自身可选值,不设置优先使用jdbc实现
-     *                   1:JdbcImpl.class:使用JDBC框架模式
-     *                   2:FastMyBatisImpl.class: 使用MyBatis插件模式
+     *                1:JdbcImpl.class:使用JDBC框架模式
+     *                2:FastMyBatisImpl.class: 使用MyBatis插件模式
      */
     public static void daoActuator(Class<? extends DaoActuator> daoImpl) {
         FastDaoAttributes.setDaoActuator(daoImpl);
@@ -35,9 +37,10 @@ public class FastDaoConfig {
 
     /**
      * 配置当前线程数据源
+     *
      * @param dataSource 数据源
      */
-    public static void dataSourceThreadLocal(DataSource dataSource){
+    public static void dataSourceThreadLocal(DataSource dataSource) {
         if (FastDaoAttributes.getDaoActuator().getClass() == FastMyBatisImpl.class) {
             FastMyBatisConnection.dataSource(dataSource);
         } else if (FastDaoAttributes.getDaoActuator().getClass() == JdbcImpl.class) {
@@ -127,5 +130,18 @@ public class FastDaoConfig {
         FastDaoAttributes.isToCamelCase = Boolean.FALSE;
     }
 
+    /**
+     * 添加执行器
+     *
+     * @param expanderClass 实现FastDaoExpander的扩展类
+     */
+    public static void addFastDaoExpander(Class<? extends FastDaoExpander> expanderClass) {
+        if (expanderClass != null) {
+            if (expanderClass.isInterface()) {
+                return;
+            }
+            FastDaoExpanderRunner.addFastDaoExpander((Class<FastDaoExpander>) expanderClass);
+        }
+    }
 
 }

@@ -76,41 +76,47 @@ public class FastSqlUtil {
     /**
      * 封装select需要查询的字段信息,
      *
-     * @param select      条件参数
-     * @param tableMapper 映射信息
-     * @return 封装后的SQL语句
+     * @param param Dao执行条件
+     * @return 封装后的SQL
      */
-    public static String selectShowField(ConditionPackages select, TableMapper tableMapper) {
+    public static FastSQL selectSql(FastDaoParam param) {
+        FastSQL fastSQL = new FastSQL();
+
+        ConditionPackages select = param.getFastExample().conditionPackages();
+        TableMapper tableMapper = param.getTableMapper();
         List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
-        StringBuilder selectShowField = new StringBuilder();
 
+        String selectField = "";
         if (select == null) {
-            return tableMapper.getShowAllTableNames();
-        }
-        if (CollUtil.isNotEmpty(select.getDistinctFields())) {
+            selectField = tableMapper.getShowAllTableNames();
+        } else if (CollUtil.isNotEmpty(select.getDistinctFields())) {
             String distinctQuery = "DISTINCT" + " ";
             for (String distinctField : select.getDistinctFields()) {
                 distinctQuery += (fieldTableNames.get(distinctField) + ", ");
             }
-            return distinctQuery.substring(0, distinctQuery.length() - 2);
-        }
-        if (CollUtil.isNotEmpty(select.getShowFields())) {
+            selectField = distinctQuery.substring(0, distinctQuery.length() - 2);
+        } else if (CollUtil.isNotEmpty(select.getShowFields())) {
+            StringBuilder selectShowField = new StringBuilder();
             for (String showField : select.getShowFields()) {
                 selectShowField.append(fieldTableNames.get(showField) + ", ");
             }
+            selectField = selectShowField.substring(0, selectShowField.length() - 2);
         } else if (CollUtil.isNotEmpty(select.getHideFields())) {
+            StringBuilder selectShowField = new StringBuilder();
             for (String fieldName : fieldNames) {
                 if (!select.getHideFields().contains(fieldName)) {
                     selectShowField.append(fieldTableNames.get(fieldName) + ", ");
                 }
             }
-        }
-        if (selectShowField.length() == 0) {
-            return tableMapper.getShowAllTableNames();
+            selectField = selectShowField.substring(0, selectShowField.length() - 2);
         } else {
-            return selectShowField.substring(0, selectShowField.length() - 2);
+            selectField = tableMapper.getShowAllTableNames();
         }
+
+        fastSQL.SELECT(selectField)
+                .FROM(tableMapper.getTableName());
+        return fastSQL;
     }
 
     /**
@@ -147,12 +153,13 @@ public class FastSqlUtil {
     /**
      * 对SQL where条件进行封装
      *
-     * @param select      条件信息
-     * @param fastSQL     sql信息
-     * @param paramMap    参数信息
-     * @param tableMapper 映射信息
+     * @param fastSQL sql信息
+     * @param param   Dao执行参数
      */
-    public static void whereSql(ConditionPackages select, FastSQL fastSQL, Map<String, Object> paramMap, TableMapper tableMapper) {
+    public static void whereSql(FastSQL fastSQL, FastDaoParam param) {
+        ConditionPackages select = param.getFastExample().conditionPackages();
+        Map paramMap = param.getParamMap();
+        TableMapper tableMapper = param.getTableMapper();
         if (select == null) {
             if (FastDaoAttributes.isOpenLogicDelete) {
                 fastSQL.AND().WHERE("`" + FastDaoAttributes.deleteTableColumnName + "` = " + !FastDaoAttributes.defaultDeleteValue);
@@ -248,15 +255,18 @@ public class FastSqlUtil {
     }
 
     /**
-     * 对更新SQL进行封装
+     * 对更新部分SQL进行封装
      *
-     * @param fastSQL     SQL信息
-     * @param obj         更新对象信息
-     * @param isSelective 是否对参数为null的属性进行操作
-     * @param paramMap    参数信息
-     * @param tableMapper 映射信息
+     * @param param dao执行参数
+     * @return 封装好更新部分SQL
      */
-    public static void updateSql(FastSQL fastSQL, Object obj, Boolean isSelective, Map<String, Object> paramMap, TableMapper tableMapper) {
+    public static FastSQL updateSql(FastDaoParam param) {
+        TableMapper tableMapper = param.getTableMapper();
+        Map<String, Object> paramMap = param.getParamMap();
+
+        FastSQL fastSQL = new FastSQL();
+        fastSQL.UPDATE(tableMapper.getTableName());
+
         int updateIndex = 0;
         List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
@@ -265,9 +275,9 @@ public class FastSqlUtil {
             if (FastDaoAttributes.isAutoSetCreateTime && fieldName.equals(FastDaoAttributes.createTimeFieldName)) {
                 continue;
             }
-            Object fieldValue = BeanUtil.getFieldValue(obj, fieldName);
+            Object fieldValue = BeanUtil.getFieldValue(param.getUpdate(), fieldName);
             if (fieldValue == null) {
-                if (isSelective) {
+                if (param.getUpdateSelective()) {
                     continue;
                 }
                 if (FastDaoAttributes.isOpenLogicDelete && fieldName.equals(FastDaoAttributes.deleteFieldName)) {
@@ -279,16 +289,18 @@ public class FastSqlUtil {
             paramMap.put(paramKey, fieldValue);
             updateIndex++;
         }
+        return fastSQL;
     }
 
     /**
      * 查询排序
      *
-     * @param conditionPackages 条件信息
-     * @param fastSQL           SQL信息
-     * @param tableMapper       映射
+     * @param fastSQL SQL信息
+     * @param param   Dao执行条件
      */
-    public static void orderBy(ConditionPackages conditionPackages, FastSQL fastSQL, TableMapper tableMapper) {
+    public static void orderBy(FastSQL fastSQL, FastDaoParam param) {
+        ConditionPackages conditionPackages = param.getFastExample().conditionPackages();
+        TableMapper tableMapper = param.getTableMapper();
         if (conditionPackages != null && conditionPackages.getOrderByQuery() != null) {
             for (ConditionPackages.OrderByQuery orderByQuery : conditionPackages.getOrderByQuery()) {
                 if (orderByQuery.getDesc()) {

@@ -57,7 +57,11 @@ public class FastDaoParam<T> {
     /**
      * 更新操作是否对不进行参数为null的字段进行操作
      */
-    private Boolean selective;
+    private Boolean updateSelective;
+    /**
+     * 是否为逻辑删除
+     */
+    private Boolean logicDelete;
 
     private FastDaoParam() {
     }
@@ -82,7 +86,8 @@ public class FastDaoParam<T> {
         daoParam.insert = null;
         daoParam.insertList = null;
         daoParam.returnVal = null;
-        daoParam.selective = Boolean.FALSE;
+        daoParam.logicDelete = Boolean.FALSE;
+        daoParam.updateSelective = Boolean.FALSE;
 
         daoParam.tableMapper = mapper;
         daoParam.fastExample = example;
@@ -129,13 +134,6 @@ public class FastDaoParam<T> {
         this.insertList = insertList;
     }
 
-    public Boolean getSelective() {
-        return selective;
-    }
-
-    public void setSelective(Boolean selective) {
-        this.selective = selective;
-    }
 
     public Map<String, Object> getParamMap() {
         return paramMap;
@@ -180,5 +178,21 @@ public class FastDaoParam<T> {
 
     public void setReturnVal(Object returnVal) {
         this.returnVal = returnVal;
+    }
+
+    public Boolean getUpdateSelective() {
+        return updateSelective;
+    }
+
+    public void setUpdateSelective(Boolean updateSelective) {
+        this.updateSelective = updateSelective;
+    }
+
+    public Boolean getLogicDelete() {
+        return logicDelete;
+    }
+
+    public void setLogicDelete(Boolean logicDelete) {
+        this.logicDelete = logicDelete;
     }
 }

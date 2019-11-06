@@ -40,7 +40,7 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public Boolean insert(Pojo pojo) {
-        return DaoTemplate.init(clazz, fastExample).insert(pojo) > 0 ? Boolean.TRUE : Boolean.FALSE;
+        return DaoTemplate.init(clazz, fastExample).insert(pojo) != null ? Boolean.TRUE : Boolean.FALSE;
     }
 
     /**
@@ -49,8 +49,8 @@ public class FastDao<Pojo> {
      * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
      * @return 是否新增成功
      */
-    public Integer insertList(List<Pojo> pojos) {
-        return DaoTemplate.init(clazz, fastExample).insertList(pojos);
+    public Boolean insertList(List<Pojo> pojos) {
+        return DaoTemplate.init(clazz, fastExample).insertList(pojos) != null ? Boolean.TRUE : Boolean.FALSE;
     }
 
     /**

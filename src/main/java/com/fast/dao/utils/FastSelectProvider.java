@@ -1,9 +1,9 @@
 package com.fast.dao.utils;
 
 import cn.hutool.core.util.StrUtil;
-import com.fast.mapper.TableMapper;
 import com.fast.condition.ConditionPackages;
 import com.fast.fast.FastDaoParam;
+import com.fast.mapper.TableMapper;
 import com.fast.utils.FastSQL;
 
 import java.util.Map;
@@ -21,15 +21,12 @@ public class FastSelectProvider {
         if (StrUtil.isNotEmpty(param.getSql())) {
             sql = param.getSql();
         } else {
-            TableMapper tableMapper = param.getTableMapper();
-            FastSQL fastSQL = new FastSQL();
-            fastSQL.SELECT(FastSqlUtil.selectShowField(conditionPackages, tableMapper))
-                    .FROM(tableMapper.getTableName());
-            FastSqlUtil.whereSql(conditionPackages, fastSQL, param.getParamMap(), tableMapper);
-            FastSqlUtil.orderBy(conditionPackages, fastSQL, tableMapper);
+            FastSQL fastSQL = FastSqlUtil.selectSql(param);
+            FastSqlUtil.whereSql(fastSQL, param);
+            FastSqlUtil.orderBy(fastSQL, param);
             sql = fastSQL.toString();
         }
-        sql = StrUtil.replace(sql,";"," ");
+        sql = StrUtil.replace(sql, ";", " ");
         if (conditionPackages != null) {
             Map<String, Object> paramMap = param.getParamMap();
             if (conditionPackages.getPage() != null && conditionPackages.getSize() != null) {
@@ -49,23 +46,20 @@ public class FastSelectProvider {
             param.setSql(countQueryInfoReplace(param.getSql()));
             return;
         }
-        TableMapper tableMapper = param.getTableMapper();
-        FastSQL fastSQL = new FastSQL();
-        fastSQL.SELECT(FastSqlUtil.selectShowField(param.getFastExample().conditionPackages(), tableMapper))
-                .FROM(tableMapper.getTableName());
-        FastSqlUtil.whereSql(param.getFastExample().conditionPackages(), fastSQL, param.getParamMap(), tableMapper);
+        FastSQL fastSQL = FastSqlUtil.selectSql(param);
+        FastSqlUtil.whereSql(fastSQL, param);
         param.setSql(countQueryInfoReplace(fastSQL.toString()));
     }
 
-    private static String countQueryInfoReplace(String sql){
-        String queryInfo = StrUtil.sub(sql,StrUtil.indexOfIgnoreCase(sql, "SELECT") + 6,StrUtil.indexOfIgnoreCase(sql, "FROM"));
+    private static String countQueryInfoReplace(String sql) {
+        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, "SELECT") + 6, StrUtil.indexOfIgnoreCase(sql, "FROM"));
         String replaceQueryInfo;
-        if (StrUtil.containsIgnoreCase(queryInfo,"distinct")) {
-            replaceQueryInfo = " COUNT( " + queryInfo +" ) ";
-        }else {
+        if (StrUtil.containsIgnoreCase(queryInfo, "distinct")) {
+            replaceQueryInfo = " COUNT( " + queryInfo + " ) ";
+        } else {
             replaceQueryInfo = " COUNT( * ) ";
         }
-        return StrUtil.replace(sql, queryInfo , replaceQueryInfo);
+        return StrUtil.replace(sql, queryInfo, replaceQueryInfo);
     }
 
 }

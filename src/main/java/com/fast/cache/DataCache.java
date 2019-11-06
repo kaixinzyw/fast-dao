@@ -2,19 +2,18 @@ package com.fast.cache;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
+import com.fast.condition.FastExample;
 import com.fast.config.FastDaoAttributes;
 import com.fast.mapper.TableMapper;
-import com.fast.condition.FastExample;
 import io.netty.util.concurrent.FastThreadLocal;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * 缓存实现,目前支持三种缓存
  * 在需要进行缓存的Bean中加入注解
  * 1:@FastRedisCache Redis缓存
  * 2:@FastStatisCache 本地缓存
- * 3:@FastRedisLocalCache 本地存数据,Redis存数据缓存版本号,当Redis版本更新时进行本地缓存刷新
  * 默认参数为框架设置的缓存时间和类型
  * 缓存可选参数
  * 1:(Long 秒) 如@FastRedisCache(60L) 缓存60秒
@@ -155,12 +154,24 @@ public class DataCache<T> {
         if (updateCount < 1 || !FastDaoAttributes.isOpenCache || tableMapper.getCacheType() == null) {
             return updateCount;
         }
+        upCache(tableMapper);
+        return updateCount;
+    }
+
+    /**
+     * 更新缓存,对象的缓存信息
+     *
+     * @param tableMapper 数据操作对象映射信息
+     */
+    public static void upCache(TableMapper tableMapper) {
+        if (tableMapper.getCacheType() == null) {
+            return;
+        }
         if (tableMapper.getCacheType().equals(DataCacheType.StatisCache)) {
             StaticCacheImpl.update(tableMapper);
         } else if (tableMapper.getCacheType().equals(DataCacheType.RedisCache)) {
             RedisCacheImpl.update(tableMapper);
         }
-        return updateCount;
     }
 
 

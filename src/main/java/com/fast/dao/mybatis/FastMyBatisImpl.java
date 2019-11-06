@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.config.PrimaryKeyType;
 import com.fast.dao.DaoActuator;
-import com.fast.dao.utils.FastSqlUtil;
 import com.fast.fast.FastDaoParam;
 import com.fast.utils.FastValueUtil;
 
@@ -20,7 +19,7 @@ import java.util.Map;
 public class FastMyBatisImpl<T> implements DaoActuator<T> {
 
     @Override
-    public Integer insert() {
+    public Object insert() {
         FastDaoParam<T> param = FastDaoParam.get();
         Integer insertCount;
         if (param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO)) {
@@ -31,13 +30,14 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
         } else {
             insertCount = FastMyBatisConnection.getMapper().insert(param);
         }
-        return insertCount;
+        return insertCount > 0 ? param.getInsert() : null;
     }
 
     @Override
-    public Integer insertList() {
+    public Object insertList() {
         FastDaoParam<T> param = FastDaoParam.get();
-        return FastMyBatisConnection.getMapper().insert(param);
+        Integer insert = FastMyBatisConnection.getMapper().insert(param);
+        return insert > 0 ? param.getInsertList() : null;
     }
 
 

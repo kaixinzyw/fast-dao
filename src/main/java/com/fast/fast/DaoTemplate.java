@@ -71,7 +71,7 @@ public class DaoTemplate<T> {
      * @param pojo 需要新增的数据
      * @return 新增结果
      */
-    public Integer insert(T pojo) {
+    public Object insert(T pojo) {
         if (pojo != null) {
             FastValueUtil.setPrimaryKey(pojo, tableMapper);
             FastValueUtil.setCreateTime(pojo);
@@ -83,8 +83,11 @@ public class DaoTemplate<T> {
         daoParam.setInsert(pojo);
         FastInsertProvider.insert(daoParam);
 
-        Integer insert = daoActuator.insert();
-        return DataCache.upCache(insert, tableMapper);
+        Object insert = daoActuator.insert();
+        if (insert == null) {
+            DataCache.upCache(tableMapper);
+        }
+        return insert;
     }
 
     /**
@@ -93,7 +96,7 @@ public class DaoTemplate<T> {
      * @param pojos 需要新增的数据
      * @return 新增结果
      */
-    public Integer insertList(List<T> pojos) {
+    public Object insertList(List<T> pojos) {
         if (CollUtil.isNotEmpty(pojos)) {
             for (T pojo : pojos) {
                 FastValueUtil.setPrimaryKey(pojo, tableMapper);
@@ -107,8 +110,11 @@ public class DaoTemplate<T> {
         daoParam.setInsertList(pojos);
         FastInsertProvider.insertList(daoParam);
 
-        Integer insert = daoActuator.insertList();
-        return DataCache.upCache(insert, tableMapper);
+        Object insertList = daoActuator.insertList();
+        if (insertList != null) {
+            DataCache.upCache(tableMapper);
+        }
+        return insertList;
     }
 
 
@@ -205,7 +211,7 @@ public class DaoTemplate<T> {
         FastValueUtil.setUpdateTime(pojo);
         FastDaoParam<T> fastDaoParam = FastDaoParam.get();
         fastDaoParam.setUpdate(pojo);
-        fastDaoParam.setSelective(isSelective);
+        fastDaoParam.setUpdateSelective(isSelective);
         FastUpdateProvider.update(fastDaoParam);
         return DataCache.upCache(daoActuator.update(), tableMapper);
     }
@@ -226,6 +232,7 @@ public class DaoTemplate<T> {
             return DataCache.upCache(daoActuator.delete(), tableMapper);
         }
         try {
+            FastDaoParam.get().setLogicDelete(true);
             T pojo = tableMapper.getObjClass().newInstance();
             FastValueUtil.setDeleted(pojo);
             return update(pojo, Boolean.TRUE);

@@ -19,7 +19,7 @@ public class FastDeleteProvider {
         TableMapper tableMapper = param.getTableMapper();
         FastSQL fastSQL = new FastSQL();
         fastSQL.DELETE_FROM(tableMapper.getTableName());
-        FastSqlUtil.whereSql(param.getFastExample().conditionPackages(), fastSQL, param.getParamMap(), tableMapper);
+        FastSqlUtil.whereSql(fastSQL, param);
         param.setSql(fastSQL.toString());
 
     }

@@ -16,11 +16,9 @@ public class FastUpdateProvider {
         if (StrUtil.isNotEmpty(param.getSql())) {
             return;
         }
-        TableMapper tableMapper = param.getTableMapper();
-        FastSQL fastSQL = new FastSQL();
-        fastSQL.UPDATE(tableMapper.getTableName());
-        FastSqlUtil.updateSql(fastSQL, param.getUpdate(), param.getSelective(), param.getParamMap(), tableMapper);
-        FastSqlUtil.whereSql(param.getFastExample().conditionPackages(), fastSQL, param.getParamMap(), tableMapper);
+
+        FastSQL fastSQL = FastSqlUtil.updateSql(param);
+        FastSqlUtil.whereSql(fastSQL, param);
         param.setSql(fastSQL.toString());
     }
 }
