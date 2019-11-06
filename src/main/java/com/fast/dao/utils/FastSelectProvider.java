@@ -3,7 +3,6 @@ package com.fast.dao.utils;
 import cn.hutool.core.util.StrUtil;
 import com.fast.condition.ConditionPackages;
 import com.fast.fast.FastDaoParam;
-import com.fast.mapper.TableMapper;
 import com.fast.utils.FastSQL;
 
 import java.util.Map;
@@ -52,7 +51,7 @@ public class FastSelectProvider {
     }
 
     private static String countQueryInfoReplace(String sql) {
-        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, "SELECT") + 6, StrUtil.indexOfIgnoreCase(sql, "FROM"));
+        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, "SELECT") + 6, StrUtil.indexOfIgnoreCase(sql, "FROM") - 1);
         String replaceQueryInfo;
         if (StrUtil.containsIgnoreCase(queryInfo, "distinct")) {
             replaceQueryInfo = " COUNT( " + queryInfo + " ) ";
