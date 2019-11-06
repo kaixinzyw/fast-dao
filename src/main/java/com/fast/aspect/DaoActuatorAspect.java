@@ -21,7 +21,9 @@ public class DaoActuatorAspect extends SimpleAspect {
      */
     @Override
     public boolean before(Object target, Method method, Object[] args) {
+        //执行计时
         interval.start();
+        //SQL转换
         FastDaoParam daoParam = FastDaoParam.get();
         daoParam.setSql(FastSqlUtil.sqlConversion(daoParam.getSql())+";");
         return true;
@@ -39,9 +41,11 @@ public class DaoActuatorAspect extends SimpleAspect {
      */
     @Override
     public boolean after(Object target, Method method, Object[] args, Object returnVal) {
+        //FastDaoParam封装打印
         FastDaoParam daoParam = FastDaoParam.get();
         daoParam.setSqlTime(interval.intervalMs());
-        FastSqlUtil.printSql(FastDaoParam.get(),returnVal);
+        daoParam.setReturnVal(returnVal);
+        FastSqlUtil.printSql(FastDaoParam.get());
         return true;
     }
 }

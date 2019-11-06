@@ -30,9 +30,8 @@ public class FastSqlUtil {
      * SQL日志打印
      *
      * @param param 参数
-     * @param o     SQL执行结果
      */
-    public static void printSql(FastDaoParam param, Object o) {
+    public static void printSql(FastDaoParam param) {
         if (!FastDaoAttributes.isSqlPrint) {
             return;
         }
@@ -68,7 +67,7 @@ public class FastSqlUtil {
 
         String result = "";
         if (FastDaoAttributes.isSqlPrintResult) {
-            result = "执行结果: " + StrUtil.CRLF + JSONObject.toJSONString(o) + StrUtil.CRLF;
+            result = "执行结果: " + StrUtil.CRLF + JSONObject.toJSONString(param.getReturnVal()) + StrUtil.CRLF;
         }
         Log log = LogFactory.get(param.getTableMapper().getObjClass());
         log.info(sql.substring(0, sql.indexOf(" ")) + " -> " + param.getTableMapper().getTableName() + ": SQL执行报告↓ " + StrUtil.CRLF + sql + StrUtil.CRLF + "本次执行耗时:" + param.getSqlTime() + "毫秒" + StrUtil.CRLF + result);
@@ -94,7 +93,7 @@ public class FastSqlUtil {
             for (String distinctField : select.getDistinctFields()) {
                 distinctQuery += (fieldTableNames.get(distinctField) + ", ");
             }
-            return distinctQuery.substring(0, distinctQuery.length() - 1);
+            return distinctQuery.substring(0, distinctQuery.length() - 2);
         }
         if (CollUtil.isNotEmpty(select.getShowFields())) {
             for (String showField : select.getShowFields()) {

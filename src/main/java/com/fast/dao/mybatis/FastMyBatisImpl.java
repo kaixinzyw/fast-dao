@@ -26,7 +26,7 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
         if (param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO)) {
             insertCount = FastMyBatisConnection.getMapper().insertPrimaryKeyAuto(param);
             if (insertCount > 0) {
-                FastValueUtil.setPrimaryKey(param.getInsert(), param.getPrimaryKeyValue(), param.getTableMapper());
+                FastValueUtil.setPrimaryKey(param.getInsert(), param.getReturnVal(), param.getTableMapper());
             }
         } else {
             insertCount = FastMyBatisConnection.getMapper().insert(param);
@@ -46,7 +46,6 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
         FastDaoParam<T> param = FastDaoParam.get();
         List<Map<String, Object>> pojoMap = FastMyBatisConnection.getMapper().findAll(param);
         if (CollUtil.isEmpty(pojoMap)) {
-            FastSqlUtil.printSql(param, new ArrayList<>());
             return new ArrayList<>();
         }
         return JSONObject.parseArray(JSONObject.toJSONString(pojoMap), param.getTableMapper().getObjClass());

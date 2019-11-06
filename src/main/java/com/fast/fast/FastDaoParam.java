@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import com.fast.condition.FastExample;
 import com.fast.mapper.TableMapper;
 import io.netty.util.concurrent.FastThreadLocal;
-import org.checkerframework.checker.signature.qual.IdentifierOrArray;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +42,9 @@ public class FastDaoParam<T> {
     private List<T> insertList;
 
     /**
-     * MyBatis单条数据新增后,如果主键类型是自增,会在此赋值
+     * 返回结果
      */
-    private Long primaryKeyValue;
+    private Object returnVal;
 
     /**
      * 拼接后的SQL语句
@@ -60,21 +59,30 @@ public class FastDaoParam<T> {
      */
     private Boolean selective;
 
-    private FastDaoParam(){}
+    private FastDaoParam() {
+    }
 
     /**
      * ORM实现参数封装类初始化
      * 如果使用自定义SQL,会直接进行SQL语句的封装,不进行模板条件拼接
+     *
      * @param <T> 操作类
      * @return 初始化结果
      */
     private static final FastThreadLocal<FastDaoParam> fastDaoParamThreadLocal = new FastThreadLocal<>();
-    public static <T> FastDaoParam<T> init(TableMapper<T> mapper,FastExample<T> example) {
+
+    public static <T> FastDaoParam<T> init(TableMapper<T> mapper, FastExample<T> example) {
         FastDaoParam<T> daoParam = fastDaoParamThreadLocal.get();
         if (daoParam == null) {
             daoParam = new FastDaoParam<>();
             fastDaoParamThreadLocal.set(daoParam);
         }
+
+        daoParam.update = null;
+        daoParam.insert = null;
+        daoParam.insertList = null;
+        daoParam.returnVal = null;
+        daoParam.selective = Boolean.FALSE;
 
         daoParam.tableMapper = mapper;
         daoParam.fastExample = example;
@@ -85,15 +93,11 @@ public class FastDaoParam<T> {
         }
         daoParam.sql = null;
         daoParam.paramMap = new HashMap<>();
-        daoParam.update = null;
-        daoParam.insert = null;
-        daoParam.insertList = null;
-        daoParam.primaryKeyValue = null;
-        daoParam.selective = Boolean.FALSE;
+
         return daoParam;
     }
 
-    public static <T>FastDaoParam<T> get(){
+    public static <T> FastDaoParam<T> get() {
         return fastDaoParamThreadLocal.get();
     }
 
@@ -157,13 +161,6 @@ public class FastDaoParam<T> {
         this.sqlTime = sqlTime;
     }
 
-    public Long getPrimaryKeyValue() {
-        return primaryKeyValue;
-    }
-
-    public void setPrimaryKeyValue(Long primaryKeyValue) {
-        this.primaryKeyValue = primaryKeyValue;
-    }
 
     public void setTableMapper(TableMapper<T> tableMapper) {
         this.tableMapper = tableMapper;
@@ -177,4 +174,11 @@ public class FastDaoParam<T> {
         this.fastExample = fastExample;
     }
 
+    public Object getReturnVal() {
+        return returnVal;
+    }
+
+    public void setReturnVal(Object returnVal) {
+        this.returnVal = returnVal;
+    }
 }

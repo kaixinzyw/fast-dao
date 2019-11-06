@@ -18,7 +18,7 @@ public interface FastMyBatisMapper {
     Integer insert(FastDaoParam param);
 
     @InsertProvider(type = FastMyBatisInsertProvider.class, method = "insert")
-    @Options(useGeneratedKeys = true, keyProperty = "primaryKeyValue")
+    @Options(useGeneratedKeys = true, keyProperty = "returnVal")
     Integer insertPrimaryKeyAuto(FastDaoParam param);
 
     @SelectProvider(type = FastMyBatisSelectProvider.class, method = "findAll")
