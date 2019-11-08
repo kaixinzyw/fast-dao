@@ -215,8 +215,8 @@ public class FastSqlUtil {
                 fastSQL.WHERE(tableMapper.getShowTableNames().get(condition.getField()) + condition.getExpression().expression
                         + pageParam(paramMap, condition.getBetweenMin(), paramIndex) + " AND " + pageParam(paramMap, condition.getBetweenMax(), paramIndex));
                 break;
-            case "isNull":
-            case "isNotNull":
+            case "null":
+            case "notNull":
                 if (condition.getWay().equals(FastCondition.Way.AND)) {
                     fastSQL.AND();
                 } else {

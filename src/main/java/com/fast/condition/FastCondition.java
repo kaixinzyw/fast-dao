@@ -220,7 +220,7 @@ public class FastCondition {
         Between("between", " BETWEEN "),
         NotBetween("notBetween", " NOT BETWEEN "),
         Null("null", " IS NULL "),
-        NotNull("isNotNull", " IS NOT NULL "),
+        NotNull("notNull", " IS NOT NULL "),
         Greater("greater", " > "),
         GreaterOrEqual("greaterOrEqual", " >= "),
         Less("less", " < "),
