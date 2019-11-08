@@ -61,11 +61,13 @@ public class FastDaoConfig {
     /**
      * 开启SQL日志打印,默认使用项目的日志框架
      *
-     * @param isPrint       是否打印SQL语句
+     * @param sqlLogLevel    SQL日志级别
+     * @param isSimplePrint 是否打印简单格式SQL,简单格式消耗性能低
      * @param isPrintResult 是否打印SQL执行结果
      */
-    public static void openSqlPrint(Boolean isPrint, Boolean isPrintResult) {
-        FastDaoAttributes.isSqlPrint = isPrint;
+    public static void openSqlPrint(SqlLogLevel sqlLogLevel, Boolean isSimplePrint, Boolean isPrintResult) {
+        FastDaoAttributes.sqlLogLevel = sqlLogLevel;
+        FastDaoAttributes.isSqlSimplePrint = isSimplePrint;
         FastDaoAttributes.isSqlPrintResult = isPrintResult;
     }
 
@@ -100,9 +102,10 @@ public class FastDaoConfig {
     public static void openLogicDelete(String deleteTableColumnName, Boolean defaultDeleteValue) {
         FastDaoAttributes.isOpenLogicDelete = Boolean.TRUE;
         FastDaoAttributes.defaultDeleteValue = defaultDeleteValue;
-
         FastDaoAttributes.deleteTableColumnName = deleteTableColumnName;
         FastDaoAttributes.deleteFieldName = FastValueUtil.toCamelCase(deleteTableColumnName);
+        FastDaoAttributes.defaultSqlWhereDeleteValueTrue = "`" + FastDaoAttributes.deleteTableColumnName + "` = true";
+        FastDaoAttributes.defaultSqlWhereDeleteValueFalse = "`" + FastDaoAttributes.deleteTableColumnName + "` = false";
     }
 
     /**

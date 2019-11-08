@@ -87,7 +87,7 @@ public class FastDaoSpringBootConfig {
         //SQL打印设置
         Boolean sqlPrint = env.getProperty("fast.db.sql.log", Boolean.class);
         if (BooleanUtil.isTrue(sqlPrint)) {
-            FastDaoAttributes.isSqlPrint = Boolean.TRUE;
+            FastDaoAttributes.sqlLogLevel = SqlLogLevel.INFO;
         }
         Boolean sqlResult = env.getProperty("fast.db.sql.log.result", Boolean.class);
         if (BooleanUtil.isTrue(sqlResult)) {

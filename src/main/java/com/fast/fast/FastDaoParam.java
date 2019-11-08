@@ -32,10 +32,7 @@ public class FastDaoParam<T> {
      * 操作所用到的对象信息
      */
     private T update;
-    /**
-     * 操作所用到的对象信息
-     */
-    private T insert;
+
     /**
      * 操作所用到的对象集合信息
      */
@@ -83,7 +80,6 @@ public class FastDaoParam<T> {
         }
 
         daoParam.update = null;
-        daoParam.insert = null;
         daoParam.insertList = null;
         daoParam.returnVal = null;
         daoParam.logicDelete = Boolean.FALSE;
@@ -116,14 +112,6 @@ public class FastDaoParam<T> {
 
     public void setUpdate(T update) {
         this.update = update;
-    }
-
-    public T getInsert() {
-        return insert;
-    }
-
-    public void setInsert(T insert) {
-        this.insert = insert;
     }
 
     public List<T> getInsertList() {

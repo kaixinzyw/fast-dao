@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface DaoActuator<T> {
 
-    Object insert();
+    T insert();
 
-    Object insertList();
+    List<T> insertList();
 
     List<T> findAll();
 

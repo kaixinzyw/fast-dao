@@ -16,10 +16,14 @@ import java.util.concurrent.TimeUnit;
 public class FastDaoAttributes {
 
     /**
-     * 是否日志打印Sql语句
-     * 使用项目设置的日志框架
+     * 设置SQL日志级别
      */
-    public static Boolean isSqlPrint = Boolean.FALSE;
+    public static SqlLogLevel sqlLogLevel = SqlLogLevel.OFF;
+
+    /**
+     * 是否打印简易格式SQL
+     */
+    public static Boolean isSqlSimplePrint = Boolean.TRUE;
     /**
      * 是否打印SQL执行结果
      */
@@ -68,6 +72,9 @@ public class FastDaoAttributes {
      * 逻辑删除标记值
      */
     public static Boolean defaultDeleteValue = Boolean.TRUE;
+
+    public static String defaultSqlWhereDeleteValueTrue;
+    public static String defaultSqlWhereDeleteValueFalse;
 
     /**
      * 是否开启缓存功能

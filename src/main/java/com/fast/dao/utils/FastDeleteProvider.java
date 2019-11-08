@@ -1,9 +1,9 @@
 package com.fast.dao.utils;
 
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.StrUtil;
 import com.fast.mapper.TableMapper;
 import com.fast.fast.FastDaoParam;
-import com.fast.utils.FastSQL;
 
 /**
  * 删除方法Sql语句拼接
@@ -16,9 +16,7 @@ public class FastDeleteProvider {
         if (StrUtil.isNotEmpty(param.getSql())) {
             return;
         }
-        TableMapper tableMapper = param.getTableMapper();
-        FastSQL fastSQL = new FastSQL();
-        fastSQL.DELETE_FROM(tableMapper.getTableName());
+        StrBuilder fastSQL = FastSqlUtil.deleteSql(param);
         FastSqlUtil.whereSql(fastSQL, param);
         param.setSql(fastSQL.toString());
 

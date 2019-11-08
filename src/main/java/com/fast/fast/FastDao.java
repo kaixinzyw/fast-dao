@@ -39,8 +39,8 @@ public class FastDao<Pojo> {
      * @param pojo 需要新增的数据,会对框架设置的主键字段进行赋值
      * @return 是否新增成功
      */
-    public Boolean insert(Pojo pojo) {
-        return DaoTemplate.init(clazz, fastExample).insert(pojo) != null ? Boolean.TRUE : Boolean.FALSE;
+    public Pojo insert(Pojo pojo) {
+        return DaoTemplate.init(clazz, fastExample).insert(pojo);
     }
 
     /**
@@ -49,8 +49,8 @@ public class FastDao<Pojo> {
      * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
      * @return 是否新增成功
      */
-    public Boolean insertList(List<Pojo> pojos) {
-        return DaoTemplate.init(clazz, fastExample).insertList(pojos) != null ? Boolean.TRUE : Boolean.FALSE;
+    public List<Pojo> insertList(List<Pojo> pojos) {
+        return DaoTemplate.init(clazz, fastExample).insertList(pojos);
     }
 
     /**

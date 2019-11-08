@@ -1,9 +1,8 @@
 package com.fast.dao.utils;
 
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.StrUtil;
-import com.fast.mapper.TableMapper;
 import com.fast.fast.FastDaoParam;
-import com.fast.utils.FastSQL;
 
 /**
  * 更新方法Sql语句拼接
@@ -16,9 +15,8 @@ public class FastUpdateProvider {
         if (StrUtil.isNotEmpty(param.getSql())) {
             return;
         }
-
-        FastSQL fastSQL = FastSqlUtil.updateSql(param);
-        FastSqlUtil.whereSql(fastSQL, param);
-        param.setSql(fastSQL.toString());
+        StrBuilder sqlBuilder = FastSqlUtil.updateSql(param);
+        FastSqlUtil.whereSql(sqlBuilder, param);
+        param.setSql(sqlBuilder.toString());
     }
 }

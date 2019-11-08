@@ -1,5 +1,7 @@
 package com.fast.condition;
 
+import cn.hutool.core.util.StrUtil;
+
 import java.util.*;
 
 /**
@@ -180,7 +182,7 @@ public class ConditionPackages {
     }
 
     public void customSQL(String customSQL, Map<String, Object> customSQLParams){
-        this.customSql = customSQL;
+        this.customSql = customSQL + StrUtil.SPACE;
         this.customSqlParams = customSQLParams;
     }
 

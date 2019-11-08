@@ -3,6 +3,7 @@ package com.fast.mapper;
 import com.fast.cache.DataCacheType;
 import com.fast.config.PrimaryKeyType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -37,15 +38,15 @@ public class TableMapper<T> {
     /**
      * <字段名,表列名>
      */
-    private Map<String, String> fieldTableNames;
+    private HashMap<String, String> fieldTableNames;
     /**
      * <表列名,字段名>
      */
-    private Map<String, String> tableFieldNames;
+    private HashMap<String, String> tableFieldNames;
     /**
      * select查询时候现实的列名
      */
-    private Map<String, String> showTableNames;
+    private HashMap<String, String> showTableNames;
     /**
      * 代替select *
      */
@@ -115,7 +116,7 @@ public class TableMapper<T> {
         return fieldTableNames;
     }
 
-    public void setFieldTableNames(Map<String, String> fieldTableNames) {
+    public void setFieldTableNames(HashMap<String, String> fieldTableNames) {
         this.fieldTableNames = fieldTableNames;
     }
 
@@ -184,11 +185,11 @@ public class TableMapper<T> {
         this.showAllTableNames = showAllTableNames;
     }
 
-    public Map<String, String> getShowTableNames() {
+    public HashMap<String, String> getShowTableNames() {
         return showTableNames;
     }
 
-    public void setShowTableNames(Map<String, String> showTableNames) {
+    public void setShowTableNames(HashMap<String, String> showTableNames) {
         this.showTableNames = showTableNames;
     }
 
@@ -196,7 +197,7 @@ public class TableMapper<T> {
         return tableFieldNames;
     }
 
-    public void setTableFieldNames(Map<String, String> tableFieldNames) {
+    public void setTableFieldNames(HashMap<String, String> tableFieldNames) {
         this.tableFieldNames = tableFieldNames;
     }
 

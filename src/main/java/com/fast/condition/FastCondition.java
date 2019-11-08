@@ -178,6 +178,7 @@ public class FastCondition {
 
     public static FastCondition equalObject(Object object) {
         FastCondition conditions = new FastCondition();
+        conditions.setWay(Way.AND);
         conditions.setExpression(Expression.Obj);
         conditions.setObject(object);
         return conditions;
@@ -196,10 +197,10 @@ public class FastCondition {
         /**
          * 条件方式
          */
-        OR("or", " OR "),
-        AND("and", " AND ");
-        String name;
-        String expression;
+        OR("or", "OR "),
+        AND("and", "AND ");
+        public String name;
+        public String expression;
 
         Way(String name, String expression) {
             this.name = name;

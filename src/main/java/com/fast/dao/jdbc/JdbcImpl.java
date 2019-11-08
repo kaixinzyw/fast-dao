@@ -20,22 +20,22 @@ import java.util.Objects;
 public class JdbcImpl<T> implements DaoActuator<T> {
 
     @Override
-    public Object insert() {
+    public T insert() {
         FastDaoParam<T> param = FastDaoParam.get();
         String jdbcSql = param.getSql();
         int insertCount;
         if (param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO)) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             insertCount = JdbcConnection.getJdbcTemplate().update(jdbcSql, new MapSqlParameterSource(param.getParamMap()), keyHolder);
-            BeanUtil.setFieldValue(param.getInsert(), param.getTableMapper().getPrimaryKeyField(), Objects.requireNonNull(keyHolder.getKey()).longValue());
+            BeanUtil.setFieldValue(param.getInsertList().get(0), param.getTableMapper().getPrimaryKeyField(), Objects.requireNonNull(keyHolder.getKey()).longValue());
         } else {
             insertCount = JdbcConnection.getJdbcTemplate().update(jdbcSql, param.getParamMap());
         }
-        return insertCount > 0 ? param.getInsert() : null;
+        return insertCount > 0 ? param.getInsertList().get(0) : null;
     }
 
     @Override
-    public Object insertList() {
+    public List<T> insertList() {
         FastDaoParam<T> param = FastDaoParam.get();
         String jdbcSql = param.getSql();
         int insertCount;

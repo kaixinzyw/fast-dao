@@ -18,6 +18,7 @@ import com.fast.utils.page.PageInfo;
 import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,19 +72,19 @@ public class DaoTemplate<T> {
      * @param pojo 需要新增的数据
      * @return 新增结果
      */
-    public Object insert(T pojo) {
+    public T insert(T pojo) {
         if (pojo != null) {
             FastValueUtil.setPrimaryKey(pojo, tableMapper);
             FastValueUtil.setCreateTime(pojo);
             FastValueUtil.setNoDelete(pojo);
         } else {
-            return 0;
+            return null;
         }
         FastDaoParam<T> daoParam = FastDaoParam.get();
-        daoParam.setInsert(pojo);
+        daoParam.setInsertList(Collections.singletonList(pojo));
         FastInsertProvider.insert(daoParam);
 
-        Object insert = daoActuator.insert();
+        T insert = daoActuator.insert();
         if (insert == null) {
             DataCache.upCache(tableMapper);
         }
@@ -96,7 +97,7 @@ public class DaoTemplate<T> {
      * @param pojos 需要新增的数据
      * @return 新增结果
      */
-    public Object insertList(List<T> pojos) {
+    public List<T> insertList(List<T> pojos) {
         if (CollUtil.isNotEmpty(pojos)) {
             for (T pojo : pojos) {
                 FastValueUtil.setPrimaryKey(pojo, tableMapper);
@@ -104,13 +105,13 @@ public class DaoTemplate<T> {
                 FastValueUtil.setNoDelete(pojo);
             }
         } else {
-            return 0;
+            return null;
         }
         FastDaoParam<T> daoParam = FastDaoParam.get();
         daoParam.setInsertList(pojos);
-        FastInsertProvider.insertList(daoParam);
+        FastInsertProvider.insert(daoParam);
 
-        Object insertList = daoActuator.insertList();
+        List<T> insertList = daoActuator.insertList();
         if (insertList != null) {
             DataCache.upCache(tableMapper);
         }

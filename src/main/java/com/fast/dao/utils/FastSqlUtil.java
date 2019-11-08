@@ -2,10 +2,8 @@ package com.fast.dao.utils;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
-import com.alibaba.fastjson.JSONObject;
 import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastCondition;
 import com.fast.config.FastDaoAttributes;
@@ -13,9 +11,7 @@ import com.fast.dao.jdbc.JdbcImpl;
 import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
-import com.fast.utils.FastSQL;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -26,52 +22,24 @@ import java.util.Map;
  */
 public class FastSqlUtil {
 
-    /**
-     * SQL日志打印
-     *
-     * @param param 参数
-     */
-    public static void printSql(FastDaoParam param) {
-        if (!FastDaoAttributes.isSqlPrint) {
-            return;
-        }
-        Map<String, Object> paramMap = param.getParamMap();
-        String sql = param.getSql();
-        if (CollUtil.isNotEmpty(paramMap)) {
-            for (String key : paramMap.keySet()) {
-                Object value = paramMap.get(key);
-                String sqlValue;
-                if (value == null) {
-                    sqlValue = "null";
-                } else if ("String".equals(value.getClass().getSimpleName())) {
-                    sqlValue = "\'" + value + "\'";
-                } else if ("Date".equals(value.getClass().getSimpleName())) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    sqlValue = "\'" + formatter.format(value) + "\'";
-                } else if ("Boolean".equals(value.getClass().getSimpleName())) {
-                    if ((Boolean) value) {
-                        sqlValue = "true";
-                    } else {
-                        sqlValue = "false";
-                    }
-                } else {
-                    sqlValue = value.toString();
-                }
-                if (FastDaoAttributes.getDaoActuatorClass().equals(FastMyBatisImpl.class)) {
-                    sql = sql.replaceAll("[#][{](paramMap.)(" + key + ")[}]", sqlValue);
-                } else if (FastDaoAttributes.getDaoActuatorClass().equals(JdbcImpl.class)) {
-                    sql = sql.replaceAll("[:](" + key + ")([,]|[)]|[\\s]|[;])", sqlValue + "$2");
-                }
-            }
-        }
-
-        String result = "";
-        if (FastDaoAttributes.isSqlPrintResult) {
-            result = "执行结果: " + StrUtil.CRLF + JSONObject.toJSONString(param.getReturnVal()) + StrUtil.CRLF;
-        }
-        Log log = LogFactory.get(param.getTableMapper().getObjClass());
-        log.info(sql.substring(0, sql.indexOf(" ")) + " -> " + param.getTableMapper().getTableName() + ": SQL执行报告↓ " + StrUtil.CRLF + sql + StrUtil.CRLF + "本次执行耗时:" + param.getSqlTime() + "毫秒" + StrUtil.CRLF + result);
-    }
+    private static final String WHERE_PARAM = "where_param_";
+    private static final String UPDATE_PARAM = "update_param_";
+    private static final String INSERT_PARAM = "insert_param_";
+    private static final String FROM = "FROM ";
+    private static final String SET = " SET ";
+    private static final String AND = FastCondition.Way.AND.expression;
+    private static final String OR = FastCondition.Way.OR.expression;
+    private static final String WHERE = "WHERE ";
+    private static final String SELECT = "SELECT ";
+    private static final String UPDATE = "UPDATE ";
+    private static final String DELETE = "DELETE FROM ";
+    private static final String INSERT = "INSERT INTO ";
+    private static final String DISTINCT = "DISTINCT ";
+    private static final String ORDER_BY = "ORDER BY ";
+    private static final String DESC = " DESC ";
+    private static final String ASC = " ASC ";
+    private static final String COMMA = ", ";
+    private static final String EQUAL = " = ";
 
     /**
      * 封装select需要查询的字段信息,
@@ -79,45 +47,44 @@ public class FastSqlUtil {
      * @param param Dao执行条件
      * @return 封装后的SQL
      */
-    public static FastSQL selectSql(FastDaoParam param) {
-        FastSQL fastSQL = new FastSQL();
-
+    public static StrBuilder selectSql(FastDaoParam param) {
+        StrBuilder sqlBuilder = StrUtil.strBuilder(SELECT);
         ConditionPackages select = param.getFastExample().conditionPackages();
         TableMapper tableMapper = param.getTableMapper();
-        List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
 
-        String selectField = "";
         if (select == null) {
-            selectField = tableMapper.getShowAllTableNames();
+            sqlBuilder.append(tableMapper.getShowAllTableNames());
         } else if (CollUtil.isNotEmpty(select.getDistinctFields())) {
-            String distinctQuery = "DISTINCT" + " ";
+            StrBuilder selectField = StrBuilder.create(DISTINCT);
             for (String distinctField : select.getDistinctFields()) {
-                distinctQuery += (fieldTableNames.get(distinctField) + ", ");
+                selectField.append(fieldTableNames.get(distinctField)).append(COMMA);
             }
-            selectField = distinctQuery.substring(0, distinctQuery.length() - 2);
+            sqlBuilder.append(selectField.subString(0, selectField.length() - 2));
         } else if (CollUtil.isNotEmpty(select.getShowFields())) {
-            StringBuilder selectShowField = new StringBuilder();
+            StrBuilder selectField = StrBuilder.create();
             for (String showField : select.getShowFields()) {
-                selectShowField.append(fieldTableNames.get(showField) + ", ");
+                selectField.append(fieldTableNames.get(showField)).append(COMMA);
             }
-            selectField = selectShowField.substring(0, selectShowField.length() - 2);
+            sqlBuilder.append(selectField.subString(0, selectField.length() - 2));
         } else if (CollUtil.isNotEmpty(select.getHideFields())) {
-            StringBuilder selectShowField = new StringBuilder();
+            StrBuilder selectField = StrBuilder.create();
+            List<String> fieldNames = tableMapper.getFieldNames();
             for (String fieldName : fieldNames) {
                 if (!select.getHideFields().contains(fieldName)) {
-                    selectShowField.append(fieldTableNames.get(fieldName) + ", ");
+                    selectField.append(fieldTableNames.get(fieldName)).append(COMMA);
                 }
             }
-            selectField = selectShowField.substring(0, selectShowField.length() - 2);
+            sqlBuilder.append(selectField.subString(0, selectField.length() - 2));
         } else {
-            selectField = tableMapper.getShowAllTableNames();
+            sqlBuilder.append(tableMapper.getShowAllTableNames());
         }
-
-        fastSQL.SELECT(selectField)
-                .FROM(tableMapper.getTableName());
-        return fastSQL;
+        sqlBuilder.append(StrUtil.CRLF);
+        sqlBuilder.append(FROM).append(tableMapper.getTableName()).append(StrUtil.SPACE);
+        sqlBuilder.append(StrUtil.CRLF);
+        return sqlBuilder;
     }
+
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -127,12 +94,14 @@ public class FastSqlUtil {
      * @param paramIndex 索引
      * @return 封装后的SQL
      */
-    private static String pageParam(Map<String, Object> paramMap, Object value, ParamIndex paramIndex) {
-        String paramKey = "where_param_" + paramIndex.get();
+    private static StrBuilder pageParam(StrBuilder valsBuilder, Map<String, Object> paramMap, Object value, String paramType, ParamIndex paramIndex) {
+        String paramKey = paramType + paramIndex.get();
         paramMap.put(paramKey, value);
-        String s = "#{" + paramKey + "}";
         paramIndex.add();
-        return s;
+        valsBuilder.append(StrUtil.COLON);
+        valsBuilder.append(paramKey);
+        valsBuilder.append(StrUtil.SPACE);
+        return valsBuilder;
     }
 
     /**
@@ -150,33 +119,46 @@ public class FastSqlUtil {
         }
     }
 
+
     /**
      * 对SQL where条件进行封装
      *
-     * @param fastSQL sql信息
-     * @param param   Dao执行参数
+     * @param sqlBuilder sql信息
+     * @param param      Dao执行参数
      */
-    public static void whereSql(FastSQL fastSQL, FastDaoParam param) {
+    public static void whereSql(StrBuilder sqlBuilder, FastDaoParam param) {
         ConditionPackages select = param.getFastExample().conditionPackages();
         Map paramMap = param.getParamMap();
         TableMapper tableMapper = param.getTableMapper();
+        sqlBuilder.append(WHERE);
         if (select == null) {
             if (FastDaoAttributes.isOpenLogicDelete) {
-                fastSQL.AND().WHERE("`" + FastDaoAttributes.deleteTableColumnName + "` = " + !FastDaoAttributes.defaultDeleteValue);
+                sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
+                        FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
             }
             return;
         }
 
+        boolean isFirst = Boolean.TRUE;
+
         if (select.getLogicDeleteProtect()) {
             if (FastDaoAttributes.isOpenLogicDelete) {
-                fastSQL.AND().WHERE("`" + FastDaoAttributes.deleteTableColumnName + "` = " + !FastDaoAttributes.defaultDeleteValue);
+                sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
+                        FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
+                sqlBuilder.append(StrUtil.CRLF);
+                isFirst = Boolean.FALSE;
             }
         }
 
         ParamIndex paramIndex = new ParamIndex();
         List<FastCondition> conditions = select.getConditions();
         for (FastCondition condition : conditions) {
-            whereCondition(condition, fastSQL, paramMap, tableMapper, paramIndex);
+            if (!isFirst) {
+                sqlBuilder.append(condition.getWay().expression);
+            } else {
+                isFirst = Boolean.FALSE;
+            }
+            whereCondition(condition, sqlBuilder, paramMap, tableMapper, paramIndex);
         }
     }
 
@@ -184,73 +166,59 @@ public class FastSqlUtil {
      * where条件封装器
      *
      * @param condition   条件信息
-     * @param fastSQL     SQL信息
+     * @param sqlBuilder  SQL信息
      * @param paramMap    参数信息
      * @param tableMapper 对象属性映射
      * @param paramIndex  参数角标
      */
-    private static void whereCondition(FastCondition condition, FastSQL fastSQL, Map<String, Object> paramMap, TableMapper tableMapper, ParamIndex paramIndex) {
-        switch (condition.getExpression().name) {
-            case "in":
-            case "notIn":
-                if (condition.getWay().equals(FastCondition.Way.AND)) {
-                    fastSQL.AND();
-                } else {
-                    fastSQL.OR();
-                }
-                String vals = "";
+    private static void whereCondition(FastCondition condition, StrBuilder sqlBuilder, Map<String, Object> paramMap,
+                                       TableMapper tableMapper, ParamIndex paramIndex) {
+        switch (condition.getExpression()) {
+            case In:
+            case NotIn:
+                sqlBuilder.append(tableMapper.getShowTableNames().get(condition.getField())
+                        .toString()).append(condition.getExpression().expression).append("(");
                 for (Object value : condition.getValueList()) {
-                    vals = vals + pageParam(paramMap, value, paramIndex) + ",";
+                    pageParam(sqlBuilder, paramMap, value, WHERE_PARAM, paramIndex).append(StrUtil.COMMA);
                 }
-                fastSQL.WHERE(tableMapper.getShowTableNames().get(condition.getField()) + condition.getExpression().expression
-                        + "(" + vals.substring(0, vals.length() - 1) + ") ");
+                sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(") ");
+                sqlBuilder.append(StrUtil.CRLF);
                 break;
-            case "between":
-            case "notBetween":
-                if (condition.getWay().equals(FastCondition.Way.AND)) {
-                    fastSQL.AND();
-                } else {
-                    fastSQL.OR();
-                }
-                fastSQL.WHERE(tableMapper.getShowTableNames().get(condition.getField()) + condition.getExpression().expression
-                        + pageParam(paramMap, condition.getBetweenMin(), paramIndex) + " AND " + pageParam(paramMap, condition.getBetweenMax(), paramIndex));
+            case Between:
+            case NotBetween:
+                sqlBuilder.append(tableMapper.getShowTableNames()
+                        .get(condition.getField()).toString()).append(condition.getExpression().expression);
+                pageParam(sqlBuilder, paramMap, condition.getBetweenMin(), WHERE_PARAM, paramIndex).append(sqlBuilder.append(AND));
+                pageParam(sqlBuilder, paramMap, condition.getBetweenMax(), WHERE_PARAM, paramIndex);
+                sqlBuilder.append(StrUtil.CRLF);
                 break;
-            case "null":
-            case "notNull":
-                if (condition.getWay().equals(FastCondition.Way.AND)) {
-                    fastSQL.AND();
-                } else {
-                    fastSQL.OR();
-                }
-                fastSQL.WHERE(tableMapper.getShowTableNames().get(condition.getField()) + condition.getExpression().expression);
+            case Null:
+            case NotNull:
+                sqlBuilder.append(tableMapper.getShowTableNames()
+                        .get(condition.getField()).toString()).append(condition.getExpression().expression);
+                sqlBuilder.append(StrUtil.CRLF);
                 break;
-            case "sql":
-                if (condition.getWay().equals(FastCondition.Way.AND)) {
-                    fastSQL.AND();
-                } else {
-                    fastSQL.OR();
-                }
-                fastSQL.WHERE(condition.getSql());
+            case SQL:
                 if (CollUtil.isNotEmpty(condition.getParams())) {
                     paramMap.putAll(condition.getParams());
                 }
+                sqlBuilder.append(condition.getSql());
+                sqlBuilder.append(StrUtil.CRLF);
                 break;
-            case "object":
-                fastSQL.AND();
+            case Obj:
                 Map<String, Object> pojoFieldTable = BeanUtil.beanToMap(condition.getObject(), false, true);
                 for (String fieldName : pojoFieldTable.keySet()) {
-                    fastSQL.WHERE(tableMapper.getShowTableNames().get(fieldName) + condition.getExpression().expression
-                            + pageParam(paramMap, pojoFieldTable.get(fieldName), paramIndex));
+                    sqlBuilder.append(tableMapper.getShowTableNames().get(fieldName)).append(condition.getExpression().expression);
+                    pageParam(sqlBuilder, paramMap, pojoFieldTable.get(fieldName), WHERE_PARAM, paramIndex);
+
                 }
+                sqlBuilder.append(StrUtil.CRLF);
                 break;
             default:
-                if (condition.getWay().equals(FastCondition.Way.AND)) {
-                    fastSQL.AND();
-                } else {
-                    fastSQL.OR();
-                }
-                fastSQL.WHERE(tableMapper.getShowTableNames().get(condition.getField()) + condition.getExpression().expression
-                        + pageParam(paramMap, condition.getValue(), paramIndex));
+                sqlBuilder.append(tableMapper.getShowTableNames()
+                        .get(condition.getField()).toString()).append(condition.getExpression().expression);
+                pageParam(sqlBuilder, paramMap, condition.getValue(), WHERE_PARAM, paramIndex);
+                sqlBuilder.append(StrUtil.CRLF);
         }
     }
 
@@ -260,18 +228,16 @@ public class FastSqlUtil {
      * @param param dao执行参数
      * @return 封装好更新部分SQL
      */
-    public static FastSQL updateSql(FastDaoParam param) {
+    public static StrBuilder updateSql(FastDaoParam param) {
         TableMapper tableMapper = param.getTableMapper();
         Map<String, Object> paramMap = param.getParamMap();
+        ParamIndex paramIndex = new ParamIndex();
+        StrBuilder sqlBuilder = StrUtil.strBuilder(UPDATE, tableMapper.getTableName(), SET).append(StrUtil.CRLF);
 
-        FastSQL fastSQL = new FastSQL();
-        fastSQL.UPDATE(tableMapper.getTableName());
-
-        int updateIndex = 0;
         List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
-
-        for (String fieldName : fieldNames) {
+        for (int i = 0; i < fieldNames.size(); i++) {
+            String fieldName = fieldNames.get(i);
             if (FastDaoAttributes.isAutoSetCreateTime && fieldName.equals(FastDaoAttributes.createTimeFieldName)) {
                 continue;
             }
@@ -284,32 +250,109 @@ public class FastSqlUtil {
                     continue;
                 }
             }
-            String paramKey = "update_param_" + updateIndex;
-            fastSQL.SET(fieldTableNames.get(fieldName) + " = " + "#{" + paramKey + "}");
-            paramMap.put(paramKey, fieldValue);
-            updateIndex++;
+            sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL);
+            pageParam(sqlBuilder, paramMap, fieldValue, UPDATE_PARAM, paramIndex);
+            sqlBuilder.append(COMMA);
+        }
+        return sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length()).append(StrUtil.CRLF);
+    }
+
+
+    /**
+     * 对删除部分SQL进行封装
+     *
+     * @param param dao执行参数
+     * @return 封装好更新部分SQL
+     */
+    public static StrBuilder deleteSql(FastDaoParam param) {
+        return StrUtil.strBuilder(DELETE, param.getTableMapper().getTableName()).append(StrUtil.CRLF);
+    }
+
+    /**
+     * 对新增SQL进行封装
+     *
+     * @param param dao执行参数
+     * @return 封装好更新部分SQL
+     */
+    public static StrBuilder insertSql(FastDaoParam param) {
+        TableMapper tableMapper = param.getTableMapper();
+        List<String> fieldNames = tableMapper.getFieldNames();
+        Map<String, String> fieldTableNames = tableMapper.getFieldTableNames();
+        Map<String, Object> paramMap = param.getParamMap();
+        ParamIndex paramIndex = new ParamIndex();
+
+        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(StrUtil.CRLF).append("(");
+
+        for (int i = 0; i < fieldNames.size(); i++) {
+            fastSQL.append("`").append(fieldTableNames.get(fieldNames.get(i))).append("`");
+            if (i < fieldNames.size() - 1) {
+                fastSQL.append(COMMA);
+            }
+        }
+        fastSQL.append(") VALUES ").append(StrUtil.CRLF);
+        List insertList = param.getInsertList();
+        for (int x = 0; x < insertList.size(); x++) {
+            fastSQL.append("(");
+            for (int i = 0; i < fieldNames.size(); i++) {
+                Object fieldValue = BeanUtil.getFieldValue(insertList.get(x), fieldNames.get(i));
+                pageParam(fastSQL, paramMap, fieldValue, INSERT_PARAM, paramIndex);
+                if (i < fieldNames.size() - 1) {
+                    fastSQL.append(COMMA);
+                }
+            }
+            fastSQL.append(")");
+            if (x < insertList.size() - 1) {
+                fastSQL.append(StrUtil.COMMA);
+            }
+            fastSQL.append(StrUtil.CRLF);
         }
         return fastSQL;
+
     }
 
     /**
      * 查询排序
      *
-     * @param fastSQL SQL信息
-     * @param param   Dao执行条件
+     * @param sqlBuilder SQL信息
+     * @param param      Dao执行条件
      */
-    public static void orderBy(FastSQL fastSQL, FastDaoParam param) {
+    public static void orderBy(StrBuilder sqlBuilder, FastDaoParam param) {
         ConditionPackages conditionPackages = param.getFastExample().conditionPackages();
         TableMapper tableMapper = param.getTableMapper();
         if (conditionPackages != null && conditionPackages.getOrderByQuery() != null) {
             for (ConditionPackages.OrderByQuery orderByQuery : conditionPackages.getOrderByQuery()) {
                 if (orderByQuery.getDesc()) {
-                    fastSQL.ORDER_BY(tableMapper.getShowTableNames().get(orderByQuery.getOrderByName()) + " desc ");
+                    sqlBuilder.append(ORDER_BY).append(tableMapper.getShowTableNames().get(orderByQuery.getOrderByName())).append(DESC);
                 } else {
-                    fastSQL.ORDER_BY(tableMapper.getShowTableNames().get(orderByQuery.getOrderByName()) + " asc ");
+                    sqlBuilder.append(ORDER_BY).append(tableMapper.getShowTableNames().get(orderByQuery.getOrderByName())).append(ASC);
                 }
             }
         }
+    }
+
+    /**
+     * 分页
+     *
+     * @param sqlBuilder SQL信息
+     * @param param      Dao执行条件
+     */
+    public static void limit(StrBuilder sqlBuilder, FastDaoParam param) {
+        ConditionPackages conditionPackages = param.getFastExample().conditionPackages();
+        if (conditionPackages != null) {
+            Map<String, Object> paramMap = param.getParamMap();
+            if (conditionPackages.getPage() != null && conditionPackages.getSize() != null) {
+                sqlBuilder.append("limit :page , :size ");
+                paramMap.put("page", conditionPackages.getPage());
+                paramMap.put("size", conditionPackages.getSize());
+            } else if (conditionPackages.getLimit() != null) {
+                sqlBuilder.append("limit :limit ");
+                paramMap.put("limit", conditionPackages.getLimit());
+            }
+        }
+    }
+
+    public static String conversionMyBatisSql(String sql) {
+        return sql.replaceAll("[:](\\w*)[\\s]", "#{paramMap." + "$1" +"}");
     }
 
     public static String sqlConversion(String sql) {

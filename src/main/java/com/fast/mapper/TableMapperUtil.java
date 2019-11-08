@@ -95,10 +95,10 @@ public class TableMapperUtil {
 
         Field[] fields = clazz.getDeclaredFields();
         List<String> fieldNames = new ArrayList<>();
-        Map<String, Class> fieldTypes = new HashMap<>();
-        Map<String, String> fieldTableNames = new HashMap<>();
-        Map<String, String> selectShowField = new HashMap<>();
-        Map<String, String> tableFieldNames = new HashMap<>();
+        HashMap<String, Class> fieldTypes = new HashMap<>();
+        HashMap<String, String> fieldTableNames = new HashMap<>();
+        HashMap<String, String> selectShowField = new HashMap<>();
+        HashMap<String, String> tableFieldNames = new HashMap<>();
         StringBuilder selectAllShowField = new StringBuilder();
         for (Field field : fields) {
             if (field.getName().equals("serialVersionUID")) {
