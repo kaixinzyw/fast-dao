@@ -34,12 +34,19 @@ public class FastSqlUtil {
     private static final String UPDATE = "UPDATE ";
     private static final String DELETE = "DELETE FROM ";
     private static final String INSERT = "INSERT INTO ";
-    private static final String DISTINCT = "DISTINCT ";
+    private static final String COUNT = "COUNT";
+    private static final String DISTINCT = "DISTINCT";
     private static final String ORDER_BY = "ORDER BY ";
     private static final String DESC = " DESC ";
     private static final String ASC = " ASC ";
     private static final String COMMA = ", ";
     private static final String EQUAL = " = ";
+    private static final String QUOTATION = "`";
+    private static final String LEFT_BRACKETS = "(";
+    private static final String RIGHT_BRACKETS = ")";
+    private static final String VALUES = " VALUES ";
+    private static final String WILDCARD = "*";
+
 
     /**
      * 封装select需要查询的字段信息,
@@ -56,7 +63,7 @@ public class FastSqlUtil {
         if (select == null) {
             sqlBuilder.append(tableMapper.getShowAllTableNames());
         } else if (CollUtil.isNotEmpty(select.getDistinctFields())) {
-            StrBuilder selectField = StrBuilder.create(DISTINCT);
+            StrBuilder selectField = StrBuilder.create(DISTINCT, StrUtil.SPACE);
             for (String distinctField : select.getDistinctFields()) {
                 selectField.append(fieldTableNames.get(distinctField)).append(COMMA);
             }
@@ -79,10 +86,22 @@ public class FastSqlUtil {
         } else {
             sqlBuilder.append(tableMapper.getShowAllTableNames());
         }
-        sqlBuilder.append(StrUtil.CRLF);
+        sqlBuilder.append(System.lineSeparator());
         sqlBuilder.append(FROM).append(tableMapper.getTableName()).append(StrUtil.SPACE);
-        sqlBuilder.append(StrUtil.CRLF);
+        sqlBuilder.append(System.lineSeparator());
         return sqlBuilder;
+    }
+
+    public static String countQueryInfoReplace(String sql) {
+        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(System.lineSeparator(),"");
+        StrBuilder replaceQueryInfo = StrUtil.strBuilder(COUNT, LEFT_BRACKETS);
+        if (StrUtil.containsIgnoreCase(queryInfo, DISTINCT)) {
+            replaceQueryInfo.append(queryInfo);
+        } else {
+            replaceQueryInfo.append(WILDCARD);
+        }
+        replaceQueryInfo.append(RIGHT_BRACKETS);
+        return StrUtil.replace(sql, queryInfo, replaceQueryInfo);
     }
 
 
@@ -145,7 +164,7 @@ public class FastSqlUtil {
             if (FastDaoAttributes.isOpenLogicDelete) {
                 sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
                         FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.append(System.lineSeparator());
                 isFirst = Boolean.FALSE;
             }
         }
@@ -177,12 +196,12 @@ public class FastSqlUtil {
             case In:
             case NotIn:
                 sqlBuilder.append(tableMapper.getShowTableNames().get(condition.getField())
-                        .toString()).append(condition.getExpression().expression).append("(");
+                        .toString()).append(condition.getExpression().expression).append(LEFT_BRACKETS);
                 for (Object value : condition.getValueList()) {
                     pageParam(sqlBuilder, paramMap, value, WHERE_PARAM, paramIndex).append(StrUtil.COMMA);
                 }
-                sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(") ");
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(RIGHT_BRACKETS);
+                sqlBuilder.append(System.lineSeparator());
                 break;
             case Between:
             case NotBetween:
@@ -190,20 +209,20 @@ public class FastSqlUtil {
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
                 pageParam(sqlBuilder, paramMap, condition.getBetweenMin(), WHERE_PARAM, paramIndex).append(sqlBuilder.append(AND));
                 pageParam(sqlBuilder, paramMap, condition.getBetweenMax(), WHERE_PARAM, paramIndex);
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.append(System.lineSeparator());
                 break;
             case Null:
             case NotNull:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.append(System.lineSeparator());
                 break;
             case SQL:
                 if (CollUtil.isNotEmpty(condition.getParams())) {
                     paramMap.putAll(condition.getParams());
                 }
                 sqlBuilder.append(condition.getSql());
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.append(System.lineSeparator());
                 break;
             case Obj:
                 Map<String, Object> pojoFieldTable = BeanUtil.beanToMap(condition.getObject(), false, true);
@@ -212,13 +231,13 @@ public class FastSqlUtil {
                     pageParam(sqlBuilder, paramMap, pojoFieldTable.get(fieldName), WHERE_PARAM, paramIndex);
 
                 }
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.append(System.lineSeparator());
                 break;
             default:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
                 pageParam(sqlBuilder, paramMap, condition.getValue(), WHERE_PARAM, paramIndex);
-                sqlBuilder.append(StrUtil.CRLF);
+                sqlBuilder.append(System.lineSeparator());
         }
     }
 
@@ -232,7 +251,7 @@ public class FastSqlUtil {
         TableMapper tableMapper = param.getTableMapper();
         Map<String, Object> paramMap = param.getParamMap();
         ParamIndex paramIndex = new ParamIndex();
-        StrBuilder sqlBuilder = StrUtil.strBuilder(UPDATE, tableMapper.getTableName(), SET).append(StrUtil.CRLF);
+        StrBuilder sqlBuilder = StrUtil.strBuilder(UPDATE, tableMapper.getTableName(), SET).append(System.lineSeparator());
 
         List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
@@ -254,7 +273,7 @@ public class FastSqlUtil {
             pageParam(sqlBuilder, paramMap, fieldValue, UPDATE_PARAM, paramIndex);
             sqlBuilder.append(COMMA);
         }
-        return sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length()).append(StrUtil.CRLF);
+        return sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length()).append(System.lineSeparator());
     }
 
 
@@ -265,7 +284,7 @@ public class FastSqlUtil {
      * @return 封装好更新部分SQL
      */
     public static StrBuilder deleteSql(FastDaoParam param) {
-        return StrUtil.strBuilder(DELETE, param.getTableMapper().getTableName()).append(StrUtil.CRLF);
+        return StrUtil.strBuilder(DELETE, param.getTableMapper().getTableName()).append(System.lineSeparator());
     }
 
     /**
@@ -281,18 +300,18 @@ public class FastSqlUtil {
         Map<String, Object> paramMap = param.getParamMap();
         ParamIndex paramIndex = new ParamIndex();
 
-        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(StrUtil.CRLF).append("(");
+        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(System.lineSeparator()).append(LEFT_BRACKETS);
 
         for (int i = 0; i < fieldNames.size(); i++) {
-            fastSQL.append("`").append(fieldTableNames.get(fieldNames.get(i))).append("`");
+            fastSQL.append(QUOTATION).append(fieldTableNames.get(fieldNames.get(i))).append(QUOTATION);
             if (i < fieldNames.size() - 1) {
                 fastSQL.append(COMMA);
             }
         }
-        fastSQL.append(") VALUES ").append(StrUtil.CRLF);
+        fastSQL.append(RIGHT_BRACKETS).append(VALUES).append(System.lineSeparator());
         List insertList = param.getInsertList();
         for (int x = 0; x < insertList.size(); x++) {
-            fastSQL.append("(");
+            fastSQL.append(LEFT_BRACKETS);
             for (int i = 0; i < fieldNames.size(); i++) {
                 Object fieldValue = BeanUtil.getFieldValue(insertList.get(x), fieldNames.get(i));
                 pageParam(fastSQL, paramMap, fieldValue, INSERT_PARAM, paramIndex);
@@ -300,11 +319,11 @@ public class FastSqlUtil {
                     fastSQL.append(COMMA);
                 }
             }
-            fastSQL.append(")");
+            fastSQL.append(RIGHT_BRACKETS);
             if (x < insertList.size() - 1) {
                 fastSQL.append(StrUtil.COMMA);
             }
-            fastSQL.append(StrUtil.CRLF);
+            fastSQL.append(System.lineSeparator());
         }
         return fastSQL;
 
@@ -341,18 +360,18 @@ public class FastSqlUtil {
         if (conditionPackages != null) {
             Map<String, Object> paramMap = param.getParamMap();
             if (conditionPackages.getPage() != null && conditionPackages.getSize() != null) {
-                sqlBuilder.append("limit :page , :size ");
+                sqlBuilder.append("limit :page , :size ").append(System.lineSeparator());
                 paramMap.put("page", conditionPackages.getPage());
                 paramMap.put("size", conditionPackages.getSize());
             } else if (conditionPackages.getLimit() != null) {
-                sqlBuilder.append("limit :limit ");
+                sqlBuilder.append("limit :limit ").append(System.lineSeparator());
                 paramMap.put("limit", conditionPackages.getLimit());
             }
         }
     }
 
     public static String conversionMyBatisSql(String sql) {
-        return sql.replaceAll("[:](\\w*)[\\s]", "#{paramMap." + "$1" +"}");
+        return sql.replaceAll("[:](\\w*)[\\s]", "#{paramMap." + "$1" + "}");
     }
 
     public static String sqlConversion(String sql) {

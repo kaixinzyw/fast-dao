@@ -71,6 +71,8 @@ public class FastDaoSpringBootConfig {
             FastDaoAttributes.isOpenLogicDelete = Boolean.TRUE;
             FastDaoAttributes.deleteTableColumnName = deleteTableColumnName;
             FastDaoAttributes.deleteFieldName = FastValueUtil.toCamelCase(deleteTableColumnName);
+            FastDaoAttributes.defaultSqlWhereDeleteValueTrue = "`" + FastDaoAttributes.deleteTableColumnName + "` = true";
+            FastDaoAttributes.defaultSqlWhereDeleteValueFalse = "`" + FastDaoAttributes.deleteTableColumnName + "` = false";
         }
         Boolean defaultDeleteValue = env.getProperty("fast.db.set.delete.val", Boolean.class);
         if (BooleanUtil.isFalse(defaultDeleteValue)) {

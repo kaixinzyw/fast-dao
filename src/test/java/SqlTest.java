@@ -1,11 +1,8 @@
-//package com.db.test;
-//
-//import cn.hutool.core.collection.CollUtil;
 //import com.alibaba.fastjson.JSONObject;
 //import com.db.test.dao.UserFastDao;
 //import com.db.test.dto.UserDto;
 //import com.db.test.pojo.User;
-//import com.fast.example.FastCustomSqlDao;
+//import com.fast.fast.FastCustomSqlDao;
 //import com.fast.utils.BeanCopyUtil;
 //import com.fast.utils.page.PageInfo;
 //import org.junit.FixMethodOrder;
@@ -15,6 +12,7 @@
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.test.context.junit4.SpringRunner;
 //
+//import java.util.ArrayList;
 //import java.util.HashMap;
 //import java.util.List;
 //import java.util.Map;
@@ -24,7 +22,22 @@
 //@FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 //public class SqlTest {
 //
+//    static {
+//        FastSetConfig.fastDaoConfig();
+//    }
 //
+//    @Test
+//    public void test_a_insertList() {
+//        List<User> userList = new ArrayList<>();
+//        for (int i = 100; i <= 200; i++) {
+//            User user = new User();
+//            user.setUserName("张亚伟" + i);
+//            user.setAge(i);
+//            userList.add(user);
+//        }
+//        List<User> ls = UserFastDao.create().dao().insertList(userList);
+//        System.out.println(JSONObject.toJSONString(ls,true));
+//    }
 //
 //    @Test
 //    public void test_a_insert() {
@@ -32,13 +45,14 @@
 //            User user = new User();
 //            user.setUserName("张亚伟" + i);
 //            user.setAge(i);
-//            UserFastDao.create().dao().insert(user);
+//            User insert = UserFastDao.create().dao().insert(user);
+//            System.out.println(JSONObject.toJSONString(insert,true));
 //        }
 //    }
 //
 //    @Test
 //    public void test_b_findByAge() {
-//        User one = UserFastDao.create().age().orderByAsc().dao().findOne();
+//        UserFastDao.create().age().distinctField().orderByAsc().dao().findAll();
 //    }
 //
 //
@@ -50,8 +64,8 @@
 //            params.put("age", 20);
 //
 //            UserFastDao testTemplate = UserFastDao.create();
-//            testTemplate.andSql("user_name = #{userName}", params);
-//            testTemplate.orSQL("age = #{age}", params);
+//            testTemplate.andSql("user_name = :userName ", params);
+//            testTemplate.orSQL("age = :age ", params);
 //            testTemplate.age().orderByDesc();
 //            testTemplate.closeLogicDeleteProtect();
 //            User one = testTemplate.dao().findOne();
@@ -158,9 +172,9 @@
 //    @Test
 //    public void test_n_findPage() {
 //        UserFastDao fastDao = UserFastDao.create();
-//        fastDao.userName().likeRight("张");
+//        fastDao.userName().likeRight("张").distinctField();
 //        fastDao.age().lessOrEqual(100);
-//        fastDao.age().orderByDesc();
+//        fastDao.age().orderByDesc().distinctField();
 //        PageInfo<User> page = fastDao.dao().findPage(1, 2);
 ////        PageInfo<User> page = fastDao.UnconditionalOperating.findPage(1, 2);
 //        System.out.println("findPage执行成功,查询到的数据为" + JSONObject.toJSONString(page, true));
@@ -178,6 +192,8 @@
 //
 //        User del = UserFastDao.create().age(19).dao().findOne();
 //        UserFastDao.create().age().valEqual(del.getAge()).dao().findAll();
+//        UserFastDao.create().age().isNull().dao().findAll();
+//        UserFastDao.create().age().notNull().dao().findAll();
 //        UserFastDao.create().userName().like(del.getUserName()).hideField().dao().findAll();
 //        UserFastDao.create().userName().like(del.getUserName()).showField().dao().findAll();
 //        UserFastDao.create().userName().like(del.getUserName()).hideField().dao().findAll();
@@ -191,15 +207,14 @@
 //        UserFastDao.create().age(20).dao().findAll();
 //
 //        List<User> us = UserFastDao.create().userName().notLike("张").dao().findAll();
-//        UserDto userDto = BeanCopyUtil.copy(del, UserDto.class);
-//        List<UserDto> userDtos = BeanCopyUtil.copy(us, UserDto.class);;
+//        PageInfo<User> 张 = UserFastDao.create().userName().notLike("张").dao().findPage(1, 10);
 //
 //    }
 //
 //
 //    @Test
 //    public void test_p_CustomSql(){
-//        String sql = "SELECT * FROM user WHERE `user_name` LIKE #{userName}";
+//        String sql = "SELECT * FROM user WHERE `user_name` LIKE :userName ";
 //        HashMap<String, Object> params = new HashMap<>();
 //        params.put("userName","%张亚伟%");
 //        List<User> all = FastCustomSqlDao.create(User.class, sql, params).findAll();

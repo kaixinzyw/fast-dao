@@ -97,7 +97,7 @@ public class FastDaoAttributes {
     /**
      * 使用的OMR实现,目前框架自身对SpringJDBC和MyBatis 进行了Mysql实现
      * 参数
-     * SpringJDBCMySqlImpl.class:使用SpringJDBC实现
+     * JdbcImpl.class:使用JDBC实现
      * FastMyBatisImpl.class: 使用MyBatis实现
      * <p>
      * 如果需要自定义扩展,可以实现DaoActuator接口进行自定义扩展

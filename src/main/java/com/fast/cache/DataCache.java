@@ -1,6 +1,7 @@
 package com.fast.cache;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.json.JSONUtil;
 import com.fast.condition.FastExample;
 import com.fast.config.FastDaoAttributes;
@@ -26,10 +27,14 @@ import java.util.List;
  */
 public class DataCache<T> {
 
+    public final static String PREFIX_NAME = "fast_cache_";
+    private final static String NULL = "null";
+    private final static String COUNT = "_count";
+    private final static String SEPARATOR = ": ";
     /**
      * 缓存键名
      */
-    private String keyName;
+    private StrBuilder keyName;
     /**
      * 缓存的表明
      */
@@ -51,9 +56,9 @@ public class DataCache<T> {
         dataCache.tableName = tableMapper.getTableName();
 
         if (fastExample.conditionPackages() == null) {
-            dataCache.keyName = "fast_cache_" + tableMapper.getTableName() + ": null";
+            dataCache.keyName = StrBuilder.create(PREFIX_NAME,tableMapper.getTableName(),SEPARATOR,NULL);
         } else {
-            dataCache.keyName = "fast_cache_" + tableMapper.getTableName() + ": " + JSONUtil.toJsonStr(fastExample.conditionPackages());
+            dataCache.keyName = StrBuilder.create(PREFIX_NAME, tableMapper.getTableName(),SEPARATOR,JSONUtil.toJsonStr(fastExample.conditionPackages()));
         }
 
         return dataCache;
@@ -66,13 +71,13 @@ public class DataCache<T> {
      */
     public T getOne() {
         if (tableMapper.getCacheType().equals(DataCacheType.StatisCache)) {
-            List<T> ts = StaticCacheImpl.get(tableMapper, keyName);
+            List<T> ts = StaticCacheImpl.get(tableMapper, keyName.toString());
             if (CollUtil.isEmpty(ts)) {
                 return null;
             }
             return ts.get(0);
         } else if (tableMapper.getCacheType().equals(DataCacheType.RedisCache)) {
-            List<T> ts = RedisCacheImpl.<T>get(tableMapper, keyName);
+            List<T> ts = RedisCacheImpl.<T>get(tableMapper, keyName.toString());
             if (CollUtil.isEmpty(ts)) {
                 return null;
             }
@@ -100,7 +105,7 @@ public class DataCache<T> {
      * @return 查询结果
      */
     public T getCount() {
-        keyName = keyName + "_count";
+        keyName.append(COUNT);
         return getOne();
 
     }
@@ -111,7 +116,7 @@ public class DataCache<T> {
      * @param t 设置的参数
      */
     public void setCount(T t) {
-        keyName = keyName + "_count";
+        keyName.append(COUNT);
         setOne(t);
     }
 
@@ -122,9 +127,9 @@ public class DataCache<T> {
      */
     public List<T> getList() {
         if (tableMapper.getCacheType().equals(DataCacheType.StatisCache)) {
-            return StaticCacheImpl.get(tableMapper,keyName);
+            return StaticCacheImpl.get(tableMapper,keyName.toString());
         } else if (tableMapper.getCacheType().equals(DataCacheType.RedisCache)) {
-            return RedisCacheImpl.get(tableMapper,keyName);
+            return RedisCacheImpl.get(tableMapper,keyName.toString());
         }
         return null;
     }
@@ -136,9 +141,9 @@ public class DataCache<T> {
      */
     public void setList(List<T> ts) {
         if (tableMapper.getCacheType().equals(DataCacheType.StatisCache)) {
-            StaticCacheImpl.set(ts,tableMapper,keyName);
+            StaticCacheImpl.set(ts,tableMapper,keyName.toString());
         } else if (tableMapper.getCacheType().equals(DataCacheType.RedisCache)) {
-            RedisCacheImpl.set(ts,tableMapper,keyName);
+            RedisCacheImpl.set(ts,tableMapper,keyName.toString());
         }
     }
 

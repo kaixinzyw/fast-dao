@@ -1,7 +1,6 @@
 package com.fast.cache;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.config.FastDaoAttributes;
 import com.fast.mapper.TableMapper;
@@ -14,6 +13,7 @@ import java.util.Set;
 public class RedisCacheImpl {
 
     private static final FastThreadLocal<StringRedisTemplate> redisTemplateThreadLocal = new FastThreadLocal<>();
+    private final static String WILDCARD = ":*";
 
     private static StringRedisTemplate redisTemplate() {
         StringRedisTemplate redisTemplate = redisTemplateThreadLocal.get();
@@ -33,14 +33,14 @@ public class RedisCacheImpl {
         return JSONObject.parseArray(ostr, tableMapper.getObjClass());
     }
 
-    public static  <T> void set(List<T> ts, TableMapper tableMapper, String keyName) {
+    public static <T> void set(List<T> ts, TableMapper tableMapper, String keyName) {
         StringRedisTemplate redisTemplate = redisTemplate();
         redisTemplate.opsForValue().set(keyName, JSONObject.toJSONString(ts), tableMapper.getCacheTime(), tableMapper.getCacheTimeType());
     }
 
     public static void update(TableMapper tableMapper) {
         StringRedisTemplate redisTemplate = redisTemplate();
-        Set keys = redisTemplate.keys("fast_cache_" + tableMapper.getTableName() + ":*");
+        Set keys = redisTemplate.keys(DataCache.PREFIX_NAME + tableMapper.getTableName() + WILDCARD);
         if (CollUtil.isNotEmpty(keys)) {
             redisTemplate.delete(keys);
         }

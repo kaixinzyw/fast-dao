@@ -27,7 +27,7 @@ public class StaticCacheImpl {
         String tableName = tableMapper.getTableName();
         Cache<String, List<?>> cache = cacheMap.get(tableName);
         if (cache == null) {
-            synchronized (("create:" + tableName).intern()) {
+            synchronized ((tableName).intern()) {
                 if (cacheMap.get(tableName) != null) {
                     return cacheMap.get(tableName);
                 }

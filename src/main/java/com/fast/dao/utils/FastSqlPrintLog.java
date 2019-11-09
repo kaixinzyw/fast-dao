@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 
 public class FastSqlPrintLog {
+
     /**
      * SQL日志打印
      *
@@ -63,16 +64,16 @@ public class FastSqlPrintLog {
 
     private static void printSql(String sql, Map<String, Object> sqlParams, FastDaoParam param) {
         Log log = LogFactory.get(param.getTableMapper().getObjClass());
-        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), ": SQL执行报告↓ ", StrUtil.CRLF, sql, StrUtil.CRLF, "本次执行耗时: " + param.getSqlTime(), StrUtil.CRLF);
+        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), ": SQL执行报告↓ ", System.lineSeparator(), sql, System.lineSeparator(), "执行耗时: " + param.getSqlTime(), System.lineSeparator());
         if (sqlParams != null) {
             printLog.append("参数: ");
             printLog.append(JSONObject.toJSONString(sqlParams));
-            printLog.append(StrUtil.CRLF);
+            printLog.append(System.lineSeparator());
         }
         if (FastDaoAttributes.isSqlPrintResult) {
-            printLog.append(("执行结果: ")).append(StrUtil.CRLF);
+            printLog.append(("执行结果: "));
             printLog.append(JSONObject.toJSONString(param.getReturnVal()));
-            printLog.append(StrUtil.CRLF);
+            printLog.append(System.lineSeparator());
         }
         switch (FastDaoAttributes.sqlLogLevel) {
             case INFO:

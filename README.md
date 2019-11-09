@@ -6,13 +6,11 @@
 >作者: 张亚伟
 >
 >邮箱: 398850094@qq.com
->
->QQ交流群: 554127796
 ----
 @[toc]
 
 ---
- Java ORM框架 Dao框架 大幅度提高开发效率 减少编码量
+ Java 全自动 ORM框架 Dao框架 大幅度提高开发效率 减少编码量
 ---- 
 - 极·简化DAO操作，大幅度提高编码效率
 - 支持自定义SQL,自动映射
@@ -36,7 +34,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>4.2.0</version>
+    <version>4.3.0</version>
 </dependency>
 ```
 #### 1.1.1 依赖
@@ -127,11 +125,12 @@ public void fastDaoConfig() {
      */
     FastDaoConfig.openToCamelCase();
     /**
-     * 框架使用的是INFO级别
-     * 参数1: 是否打印SQL日志
-     * 参数2: 是否打印SQL执行结果
+     * 设置SQL日志打印级别,本功能主要用于自检
+     * 参数1: 日志级别
+     * 参数2: 是否打印简单格式SQL
+     * 参数3: 是否打印SQL执行结果
      */
-    FastDaoConfig.openSqlPrint(true, true);
+    FastDaoConfig.openSqlPrint(SqlLogLevel.INFO, false, true);
     /**
      * 开启自动对数据 新增操作 进行创建时间设置
      * 参数1: 需要设置创建时间的字段名
@@ -230,7 +229,7 @@ UserFastDao fastDao = UserFastDao.create();
 |查询指定字段设置|fastDao.fieldName().showField()|执行查询操作时只查询指定字段,可设置多个<br>`fastDao.id().showField();`<br>`fastDao.userName().showField();`|
 |过滤字段设置|fastDao.fieldName().hideField()|查询操作时不查询指定字段,可设置多个<br>`fastDao.password().hideField();`<br>`fastDao.mail().hideField();`|
 |字段去重复设置|fastDao.fieldName().distinctField()|`fastDao.userName().distinctField()`|
-|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需 要使用 #{参数名}占位<br>在参数值MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
+|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需 要使用 :参数名 占位<br>在参数值MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = :userName ",params)`|
 |关闭逻辑删除保护|fastDao.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
 |OR条件设置|fastDao.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`fastDao.userName().valEqual("张三").or().isNull()`
 
@@ -245,7 +244,7 @@ FastDao<User> dao = UserFastDao.create().dao();
 
 |说明|方法名 |示例|
 |---|---|---|
-|新增|Boolean insert(Pojo pojo)|新增一个用户,新增成功后会进行对象主键字段赋值<br>`Boolean success = UserFastDao.create().dao().insert(user)`|
+|新增|Pojo insert(Pojo pojo)|新增一个用户,新增成功后会进行对象主键字段赋值<br>`User user = UserFastDao.create().dao().insert(user)`|
 |查询单条数据|Pojo findOne()|查询用户名为张三的信息<br>`User user = UserFastDao.create().userName("张三").dao().findOne()`|
 |查询多条数据|List<Pojo> findAll()|查询年龄在20-30间的所有用户<br>`List<User> list = UserFastDao.create().age().between(20,30).dao().findAll()`|
 |查询数量|Integer findCount()|查询一共有多少用户<br>`Integer count = UserFastDao.create().dao().findCount()`|
@@ -264,7 +263,7 @@ FastCustomSqlDao.create(Class, SQL语句, 参数)
 
 ```java
 //例:
-String sql = "SELECT * FROM user WHERE `user_name` LIKE #{userName}";
+String sql = "SELECT * FROM user WHERE `user_name` LIKE :userName ";
 
 HashMap<String, Object> params = new HashMap<>();
 params.put("userName","%张亚伟%");
@@ -318,5 +317,45 @@ private static DataSource getDataSource() {
 }
 ```
 ----
+
+### 2.6 切面
+使用切面可以进行很多自定义操作,比如读写分离,CRUD时候添加参数,权限验证等
+#### 2.6.1 实现FastDaoExpander接口
+```java
+public class DemoExpander implements FastDaoExpander {
+
+    /**
+     * @param param 封装了DAO所有的执行参数
+     * @return 是否执行
+     */
+    @Override
+    public boolean before(FastDaoParam param) {
+        System.out.println("DAO执行前");
+        return true;
+    }
+
+    /**
+     * @param param 封装了DAO所有的执行参数
+     */
+    @Override
+    public void after(FastDaoParam param) {
+        System.out.println("DAO执行后");
+    }
+
+    @Override
+    public List<ExpanderOccasion> occasion() {
+        //配置DAO切面执行时机
+        List<ExpanderOccasion> list = new ArrayList<>();
+        list.add(ExpanderOccasion.SELECT);
+        list.add(ExpanderOccasion.UPDATE);
+        return list;
+    }
+
+}
+```
+#### 2.6.2 配置切面实现,可以添加多个切面
+```java
+FastDaoConfig.addFastDaoExpander(DemoExpander.class);
+```
 
 **感谢使用,希望您能提出宝贵的建议,我会不断改进更新**

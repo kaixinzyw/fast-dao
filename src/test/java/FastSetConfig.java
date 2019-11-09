@@ -1,46 +1,50 @@
+//import com.alibaba.druid.pool.DruidDataSource;
 //import com.fast.config.FastDaoConfig;
-//import com.fast.dao.mybatis.FastMyBatisImpl;
-//import org.springframework.context.annotation.Bean;
+//import com.fast.config.SqlLogLevel;
+//import com.fast.dao.jdbc.JdbcImpl;
+//import org.springframework.data.redis.connection.RedisConnectionFactory;
+//import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+//import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 //
+//import javax.sql.DataSource;
 //import java.util.concurrent.TimeUnit;
 //
-////@Component
 //public class FastSetConfig {
 //
-//
-//    @Bean
-//    public void fastJdbcConfig() {
+//    public static void fastDaoConfig() {
 //
 //        /**
-//         * 配置创建
-//         * 参数1: 使用的ORM实现, 框架自身可选值 1:SpringJDBCMySqlImpl.class:使用SpringJDBC实现, 2:FastMyBatisImpl.class: 使用MyBatis实现
-//         * 参数2: 框架操作的主键字段名称
-//         * 参数3: 框架操作的主键类型
+//         * 配置框架模式,JdbcImpl.class FastMyBatisImpl.class
 //         */
+//        FastDaoConfig.daoActuator(JdbcImpl.class);
 //
 //        /**
-//         * 设置使用哪种方式执行Dao,默认SpringJDBCMySqlImpl.class
+//         * 数据源配置
 //         */
-//        FastDaoConfig.daoActuator(FastMyBatisImpl.class);
+//        FastDaoConfig.dataSource(getDataSource());
 //
+//        /**
+//         * redis配置
+//         */
+//        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
 //
 //        /**
 //         * 字段驼峰转换 例 user_name = userName
 //         */
 //        FastDaoConfig.openToCamelCase();
 //        /**
-//         * 框架使用的是INFO级别
+//         * 设置SQL日志打印级别
 //         * 参数1: 是否打印SQL日志
 //         * 参数2: 是否打印SQL执行结果
 //         */
-//        FastDaoConfig.openSqlPrint(true, true);
+//        FastDaoConfig.openSqlPrint(SqlLogLevel.INFO,false, true);
 //        /**
 //         * 开启自动对数据 新增操作 进行创建时间设置
 //         * 参数1: 需要设置创建时间的字段名
 //         */
 //        FastDaoConfig.openAutoSetCreateTime("create_time");
 //        /**
-//         * 开启自动对数据 更新操作|逻辑删除操作 进行更新时间设置
+//         * 开启自动对数据 更新操作/逻辑删除操作 进行更新时间设置
 //         * 参数1: 需要设置更新时间的字段名
 //         */
 //        FastDaoConfig.openAutoSetUpdateTime("update_time");
@@ -60,5 +64,24 @@
 //        FastDaoConfig.openCache(10L, TimeUnit.SECONDS);
 //
 //    }
+//
+//    private static DataSource getDataSource() {
+//        DruidDataSource dataSource = new DruidDataSource();
+//        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/zyw_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
+//        dataSource.setUsername("root");
+//        dataSource.setPassword("kaixin001");
+//        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//        return dataSource;
+//    }
+//
+//    private static RedisConnectionFactory getRedisConnectionFactory() {
+//        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+//        redisConfig.setHostName("127.0.0.1");
+//        redisConfig.setPort(6379);
+//        redisConfig.setDatabase(1);
+//        return new JedisConnectionFactory(redisConfig);
+//    }
+//
+//
 //
 //}
