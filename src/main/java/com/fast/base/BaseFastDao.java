@@ -30,10 +30,10 @@ public class BaseFastDao<T> {
     /**
      * 对象有参属性匹配
      *
-     * @param pojo 传入对象中参数不为空的属性会作为AND条件,属性应有get和set方法
+     * @param o 传入对象中参数不为空的属性会作为AND条件
      */
-    public void equalPojo(T pojo) {
-        fastExample.equalPojo(pojo);
+    public void equalObject(Object o) {
+        fastExample.equalObject(o);
     }
 
     /**

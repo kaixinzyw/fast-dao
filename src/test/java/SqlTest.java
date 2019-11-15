@@ -1,7 +1,10 @@
+//package com.db.test;
+//
 //import com.alibaba.fastjson.JSONObject;
 //import com.db.test.dao.UserFastDao;
 //import com.db.test.dto.UserDto;
 //import com.db.test.pojo.User;
+//import com.fast.config.FastDaoConfig;
 //import com.fast.fast.FastCustomSqlDao;
 //import com.fast.utils.BeanCopyUtil;
 //import com.fast.utils.page.PageInfo;
@@ -77,7 +80,7 @@
 //        User User = new User();
 //        User.setUserName("张亚伟10");
 //        UserFastDao testTemplate = UserFastDao.create();
-//        testTemplate.equalPojo(User);
+//        testTemplate.equalObject(User);
 //        testTemplate.age().orderByAsc();
 //        for (int i = 0; i < 100; i++) {
 ////            new Thread(() -> {

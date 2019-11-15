@@ -16,6 +16,13 @@ public class FastDaoExpanderRunner {
     private static List<Class<FastDaoExpander>> selectOccasion = new ArrayList<>();
     private static Boolean isExpander = Boolean.FALSE;
 
+    private static final String INSERT = "insert";
+    private static final String SELECT = "select";
+    private static final String COUNT = "count";
+    private static final String UPDATE = "update";
+    private static final String DELETE = "delete";
+
+
     public static void addFastDaoExpander(Class<FastDaoExpander> expanderClass) {
         FastDaoExpander expander = Singleton.get(expanderClass);
         if (expander == null || CollUtil.isEmpty(expander.occasion())) {
@@ -42,11 +49,11 @@ public class FastDaoExpanderRunner {
         isExpander = Boolean.TRUE;
     }
 
-    public static boolean runBeforeFastDaoExpander(FastDaoParam param) {
+    public static boolean runBeforeFastDaoExpander(FastDaoParam param, String methodName) {
         if (!isExpander) {
             return true;
         }
-        List<Class<FastDaoExpander>> expanders = getExpanders(param);
+        List<Class<FastDaoExpander>> expanders = getExpanders(param, methodName);
         if (CollUtil.isEmpty(expanders)) {
             return true;
         }
@@ -60,11 +67,11 @@ public class FastDaoExpanderRunner {
         return true;
     }
 
-    public static void runAfterFastDaoExpander(FastDaoParam param) {
+    public static void runAfterFastDaoExpander(FastDaoParam param, String methodName) {
         if (!isExpander) {
             return;
         }
-        List<Class<FastDaoExpander>> expanders = getExpanders(param);
+        List<Class<FastDaoExpander>> expanders = getExpanders(param, methodName);
         if (CollUtil.isEmpty(expanders)) {
             return;
         }
@@ -75,20 +82,20 @@ public class FastDaoExpanderRunner {
     }
 
 
-    private static List<Class<FastDaoExpander>> getExpanders(FastDaoParam param) {
+    private static List<Class<FastDaoExpander>> getExpanders(FastDaoParam param, String methodName) {
         List<Class<FastDaoExpander>> expanders = null;
         String sql = StrUtil.trimStart(param.getSql());
-        if (StrUtil.startWithIgnoreCase(sql, ExpanderOccasion.INSERT.name())) {
+        if (methodName.equals(INSERT)) {
             expanders = insertOccasion;
-        } else if (StrUtil.startWithIgnoreCase(sql, ExpanderOccasion.DELETE.name())) {
+        } else if (methodName.equals(DELETE)) {
             expanders = deleteOccasion;
-        } else if (StrUtil.startWithIgnoreCase(sql, ExpanderOccasion.UPDATE.name())) {
+        } else if (methodName.equals(UPDATE)) {
             if (param.getLogicDelete()) {
                 expanders = deleteOccasion;
             } else {
                 expanders = updateOccasion;
             }
-        } else if (StrUtil.startWithIgnoreCase(sql, ExpanderOccasion.SELECT.name())) {
+        } else if (methodName.equals(SELECT) || methodName.equals(COUNT)) {
             expanders = selectOccasion;
         }
         return expanders;

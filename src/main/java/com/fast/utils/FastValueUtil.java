@@ -4,7 +4,6 @@ package com.fast.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
 import com.fast.mapper.TableMapper;
@@ -14,13 +13,13 @@ import java.util.Date;
 public class FastValueUtil {
 
     public static void setCreateTime(Object o) {
-        if (FastDaoAttributes.isAutoSetCreateTime && o != null) {
+        if (FastDaoAttributes.isAutoSetCreateTime) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.createTimeFieldName, new Date());
         }
     }
 
     public static void setUpdateTime(Object o) {
-        if (FastDaoAttributes.isAutoSetUpdateTime && o != null) {
+        if (FastDaoAttributes.isAutoSetUpdateTime) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.updateTimeFieldName, new Date());
         }
     }
@@ -31,7 +30,7 @@ public class FastValueUtil {
     }
 
     public static void setPrimaryKey(Object o, TableMapper tableMapper) {
-        if (tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.UUID) && o != null) {
+        if (tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.UUID)) {
             Object primaryKey = BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
             if (primaryKey == null) {
                 BeanUtil.setFieldValue(o, tableMapper.getPrimaryKeyField(), UUID.randomUUID().toString(true));
@@ -39,26 +38,14 @@ public class FastValueUtil {
         }
     }
 
-    public static Object getPrimaryKeyValue(Object o, TableMapper tableMapper) {
-        if (o == null) {
-            return null;
-        }
-        Object primaryKeyVal = BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
-        if (primaryKeyVal == null) {
-            throw new RuntimeException("主键值不存在: " + JSONObject.toJSONString(o));
-        }
-        return primaryKeyVal;
-    }
-
-
     public static void setDeleted(Object o) {
-        if (FastDaoAttributes.isOpenLogicDelete && o != null) {
+        if (FastDaoAttributes.isOpenLogicDelete) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.deleteFieldName, FastDaoAttributes.defaultDeleteValue);
         }
     }
 
     public static void setNoDelete(Object o) {
-        if (FastDaoAttributes.isOpenLogicDelete && o != null) {
+        if (FastDaoAttributes.isOpenLogicDelete) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.deleteFieldName, !FastDaoAttributes.defaultDeleteValue);
         }
     }

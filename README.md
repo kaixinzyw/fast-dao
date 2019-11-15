@@ -34,7 +34,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>4.3.0</version>
+    <version>5.0</version>
 </dependency>
 ```
 #### 1.1.1 依赖
@@ -225,7 +225,7 @@ UserFastDao fastDao = UserFastDao.create();
 |NotNull条件设置|fastDao.fieldName().notNull()|`fastDao.userName().notNull()`|
 |排序设置-升序|fastDao.fieldName().orderByAsc()|`fastDao.age().orderByAsc()`|
 |排序设置-降序|fastDao.fieldName().orderByDesc()|`fastDao.age().orderByDesc()`|
-|对象条件设置|fastDao.equalPojo(对象)|`User user = new User;`<br>`user.setName("张三");`<br>`fastDao.equalPojo(user )`<br>|
+|对象条件设置|fastDao.equalObject(对象)|`User user = new User;`<br>`user.setName("张三");`<br>`fastDao.equalObject(user )`<br>|
 |查询指定字段设置|fastDao.fieldName().showField()|执行查询操作时只查询指定字段,可设置多个<br>`fastDao.id().showField();`<br>`fastDao.userName().showField();`|
 |过滤字段设置|fastDao.fieldName().hideField()|查询操作时不查询指定字段,可设置多个<br>`fastDao.password().hideField();`<br>`fastDao.mail().hideField();`|
 |字段去重复设置|fastDao.fieldName().distinctField()|`fastDao.userName().distinctField()`|
@@ -251,8 +251,7 @@ FastDao<User> dao = UserFastDao.create().dao();
 |分页查询|PageInfo<Pojo> findPage(int pageNum, int pageSize)|分页查询用户,并对年龄进行排序<br>`PageInfo<User> page = UserFastDao.create().age().orderByDesc().findPage(1, 10)`|
 |更新数据,对象中参数为空的属性不进行更新|Integer update(Pojo pojo)|更新姓名为张三和李四的用户<br>`Integer count = UserFastDao.create().userName().in("张三","李四").dao().update(user)`|
 |更新数据,对象中参数为空的属性也进行更新|Integer updateOverwrite(Pojo pojo)|更新年龄小于30,并且姓张的用户<br>`UserFastDao fastDao = UserFastDao.create();`<br>`fastDao.age().less(30);`<br>`fastDao.userName().like("张");`<br>`Integer count = fastDao.updateOverwrite(user)`|
-|逻辑删除<br>本操作会自动将数据进行逻辑删除标记<br>SpringBoot环境需要在properties中配置<br>fast.db.set.delete=列名<br>其他环境使用Bean配置<br>FastDaoConfig.openLogicDelete("deleted",true);<br>重要!!!如果不进行设置将使用物理删除方式|Integer delete()|删除年龄大于80或为null的用户<br>`Integer count = UserFastDao.create().age().greater(80).or().isNull().delete()`
-|物理删除|Integer deleteDisk()|删除id等于12的用户<br>`Integer count = UserFastDao.create().id(12).dao().deleteDisk()`|
+|通过条件物理删除<br>如果启动了逻辑删除功能<br>本操作会自动将数据删除标记修改,不会进行物理删除<br>除非关闭逻辑删除保护<br>逻辑删除配置<br>FastDaoConfig.openLogicDelete("deleted",true);<br>关闭逻辑删除保护方式请参考条件设置<br>重要!!!如果不进行设置将使用物理删除方式|Integer delete()|删除年龄大于80或为null的用户<br>`Integer count = UserFastDao.create().age().greater(80).or().isNull().delete()`|
 
 
 ### 2.3 自定义SQL

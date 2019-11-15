@@ -1,6 +1,8 @@
 package com.fast.condition;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.fast.fast.FastDao;
 
 import java.util.Collection;
@@ -66,13 +68,13 @@ public class FastExample<T> {
     /**
      * 对象查询
      *
-     * @param t 对象在不为空的字段作为AND条件
+     * @param o 对象在不为空的字段作为AND条件
      */
-    public void equalPojo(T t) {
-        if (t == null) {
+    public void equalObject(Object o) {
+        if (o == null) {
             return;
         }
-        criteria.conditionPackages.setEqualObject(t);
+        criteria.conditionPackages.setEqualObject(o);
     }
 
     /**
@@ -82,6 +84,9 @@ public class FastExample<T> {
      * @param params 参数值MAP集合
      */
     public void andSql(String sql, Map<String, Object> params) {
+        if (StrUtil.isBlank(sql)) {
+            return;
+        }
         criteria.conditionPackages.setWay(FastCondition.Way.AND);
         criteria.conditionPackages.addSql(sql, params);
     }
@@ -93,6 +98,9 @@ public class FastExample<T> {
      * @param params 参数值MAP集合
      */
     public void orSql(String sql, Map<String, Object> params) {
+        if (StrUtil.isBlank(sql)) {
+            return;
+        }
         criteria.conditionPackages.setWay(FastCondition.Way.OR);
         criteria.conditionPackages.addSql(sql, params);
     }
@@ -273,6 +281,9 @@ public class FastExample<T> {
          * @return 条件操作工具
          */
         public Criteria<P> in(Object... inValues) {
+            if (ArrayUtil.isEmpty(inValues)){
+                return this;
+            }
             conditionPackages.addInQuery(fieldName, inValues);
             return this;
         }
@@ -284,6 +295,9 @@ public class FastExample<T> {
          * @return 条件操作工具
          */
         public Criteria<P> notIn(Object... inValues) {
+            if (ArrayUtil.isEmpty(inValues)){
+                return this;
+            }
             conditionPackages.addNotInQuery(fieldName, inValues);
             return this;
         }
@@ -295,6 +309,9 @@ public class FastExample<T> {
          * @return 条件操作工具
          */
         public Criteria<P> in(Collection inValues) {
+            if (CollUtil.isEmpty(inValues)) {
+                return this;
+            }
             conditionPackages.addInQuery(fieldName, inValues);
             return this;
         }
@@ -306,6 +323,9 @@ public class FastExample<T> {
          * @return 条件操作工具
          */
         public Criteria<P> notIn(Collection inValues) {
+            if (CollUtil.isEmpty(inValues)) {
+                return this;
+            }
             conditionPackages.addNotInQuery(fieldName, inValues);
             return this;
         }

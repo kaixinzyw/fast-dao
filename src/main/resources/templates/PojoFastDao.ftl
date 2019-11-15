@@ -17,9 +17,9 @@ ${package}
 public class ${table.pojoFastDaoName} extends BaseFastDao<${beanName}> {
 
     public static ${table.pojoFastDaoName} create(){return new ${table.pojoFastDaoName}();}
-    public static ${table.pojoFastDaoName} create(${beanName} ${beanName?uncap_first}) {
+    public static ${table.pojoFastDaoName} create(Object object) {
         ${table.pojoFastDaoName} fastDao = new ${table.pojoFastDaoName}();
-        fastDao.equalPojo(${beanName?uncap_first});
+        fastDao.equalObject(object);
         return fastDao;
     }
 

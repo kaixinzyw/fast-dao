@@ -9,13 +9,11 @@ import java.util.List;
  */
 public interface DaoActuator<T> {
 
-    T insert();
+    List<T> insert();
 
-    List<T> insertList();
+    List<T> select();
 
-    List<T> findAll();
-
-    Integer findCount();
+    Integer count();
 
     Integer update();
 

@@ -12,6 +12,7 @@ import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +94,7 @@ public class FastSqlUtil {
     }
 
     public static String countQueryInfoReplace(String sql) {
-        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(System.lineSeparator(),"");
+        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(System.lineSeparator(), "");
         StrBuilder replaceQueryInfo = StrUtil.strBuilder(COUNT, LEFT_BRACKETS);
         if (StrUtil.containsIgnoreCase(queryInfo, DISTINCT)) {
             replaceQueryInfo.append(queryInfo);
@@ -225,11 +226,19 @@ public class FastSqlUtil {
                 sqlBuilder.append(System.lineSeparator());
                 break;
             case Obj:
-                Map<String, Object> pojoFieldTable = BeanUtil.beanToMap(condition.getObject(), false, true);
-                for (String fieldName : pojoFieldTable.keySet()) {
-                    sqlBuilder.append(tableMapper.getShowTableNames().get(fieldName)).append(condition.getExpression().expression);
-                    pageParam(sqlBuilder, paramMap, pojoFieldTable.get(fieldName), WHERE_PARAM, paramIndex);
-
+                Map<String, Object> fieldMap;
+                if (condition.getObject() instanceof Map) {
+                    fieldMap = (Map<String, Object>) condition.getObject();
+                } else {
+                    fieldMap = BeanUtil.beanToMap(condition.getObject(), false, true);
+                }
+                HashMap<String,String> showTableNames = tableMapper.getShowTableNames();
+                for (String fieldName : fieldMap.keySet()) {
+                    String showTable = showTableNames.get(fieldName);
+                    if (showTable != null) {
+                        sqlBuilder.append(showTable).append(condition.getExpression().expression);
+                        pageParam(sqlBuilder, paramMap, fieldMap.get(fieldName), WHERE_PARAM, paramIndex);
+                    }
                 }
                 sqlBuilder.append(System.lineSeparator());
                 break;

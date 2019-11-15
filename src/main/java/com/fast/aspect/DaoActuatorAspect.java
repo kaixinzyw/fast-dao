@@ -3,7 +3,6 @@ package com.fast.aspect;
 import cn.hutool.aop.aspects.SimpleAspect;
 import cn.hutool.core.date.TimeInterval;
 import com.fast.dao.utils.FastSqlPrintLog;
-import com.fast.dao.utils.FastSqlUtil;
 import com.fast.fast.FastDaoParam;
 
 import java.lang.reflect.Method;
@@ -24,9 +23,7 @@ public class DaoActuatorAspect extends SimpleAspect {
     public boolean before(Object target, Method method, Object[] args) {
         //执行计时
         interval.start();
-        //SQL转换
-        FastDaoParam daoParam = FastDaoParam.get();
-        return FastDaoExpanderRunner.runBeforeFastDaoExpander(daoParam);
+        return FastDaoExpanderRunner.runBeforeFastDaoExpander(FastDaoParam.get(), method.getName());
     }
 
     /**
@@ -46,7 +43,7 @@ public class DaoActuatorAspect extends SimpleAspect {
         daoParam.setSqlTime(interval.intervalMs());
         daoParam.setReturnVal(returnVal);
         FastSqlPrintLog.printSql(FastDaoParam.get());
-        FastDaoExpanderRunner.runAfterFastDaoExpander(daoParam);
+        FastDaoExpanderRunner.runAfterFastDaoExpander(daoParam, method.getName());
         return true;
     }
 }

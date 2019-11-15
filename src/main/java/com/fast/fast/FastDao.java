@@ -124,21 +124,12 @@ public class FastDao<Pojo> {
     }
 
     /**
-     * 通过主键逻辑删除标记,如果启动了逻辑删除功能,本操作会自动将数据删除标记修改,不会进行物理删除
+     * 通过条件物理删除,如果启动了逻辑删除功能,本操作会自动将数据删除标记修改,不会进行物理删除,除非关闭逻辑删除保护
      *
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.init(clazz, fastExample).delete(false);
-    }
-
-    /**
-     * 通过条件物理删除 (本操作会进行物理删除,请谨慎操作)
-     *
-     * @return 删除影响到的数据条数
-     */
-    public Integer deleteDisk() {
-        return DaoTemplate.init(clazz, fastExample).delete(true);
+        return DaoTemplate.init(clazz, fastExample).delete();
     }
 
 }

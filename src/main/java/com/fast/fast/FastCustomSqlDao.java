@@ -35,6 +35,12 @@ public class FastCustomSqlDao<T> {
         return customSqlDao;
     }
 
+    /**
+     * 新增操作
+     */
+    public void insert() {
+        DaoTemplate.<T>init(clazz, fastExample).insert(null);
+    }
 
     /**
      * 通过查询条件查询一条数据
@@ -97,12 +103,12 @@ public class FastCustomSqlDao<T> {
 
 
     /**
-     * 删除数据
+     * 删除数据 本操作不会使用逻辑删除方式
      *
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.<T>init(clazz, fastExample).delete(false);
+        return DaoTemplate.<T>init(clazz, fastExample).delete();
     }
 
 }
