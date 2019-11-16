@@ -23,7 +23,6 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
     public List<T> insert() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastInsertProvider.insert(param);
-        param.setSql(FastSqlUtil.conversionMyBatisSql(param.getSql()));
         if (CollUtil.isNotEmpty(param.getInsertList()) && param.getTableMapper().getPrimaryKeyType() != null && param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO) && param.getInsertList().size() == 1) {
             FastMyBatisConnection.getMapper().insertPrimaryKeyAuto(param);
             FastValueUtil.setPrimaryKey(param.getInsertList().get(0), param.getReturnVal(), param.getTableMapper());
@@ -38,7 +37,6 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
     public List<T> select() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
-        param.setSql(FastSqlUtil.conversionMyBatisSql(param.getSql()));
         List<Map<String, Object>> pojoMap = FastMyBatisConnection.getMapper().findAll(param);
         if (CollUtil.isEmpty(pojoMap)) {
             return new ArrayList<>();
@@ -50,7 +48,6 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
     public Integer count() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findCount(param);
-        param.setSql(FastSqlUtil.conversionMyBatisSql(param.getSql()));
         return FastMyBatisConnection.getMapper().findCount(FastDaoParam.get());
     }
 
@@ -59,7 +56,6 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
     public Integer update() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastUpdateProvider.update(param);
-        param.setSql(FastSqlUtil.conversionMyBatisSql(param.getSql()));
         return FastMyBatisConnection.getMapper().update(FastDaoParam.get());
     }
 
@@ -68,7 +64,6 @@ public class FastMyBatisImpl<T> implements DaoActuator<T> {
     public Integer delete() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastDeleteProvider.delete(param);
-        param.setSql(FastSqlUtil.conversionMyBatisSql(param.getSql()));
         return FastMyBatisConnection.getMapper().delete(FastDaoParam.get());
     }
 

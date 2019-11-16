@@ -2,6 +2,7 @@ package com.fast.fast;
 
 import cn.hutool.core.util.StrUtil;
 import com.fast.condition.FastExample;
+import com.fast.dao.utils.FastSqlUtil;
 import com.fast.mapper.TableMapper;
 import io.netty.util.concurrent.FastThreadLocal;
 
@@ -88,7 +89,7 @@ public class FastDaoParam<T> {
         daoParam.tableMapper = mapper;
         daoParam.fastExample = example;
         if (StrUtil.isNotEmpty(daoParam.fastExample.conditionPackages().getCustomSql())) {
-            daoParam.sql = daoParam.fastExample.conditionPackages().getCustomSql();
+            daoParam.sql = FastSqlUtil.sqlConversion(daoParam.fastExample.conditionPackages().getCustomSql());
             daoParam.paramMap = daoParam.fastExample.conditionPackages().getCustomSqlParams();
             return daoParam;
         }

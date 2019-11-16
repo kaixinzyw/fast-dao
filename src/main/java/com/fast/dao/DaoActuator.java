@@ -18,4 +18,5 @@ public interface DaoActuator<T> {
     Integer update();
 
     Integer delete();
+
 }

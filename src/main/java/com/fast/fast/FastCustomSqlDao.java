@@ -10,6 +10,7 @@ import java.util.Map;
  * 自定义SQL执行器
  *
  * @param <T> 自定义SQL操作的对象泛型
+ * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class FastCustomSqlDao<T> {
     private FastExample<T> fastExample;
@@ -100,7 +101,6 @@ public class FastCustomSqlDao<T> {
     public Integer update() {
         return DaoTemplate.<T>init(clazz, fastExample).update(null, true);
     }
-
 
     /**
      * 删除数据 本操作不会使用逻辑删除方式

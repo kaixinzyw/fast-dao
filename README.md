@@ -13,14 +13,15 @@
  Java 全自动 ORM框架 Dao框架 大幅度提高开发效率 减少编码量
 ---- 
 - 极·简化DAO操作，大幅度提高编码效率
-- 支持自定义SQL,自动映射
-- 支持Redis缓存和内存缓存,自动更新缓存
+- 支持自定义SQL
+- 支持Spring事务管理
+- 支持Redis缓存和内存缓存,支持缓存自动刷新
 - 支持MyBatis
 
 ----
 示例
 ```java
-Boolean success = UserFastDao.create().dao().insert(user); //增,新增成功后主键会在对象中设置
+User user = UserFastDao.create().dao().insert(user); //增,新增成功后主键会在对象中设置
 Integer delCount = UserFastDao.create().id(1).dao().delete(); //删,可以选择逻辑删除和物理删除
 Integer updateCount = UserFastDao.create().id(1).dao().update(user); //改,操作简单,条件丰富
 PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页查询
@@ -34,7 +35,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>5.0</version>
+    <version>5.1</version>
 </dependency>
 ```
 #### 1.1.1 依赖
@@ -75,7 +76,7 @@ spring.redis.database=0
 spring.redis.host=127.0.0.1
 spring.redis.port=6379
 
-#Dao实现,<jdbc,mybatis> 默认参数:jdbc
+#框架模式,<jdbc:JDBC模式,mybatis:MyBatis模式> 默认参数:jdbc
 fast.db.impl=mybatis
 
 #列名驼峰转换字段名,<true,false> 默认参数:true
@@ -229,7 +230,7 @@ UserFastDao fastDao = UserFastDao.create();
 |查询指定字段设置|fastDao.fieldName().showField()|执行查询操作时只查询指定字段,可设置多个<br>`fastDao.id().showField();`<br>`fastDao.userName().showField();`|
 |过滤字段设置|fastDao.fieldName().hideField()|查询操作时不查询指定字段,可设置多个<br>`fastDao.password().hideField();`<br>`fastDao.mail().hideField();`|
 |字段去重复设置|fastDao.fieldName().distinctField()|`fastDao.userName().distinctField()`|
-|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需 要使用 :参数名 占位<br>在参数值MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = :userName ",params)`|
+|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需要使用 #{参数名} 声明<br>传递参数MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
 |关闭逻辑删除保护|fastDao.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
 |OR条件设置|fastDao.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`fastDao.userName().valEqual("张三").or().isNull()`
 
@@ -256,13 +257,13 @@ FastDao<User> dao = UserFastDao.create().dao();
 
 ### 2.3 自定义SQL
  
-多表等复杂SQL操作,可以使用自定义SQL执行器实现,框架会自动进行对象和表进行映射
-
+多表等复杂SQL操作,可以使用自定义SQL执行器实现,框架会自动进行对象和表进行映射<br>
+如果有参数需要使用 #{参数名} 声明,传递参数MAP集合中put(参数名,参数值)<br>
 FastCustomSqlDao.create(Class, SQL语句, 参数)
 
 ```java
 //例:
-String sql = "SELECT * FROM user WHERE `user_name` LIKE :userName ";
+String sql = "SELECT * FROM user WHERE `user_name` LIKE #{userName}";
 
 HashMap<String, Object> params = new HashMap<>();
 params.put("userName","%张亚伟%");
