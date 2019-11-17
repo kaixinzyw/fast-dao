@@ -39,6 +39,11 @@ public class FastSqlUtil {
     private static final String COUNT = "COUNT";
     private static final String LIMIT = "limit ";
     private static final String DISTINCT = "DISTINCT";
+    private static final String SUM = "SUM";
+    private static final String AVG = "AVG";
+    private static final String MIN = "MIN";
+    private static final String MAX = "MAX";
+    private static final String ONE_COUNT = ">1";
     private static final String ORDER_BY = "ORDER BY ";
     private static final String DESC = " DESC ";
     private static final String ASC = " ASC ";
@@ -281,6 +286,37 @@ public class FastSqlUtil {
 
         if (select == null) {
             sqlBuilder.append(tableMapper.getShowAllTableNames());
+        } else if (CollUtil.isNotEmpty(select.getSumFields()) || CollUtil.isNotEmpty(select.getAvgFields())
+                || CollUtil.isNotEmpty(select.getMinFields()) || CollUtil.isNotEmpty(select.getMaxFields())) {
+            if (CollUtil.isNotEmpty(select.getSumFields())) {
+                for (String sumField : select.getSumFields()) {
+                    sqlBuilder.append(SUM).append(LEFT_BRACKETS)
+                            .append(fieldTableNames.get(sumField)).append(RIGHT_BRACKETS)
+                            .append(StrUtil.SPACE).append(fieldTableNames.get(sumField)).append(COMMA);
+                }
+            }
+            if (CollUtil.isNotEmpty(select.getAvgFields())) {
+                for (String avgField : select.getAvgFields()) {
+                    sqlBuilder.append(AVG).append(LEFT_BRACKETS)
+                            .append(fieldTableNames.get(avgField)).append(RIGHT_BRACKETS)
+                            .append(StrUtil.SPACE).append(fieldTableNames.get(avgField)).append(COMMA);
+                }
+            }
+            if (CollUtil.isNotEmpty(select.getMinFields())) {
+                for (String minField : select.getMinFields()) {
+                    sqlBuilder.append(MIN).append(LEFT_BRACKETS)
+                            .append(fieldTableNames.get(minField)).append(RIGHT_BRACKETS)
+                            .append(StrUtil.SPACE).append(fieldTableNames.get(minField)).append(COMMA);
+                }
+            }
+            if (CollUtil.isNotEmpty(select.getMaxFields())) {
+                for (String maxField : select.getMaxFields()) {
+                    sqlBuilder.append(MAX).append(LEFT_BRACKETS)
+                            .append(fieldTableNames.get(maxField)).append(RIGHT_BRACKETS)
+                            .append(StrUtil.SPACE).append(fieldTableNames.get(maxField)).append(COMMA);
+                }
+            }
+            sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length());
         } else if (CollUtil.isNotEmpty(select.getDistinctFields())) {
             StrBuilder selectField = StrBuilder.create(DISTINCT, StrUtil.SPACE);
             for (String distinctField : select.getDistinctFields()) {
@@ -313,13 +349,17 @@ public class FastSqlUtil {
 
     public static String countQueryInfoReplace(String sql) {
         String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(System.lineSeparator(), "");
+
         StrBuilder replaceQueryInfo = StrUtil.strBuilder(COUNT, LEFT_BRACKETS);
         if (StrUtil.containsIgnoreCase(queryInfo, DISTINCT)) {
-            replaceQueryInfo.append(queryInfo);
+            replaceQueryInfo.append(queryInfo).append(RIGHT_BRACKETS);
+        } else if (StrUtil.containsIgnoreCase(queryInfo, SUM) || StrUtil.containsIgnoreCase(queryInfo, AVG)
+                || StrUtil.containsIgnoreCase(queryInfo, MIN) || StrUtil.containsIgnoreCase(queryInfo, MAX)) {
+            replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS).append(ONE_COUNT);
         } else {
-            replaceQueryInfo.append(WILDCARD);
+            replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
         }
-        replaceQueryInfo.append(RIGHT_BRACKETS);
+
         return StrUtil.replace(sql, queryInfo, replaceQueryInfo);
     }
 
@@ -383,34 +423,41 @@ public class FastSqlUtil {
         Map<String, Object> paramMap = param.getParamMap();
         ParamIndex paramIndex = new ParamIndex();
         paramIndex.setParamType(INSERT_PARAM_TYPE);
-
-        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(System.lineSeparator()).append(LEFT_BRACKETS);
-
-        for (int i = 0; i < fieldNames.size(); i++) {
-            fastSQL.append(QUOTATION).append(fieldTableNames.get(fieldNames.get(i))).append(QUOTATION);
-            if (i < fieldNames.size() - 1) {
-                fastSQL.append(COMMA);
-            }
-        }
-        fastSQL.append(RIGHT_BRACKETS).append(VALUES).append(System.lineSeparator());
+        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(System.lineSeparator());
         List insertList = param.getInsertList();
-        for (int x = 0; x < insertList.size(); x++) {
-            fastSQL.append(LEFT_BRACKETS);
-            for (int i = 0; i < fieldNames.size(); i++) {
-                Object fieldValue = BeanUtil.getFieldValue(insertList.get(x), fieldNames.get(i));
-                packParam(fastSQL, paramMap, fieldValue, paramIndex);
-                if (i < fieldNames.size() - 1) {
-                    fastSQL.append(COMMA);
+        if (insertList.size() == 1) {
+            fastSQL.append(SET);
+            Object in = insertList.get(0);
+            for (String fieldName : fieldNames) {
+                Object fieldValue = BeanUtil.getFieldValue(in, fieldName);
+                if (fieldValue != null) {
+                    fastSQL.append(fieldTableNames.get(fieldName)).append(EQUAL);
+                    packParam(fastSQL, paramMap, fieldValue, paramIndex).append(COMMA);
                 }
             }
-            fastSQL.append(RIGHT_BRACKETS);
-            if (x < insertList.size() - 1) {
-                fastSQL.append(StrUtil.COMMA);
+            fastSQL.del(fastSQL.length() - 2, fastSQL.length());
+        } else {
+            fastSQL.append(LEFT_BRACKETS);
+            fastSQL.append(tableMapper.getShowAllTableNames());
+            fastSQL.append(RIGHT_BRACKETS).append(VALUES).append(System.lineSeparator());
+
+            for (int x = 0; x < insertList.size(); x++) {
+                fastSQL.append(LEFT_BRACKETS);
+                for (int i = 0; i < fieldNames.size(); i++) {
+                    Object fieldValue = BeanUtil.getFieldValue(insertList.get(x), fieldNames.get(i));
+                    packParam(fastSQL, paramMap, fieldValue, paramIndex);
+                    if (i < fieldNames.size() - 1) {
+                        fastSQL.append(COMMA);
+                    }
+                }
+                fastSQL.append(RIGHT_BRACKETS);
+                if (x < insertList.size() - 1) {
+                    fastSQL.append(StrUtil.COMMA);
+                }
+                fastSQL.append(System.lineSeparator());
             }
-            fastSQL.append(System.lineSeparator());
         }
         return fastSQL;
-
     }
 
     public static String conversionMyBatisSql(String sql) {

@@ -17,8 +17,8 @@ import java.util.Map;
 public class FastExample<T> {
 
 
-
-    private FastExample(){}
+    private FastExample() {
+    }
 
     /**
      * 初始化创建
@@ -281,7 +281,7 @@ public class FastExample<T> {
          * @return 条件操作工具
          */
         public Criteria<P> in(Object... inValues) {
-            if (ArrayUtil.isEmpty(inValues)){
+            if (ArrayUtil.isEmpty(inValues)) {
                 return this;
             }
             conditionPackages.addInQuery(fieldName, inValues);
@@ -295,7 +295,7 @@ public class FastExample<T> {
          * @return 条件操作工具
          */
         public Criteria<P> notIn(Object... inValues) {
-            if (ArrayUtil.isEmpty(inValues)){
+            if (ArrayUtil.isEmpty(inValues)) {
                 return this;
             }
             conditionPackages.addNotInQuery(fieldName, inValues);
@@ -468,6 +468,46 @@ public class FastExample<T> {
         }
 
         /**
+         * 字段求和
+         *
+         * @return 条件操作工具
+         */
+        public Criteria<P> sumField() {
+            conditionPackages.addSumFields(fieldName);
+            return this;
+        }
+
+        /**
+         * 字段求平均值
+         *
+         * @return 条件操作工具
+         */
+        public Criteria<P> avgField() {
+            conditionPackages.addAvgFields(fieldName);
+            return this;
+        }
+
+        /**
+         * 字段求平均值
+         *
+         * @return 条件操作工具
+         */
+        public Criteria<P> minField() {
+            conditionPackages.addMinFields(fieldName);
+            return this;
+        }
+
+        /**
+         * 字段求平均值
+         *
+         * @return 条件操作工具
+         */
+        public Criteria<P> maxField() {
+            conditionPackages.addMaxFields(fieldName);
+            return this;
+        }
+
+        /**
          * 字段去重
          *
          * @return 条件操作工具
@@ -504,7 +544,7 @@ public class FastExample<T> {
          * @return Dao执行器
          */
         public FastDao<P> dao() {
-            return FastDao.<P>init(pojoClass,fastExample);
+            return FastDao.<P>init(pojoClass, fastExample);
         }
 
     }

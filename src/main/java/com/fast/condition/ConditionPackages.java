@@ -34,6 +34,26 @@ public class ConditionPackages {
     private Set<String> distinctFields;
 
     /**
+     * 字段求和
+     */
+    private Set<String> sumFields;
+
+    /**
+     * 字段求平均值
+     */
+    private Set<String> avgFields;
+
+    /**
+     * 字段求最小值
+     */
+    private Set<String> minFields;
+
+    /**
+     * 字段求最大值
+     */
+    private Set<String> maxFields;
+
+    /**
      * 逻辑删除保护,默认开启
      */
     private Boolean logicDeleteProtect = Boolean.TRUE;
@@ -169,6 +189,56 @@ public class ConditionPackages {
         }
     }
 
+    public Set<String> getSumFields() {
+        return sumFields;
+    }
+    public void addSumFields(String sumField) {
+        if (this.sumFields != null) {
+            this.sumFields.add(sumField);
+        } else {
+            this.sumFields = new HashSet<>();
+            this.sumFields.add(sumField);
+        }
+    }
+
+    public Set<String> getAvgFields() {
+        return avgFields;
+    }
+    public void addAvgFields(String avgField) {
+        if (this.avgFields != null) {
+            this.avgFields.add(avgField);
+        } else {
+            this.avgFields = new HashSet<>();
+            this.avgFields.add(avgField);
+        }
+    }
+
+    public Set<String> getMinFields() {
+        return minFields;
+    }
+    public void addMinFields(String minField) {
+        if (this.minFields != null) {
+            this.minFields.add(minField);
+        } else {
+            this.minFields = new HashSet<>();
+            this.minFields.add(minField);
+        }
+    }
+
+    public Set<String> getMaxFields() {
+        return maxFields;
+    }
+    public void addMaxFields(String maxField) {
+        if (this.maxFields != null) {
+            this.maxFields.add(maxField);
+        } else {
+            this.maxFields = new HashSet<>();
+            this.maxFields.add(maxField);
+        }
+    }
+
+
+
     public List<OrderByQuery> getOrderByQuery() {
         return orderByQuery;
     }
@@ -267,4 +337,5 @@ public class ConditionPackages {
     public Map<String, Object> getCustomSqlParams() {
         return customSqlParams;
     }
+
 }

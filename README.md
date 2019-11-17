@@ -35,7 +35,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>5.1</version>
+    <version>5.2</version>
 </dependency>
 ```
 #### 1.1.1 依赖
@@ -230,6 +230,10 @@ UserFastDao fastDao = UserFastDao.create();
 |查询指定字段设置|fastDao.fieldName().showField()|执行查询操作时只查询指定字段,可设置多个<br>`fastDao.id().showField();`<br>`fastDao.userName().showField();`|
 |过滤字段设置|fastDao.fieldName().hideField()|查询操作时不查询指定字段,可设置多个<br>`fastDao.password().hideField();`<br>`fastDao.mail().hideField();`|
 |字段去重复设置|fastDao.fieldName().distinctField()|`fastDao.userName().distinctField()`|
+|字段去求和设置|fastDao.fieldName().sumField()|`fastDao.age().sumField()`|
+|字段去求平均值设置|fastDao.fieldName().avgField()|`fastDao.age().avgField()`|
+|字段去求最小值设置|fastDao.fieldName().minField()|`fastDao.age().minField()`|
+|字段去求最大值设置|fastDao.fieldName().maxField()|`fastDao.age().maxField()`|
 |自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需要使用 #{参数名} 声明<br>传递参数MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
 |关闭逻辑删除保护|fastDao.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
 |OR条件设置|fastDao.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`fastDao.userName().valEqual("张三").or().isNull()`
