@@ -1,4 +1,8 @@
 
+## 修改中的功能...
+### 1:insertList修改为insert(List)
+### 2:添加每次最多插入多少条,自动分批循环,insert(List,5000条)
+
 >主页: [http://www.fast-dao.com/](http://www.fast-dao.com/) 
 >
 >GitHub: [https://github.com/kaixinzyw/fast-dao](https://github.com/kaixinzyw/fast-dao/) 
