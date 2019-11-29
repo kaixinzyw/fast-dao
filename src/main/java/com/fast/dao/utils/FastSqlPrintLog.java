@@ -2,6 +2,7 @@ package com.fast.dao.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -41,7 +42,7 @@ public class FastSqlPrintLog {
                 } else if ("Date".equals(value.getClass().getSimpleName())) {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     sqlValue = "\'" + formatter.format(value) + "\'";
-                } else if ("Boolean".equals(value.getClass().getSimpleName())) {
+                } else if (BooleanUtil.isBoolean(value.getClass())) {
                     if ((Boolean) value) {
                         sqlValue = "true";
                     } else {
