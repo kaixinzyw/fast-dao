@@ -44,13 +44,24 @@ public class FastDao<Pojo> {
     }
 
     /**
-     * 新增数据
+     * 批量新增数据
      *
      * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
      * @return 是否新增成功
      */
     public List<Pojo> insertList(List<Pojo> pojos) {
         return DaoTemplate.init(clazz, fastExample).insertList(pojos);
+    }
+
+    /**
+     * 批量新增数据,分多次插入
+     *
+     * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
+     * @param size 每次插入条数
+     * @return 是否新增成功
+     */
+    public List<Pojo> insertList(List<Pojo> pojos, Integer size) {
+        return DaoTemplate.init(clazz, fastExample).insertList(pojos,size);
     }
 
     /**

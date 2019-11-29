@@ -45,9 +45,9 @@ public class DaoTemplate<T> {
     /**
      * 初始化
      *
-     * @param <T> 操作对象的泛型信息
+     * @param <T>         操作对象的泛型信息
      * @param fastExample 条件封装
-     * @param clazz 执行类
+     * @param clazz       执行类
      * @return ORM执行器
      */
     public static <T> DaoTemplate<T> init(Class<T> clazz, FastExample<T> fastExample) {
@@ -103,6 +103,33 @@ public class DaoTemplate<T> {
         List<T> insertList = daoActuator.insert();
         DataCache.upCache(tableMapper);
         return insertList;
+    }
+
+    /**
+     * 新增操作
+     *
+     * @param ins  需要新增的数据
+     * @param size 每次插入条数
+     * @return 新增结果
+     */
+    public List<T> insertList(List<T> ins, Integer size) {
+        if (CollUtil.isEmpty(ins)) {
+            return ins;
+        }
+        for (T bean : ins) {
+            FastValueUtil.setPrimaryKey(bean, tableMapper);
+            FastValueUtil.setCreateTime(bean);
+            FastValueUtil.setNoDelete(bean);
+        }
+        List<List<T>> inSplit = CollUtil.split(ins, size);
+        FastDaoParam<T> daoParam = FastDaoParam.<T>get();
+        for (List<T> ts : inSplit) {
+            FastDaoParam.<T>get().setInsertList(ts);
+            daoActuator.insert();
+            FastDaoParam.init(tableMapper, fastExample);
+        }
+        DataCache.upCache(tableMapper);
+        return ins;
     }
 
 
@@ -177,7 +204,7 @@ public class DaoTemplate<T> {
             this.fastExample.conditionPackages().setPage((pageNum - 1) * pageSize);
         }
         this.fastExample.conditionPackages().setSize(pageSize);
-        FastDaoParam.get().setSql(null);
+        FastDaoParam.init(tableMapper, fastExample);
         List<T> list = findAll();
         if (list == null) {
             list = new ArrayList<>();

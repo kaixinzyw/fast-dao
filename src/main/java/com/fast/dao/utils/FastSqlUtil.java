@@ -184,7 +184,7 @@ public class FastSqlUtil {
             case NotBetween:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
-                packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(sqlBuilder.append(AND));
+                packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(AND);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMax(), paramIndex);
                 sqlBuilder.append(System.lineSeparator());
                 break;
