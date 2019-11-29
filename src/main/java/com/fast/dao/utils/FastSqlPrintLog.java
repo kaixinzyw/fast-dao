@@ -8,8 +8,6 @@ import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.SqlLogLevel;
-import com.fast.dao.jdbc.JdbcImpl;
-import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.fast.FastDaoParam;
 
 import java.text.SimpleDateFormat;
@@ -52,9 +50,9 @@ public class FastSqlPrintLog {
                 } else {
                     sqlValue = value.toString();
                 }
-                if (FastDaoAttributes.getDaoActuatorClass().equals(JdbcImpl.class)) {
+                if (FastDaoAttributes.IS_JDBC_PARAM_TYPE) {
                     sql = sql.replaceAll("[:](" + key + ")[\\s]", sqlValue);
-                } else if (FastDaoAttributes.getDaoActuatorClass().equals(FastMyBatisImpl.class)) {
+                } else {
                     sql = sql.replaceAll("[#][{](paramMap.)(" + key + ")[}]", sqlValue);
                 }
             }

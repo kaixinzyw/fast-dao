@@ -7,8 +7,6 @@ import cn.hutool.core.util.StrUtil;
 import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastCondition;
 import com.fast.config.FastDaoAttributes;
-import com.fast.dao.jdbc.JdbcImpl;
-import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
 
@@ -56,7 +54,6 @@ public class FastSqlUtil {
     private static final String WILDCARD = "*";
     private static final String MYBATIS_PARAM_PREFIX = "#{paramMap.";
     private static final String MYBATIS_PARAM_suffix = "} ";
-    private static Boolean IS_JDBC_PARAM_TYPE;
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -70,14 +67,7 @@ public class FastSqlUtil {
         String paramKey = paramIndex.getParamType() + paramIndex.get();
         paramMap.put(paramKey, value);
         paramIndex.add();
-        if (IS_JDBC_PARAM_TYPE == null) {
-            if (FastDaoAttributes.getDaoActuatorClass().equals(JdbcImpl.class)) {
-                IS_JDBC_PARAM_TYPE = Boolean.TRUE;
-            } else {
-                IS_JDBC_PARAM_TYPE = Boolean.FALSE;
-            }
-        }
-        return IS_JDBC_PARAM_TYPE ? packJdbcParam(sqlBuilder, paramKey) : packMyBaitsParam(sqlBuilder, paramKey);
+        return FastDaoAttributes.IS_JDBC_PARAM_TYPE ? packJdbcParam(sqlBuilder, paramKey) : packMyBaitsParam(sqlBuilder, paramKey);
     }
 
     private static StrBuilder packJdbcParam(StrBuilder sqlBuilder, String paramKey) {
@@ -465,12 +455,11 @@ public class FastSqlUtil {
     }
 
     public static String sqlConversion(String sql) {
-        if (FastDaoAttributes.getDaoActuatorClass().equals(JdbcImpl.class)) {
+        if (FastDaoAttributes.IS_JDBC_PARAM_TYPE) {
             return sql.replaceAll("[#][{](\\w*)[}]", ":$1");
-        } else if (FastDaoAttributes.getDaoActuatorClass().equals(FastMyBatisImpl.class)) {
+        } else {
             return sql.replaceAll("[#][{]", "#{paramMap.");
         }
-        return sql;
     }
 
 }
