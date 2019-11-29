@@ -29,7 +29,6 @@ public class JdbcConnection {
     }
 
     public static NamedParameterJdbcTemplate dataSource(DataSource dataSource){
-        jdbcTemplateThreadLocal.remove();
         if (dataSource == null) {
             dataSource = FastDaoAttributes.getDataSource();
         }

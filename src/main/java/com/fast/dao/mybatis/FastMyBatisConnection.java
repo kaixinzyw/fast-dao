@@ -31,7 +31,6 @@ public class FastMyBatisConnection {
     }
 
     public static FastMyBatisMapper dataSource(DataSource dataSource) {
-        mapperThreadLocal.remove();
         if (dataSource == null) {
             dataSource = FastDaoAttributes.getDataSource();
         }
