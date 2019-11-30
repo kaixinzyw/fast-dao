@@ -53,6 +53,8 @@ public class ConditionPackages {
      */
     private Set<String> maxFields;
 
+    private Set<String> customQueryColumns;
+
     /**
      * 逻辑删除保护,默认开启
      */
@@ -234,6 +236,18 @@ public class ConditionPackages {
         } else {
             this.maxFields = new HashSet<>();
             this.maxFields.add(maxField);
+        }
+    }
+
+    public Set<String> getCustomQueryColumns() {
+        return customQueryColumns;
+    }
+    public void addCustomQueryColumn(String customField) {
+        if (this.customQueryColumns != null) {
+            this.customQueryColumns.add(customField);
+        } else {
+            this.customQueryColumns = new HashSet<>();
+            this.customQueryColumns.add(customField);
         }
     }
 

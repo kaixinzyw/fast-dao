@@ -198,7 +198,8 @@ public class FastCondition {
          * 条件方式
          */
         OR("or", "OR "),
-        AND("and", "AND ");
+        AND("and", "AND "),
+        CUSTOM("custom", " ");
         public String name;
         public String expression;
 

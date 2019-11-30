@@ -64,6 +64,17 @@ public class FastExample<T> {
         return criteria.dao();
     }
 
+    /**
+     * 自定义查询列
+     *
+     * @param queryColumn SELECT查询时自定义查询列
+     */
+    public void customQueryColumn(String queryColumn) {
+        if (queryColumn == null) {
+            return;
+        }
+        criteria.conditionPackages.addCustomQueryColumn(queryColumn);
+    }
 
     /**
      * 对象查询

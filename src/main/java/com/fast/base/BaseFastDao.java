@@ -37,6 +37,15 @@ public class BaseFastDao<T> {
     }
 
     /**
+     * 自定义查询列
+     *
+     * @param queryColumn SELECT查询时自定义列
+     */
+    public void customQueryColumn(String queryColumn) {
+        fastExample.customQueryColumn(queryColumn);
+    }
+
+    /**
      * 自定义sql条件,会将传入的参数进行AND条件进行拼接
      *
      * @param sql    自定义sql语句,如果有占位符,使用#{参数名}进行描述 例:userName=${userName}

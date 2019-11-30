@@ -276,6 +276,12 @@ public class FastSqlUtil {
 
         if (select == null) {
             sqlBuilder.append(tableMapper.getShowAllTableNames());
+        } else if (CollUtil.isNotEmpty(select.getCustomQueryColumns())) {
+            StrBuilder selectColumn = StrBuilder.create();
+            for (String queryColumn : select.getCustomQueryColumns()) {
+                selectColumn.append(queryColumn).append(COMMA);
+            }
+            sqlBuilder.append(selectColumn.subString(0, selectColumn.length() - 2));
         } else if (CollUtil.isNotEmpty(select.getSumFields()) || CollUtil.isNotEmpty(select.getAvgFields())
                 || CollUtil.isNotEmpty(select.getMinFields()) || CollUtil.isNotEmpty(select.getMaxFields())) {
             if (CollUtil.isNotEmpty(select.getSumFields())) {
