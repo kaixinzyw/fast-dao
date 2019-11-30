@@ -41,10 +41,12 @@ public class FastSqlUtil {
     private static final String AVG = "AVG";
     private static final String MIN = "MIN";
     private static final String MAX = "MAX";
-    private static final String ONE_COUNT = ">1";
+    private static final String GROUP = "GROUP";
+    private static final String ONE_COUNT = ">0";
     private static final String ORDER_BY = "ORDER BY ";
     private static final String DESC = " DESC ";
     private static final String ASC = " ASC ";
+    private static final String CRLF = System.lineSeparator();
     private static final String COMMA = ", ";
     private static final String EQUAL = " = ";
     private static final String QUOTATION = "`";
@@ -130,7 +132,7 @@ public class FastSqlUtil {
             if (FastDaoAttributes.isOpenLogicDelete) {
                 sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
                         FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
                 isFirst = Boolean.FALSE;
             }
         }
@@ -168,7 +170,7 @@ public class FastSqlUtil {
                     packParam(sqlBuilder, paramMap, value, paramIndex).append(StrUtil.COMMA);
                 }
                 sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(RIGHT_BRACKETS);
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
                 break;
             case Between:
             case NotBetween:
@@ -176,20 +178,20 @@ public class FastSqlUtil {
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(AND);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMax(), paramIndex);
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
                 break;
             case Null:
             case NotNull:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
                 break;
             case SQL:
                 if (CollUtil.isNotEmpty(condition.getParams())) {
                     paramMap.putAll(condition.getParams());
                 }
                 sqlBuilder.append(sqlConversion(condition.getSql()));
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
                 break;
             case Obj:
                 Map<String, Object> fieldMap;
@@ -206,13 +208,13 @@ public class FastSqlUtil {
                         packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
                     }
                 }
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
                 break;
             default:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
                 packParam(sqlBuilder, paramMap, condition.getValue(), paramIndex);
-                sqlBuilder.append(System.lineSeparator());
+                sqlBuilder.append(CRLF);
         }
     }
 
@@ -251,13 +253,13 @@ public class FastSqlUtil {
                 Map<String, Object> paramMap = param.getParamMap();
                 sqlBuilder.append(LIMIT);
                 packParam(sqlBuilder, paramMap, conditionPackages.getPage(), paramIndex).append(COMMA);
-                packParam(sqlBuilder, paramMap, conditionPackages.getSize(), paramIndex).append(System.lineSeparator());
+                packParam(sqlBuilder, paramMap, conditionPackages.getSize(), paramIndex).append(CRLF);
             } else if (conditionPackages.getLimit() != null) {
                 ParamIndex paramIndex = new ParamIndex();
                 paramIndex.setParamType(LIMIT_PARAM_TYPE);
                 Map<String, Object> paramMap = param.getParamMap();
                 sqlBuilder.append(LIMIT);
-                packParam(sqlBuilder, paramMap, conditionPackages.getLimit(), paramIndex).append(System.lineSeparator());
+                packParam(sqlBuilder, paramMap, conditionPackages.getLimit(), paramIndex).append(CRLF);
             }
         }
     }
@@ -337,14 +339,14 @@ public class FastSqlUtil {
         } else {
             sqlBuilder.append(tableMapper.getShowAllTableNames());
         }
-        sqlBuilder.append(System.lineSeparator());
+        sqlBuilder.append(CRLF);
         sqlBuilder.append(FROM).append(tableMapper.getTableName()).append(StrUtil.SPACE);
-        sqlBuilder.append(System.lineSeparator());
+        sqlBuilder.append(CRLF);
         return sqlBuilder;
     }
 
     public static String countQueryInfoReplace(String sql) {
-        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(System.lineSeparator(), "");
+        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(CRLF, "");
 
         StrBuilder replaceQueryInfo = StrUtil.strBuilder(COUNT, LEFT_BRACKETS);
         if (StrUtil.containsIgnoreCase(queryInfo, DISTINCT)) {
@@ -355,8 +357,7 @@ public class FastSqlUtil {
         } else {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
         }
-
-        return StrUtil.replace(sql, queryInfo, replaceQueryInfo);
+        return StrUtil.replace(sql, StrUtil.sub(sql,0,StrUtil.indexOfIgnoreCase(sql, FROM)), StrUtil.strBuilder(SELECT,replaceQueryInfo,CRLF));
     }
 
     /**
@@ -370,7 +371,7 @@ public class FastSqlUtil {
         Map<String, Object> paramMap = param.getParamMap();
         ParamIndex paramIndex = new ParamIndex();
         paramIndex.setParamType(UPDATE_PARAM_TYPE);
-        StrBuilder sqlBuilder = StrUtil.strBuilder(UPDATE, tableMapper.getTableName(), SET).append(System.lineSeparator());
+        StrBuilder sqlBuilder = StrUtil.strBuilder(UPDATE, tableMapper.getTableName(), SET).append(CRLF);
 
         List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
@@ -392,7 +393,7 @@ public class FastSqlUtil {
             packParam(sqlBuilder, paramMap, fieldValue, paramIndex);
             sqlBuilder.append(COMMA);
         }
-        return sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length()).append(System.lineSeparator());
+        return sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length()).append(CRLF);
     }
 
 
@@ -403,7 +404,7 @@ public class FastSqlUtil {
      * @return 封装好更新部分SQL
      */
     public static StrBuilder deleteSql(FastDaoParam param) {
-        return StrUtil.strBuilder(DELETE, param.getTableMapper().getTableName()).append(System.lineSeparator());
+        return StrUtil.strBuilder(DELETE, param.getTableMapper().getTableName()).append(CRLF);
     }
 
     /**
@@ -419,7 +420,7 @@ public class FastSqlUtil {
         Map<String, Object> paramMap = param.getParamMap();
         ParamIndex paramIndex = new ParamIndex();
         paramIndex.setParamType(INSERT_PARAM_TYPE);
-        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(System.lineSeparator());
+        StrBuilder fastSQL = StrUtil.strBuilder(INSERT, tableMapper.getTableName()).append(CRLF);
         List insertList = param.getInsertList();
         if (insertList.size() == 1) {
             fastSQL.append(SET);
@@ -435,7 +436,7 @@ public class FastSqlUtil {
         } else {
             fastSQL.append(LEFT_BRACKETS);
             fastSQL.append(tableMapper.getShowAllTableNames());
-            fastSQL.append(RIGHT_BRACKETS).append(VALUES).append(System.lineSeparator());
+            fastSQL.append(RIGHT_BRACKETS).append(VALUES).append(CRLF);
 
             for (int x = 0; x < insertList.size(); x++) {
                 fastSQL.append(LEFT_BRACKETS);
@@ -450,7 +451,7 @@ public class FastSqlUtil {
                 if (x < insertList.size() - 1) {
                     fastSQL.append(StrUtil.COMMA);
                 }
-                fastSQL.append(System.lineSeparator());
+                fastSQL.append(CRLF);
             }
         }
         return fastSQL;
