@@ -103,6 +103,20 @@ public class FastExample<T> {
     }
 
     /**
+     * 自定义SQL查询
+     *
+     * @param sql    自定义SQL语句,如果有参数需要使用#{参数名}进行占位
+     * @param params 参数值MAP集合
+     */
+    public void sql(String sql, Map<String, Object> params) {
+        if (StrUtil.isBlank(sql)) {
+            return;
+        }
+        criteria.conditionPackages.setWay(FastCondition.Way.CUSTOM);
+        criteria.conditionPackages.addSql(sql, params);
+    }
+
+    /**
      * 自定义SQL查询,使用OR进行拼接
      *
      * @param sql    自定义SQL语句,如果有参数需要使用#{参数名}进行占位

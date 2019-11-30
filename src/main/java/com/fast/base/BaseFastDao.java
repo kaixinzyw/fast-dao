@@ -56,6 +56,18 @@ public class BaseFastDao<T> {
     }
 
     /**
+     * 自定义sql条件,WHERE后拼接
+     *
+     * @param sql    自定义sql语句,如果有占位符,使用#{参数名}进行描述 例:userName=${userName}
+     * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     */
+    public void sql(String sql, Map<String, Object> params) {
+        fastExample.sql(sql, params);
+    }
+
+
+
+    /**
      * 自定义sql条件,会将传入的参数进行OR条件进行拼接
      *
      * @param sql    自定义sql语句,如果有占位符,使用#{参数名}进行描述 例:userName=${userName}
