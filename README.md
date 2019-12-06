@@ -30,134 +30,20 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 
 ## 1. 框架安装
 
-### 1.1 Maven
+### 1.1 Maven地址
 ```xml
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>5.5</version>
+    <version>6.0</version>
 </dependency>
 ```
-#### 1.1.1 依赖
-```xml
-        <!-- JDBC模式下依赖 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>5.2.0.RELEASE</version>
-        </dependency>
 
-
-        <!-- MyBatis模式下依赖 -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.3</version>
-        </dependency>
-        <!-- MyBatis模式下依赖 -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>2.0.3</version>
-        </dependency>
-```
-### 1.2 配置
-#### 1.2.1 SpringBoot配置方式
-
-```bash
-#数据源配置
-spring.datasource.url=jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=123456
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-#redis配置
-spring.redis.database=0
-spring.redis.host=127.0.0.1
-spring.redis.port=6379
-
-#框架模式,<jdbc:JDBC模式,mybatis:MyBatis模式> 默认参数:jdbc
-fast.db.impl=mybatis
-
-#列名驼峰转换字段名,<true,false> 默认参数:true
-fast.db.camel=true
-
-#自动设置数据创建时间列,只支持datetime类型,默认参数:null 不进行任何操作
-fast.db.set.create=create_time
-
-#自动设置数据更新时间列,只支持datetime类型,默认参数:null 不进行任何操作
-fast.db.set.update=update_time
-
-#开启逻辑删除功能列,只支持bit类型,默认参数:null 不开启逻辑删除功能
-fast.db.set.delete=deleted
-#逻辑删除标记,<true.false> 默认参数:true
-fast.db.set.delete.val=true
-
-#设置全局缓存时间,单位为秒,Long类型
-fast.db.cache.time=60
-
-#SQL执行日志,<true,false>默认参数:false
-fast.db.sql.log=true
-#SQL执行结果日志,<true,false>默认参数:false
-fast.db.sql.log.result=true
-```
-#### 1.2.2 Java Bean配置方式
+#### 1.2.2 框架配置
 
 ```java
-public void fastDaoConfig() {
-
-    /**
-     * 配置框架模式,默认JdbcImpl.class
-     */
-    FastDaoConfig.daoActuator(FastMyBatisImpl.class);
-
-    /**
-     * 数据源配置
-     */
-    FastDaoConfig.dataSource(getDataSource());
-
-    /**
-     * redis配置,如果使用Redis需要进行此配置
-     */
-    FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
-
-    /**
-     * 字段驼峰转换 例 user_name = userName
-     */
-    FastDaoConfig.openToCamelCase();
-    /**
-     * 设置SQL日志打印级别,本功能主要用于自检
-     * 参数1: 日志级别
-     * 参数2: 是否打印简单格式SQL
-     * 参数3: 是否打印SQL执行结果
-     */
-    FastDaoConfig.openSqlPrint(SqlLogLevel.INFO, false, true);
-    /**
-     * 开启自动对数据 新增操作 进行创建时间设置
-     * 参数1: 需要设置创建时间的字段名
-     */
-    FastDaoConfig.openAutoSetCreateTime("create_time");
-    /**
-     * 开启自动对数据 更新操作/逻辑删除操作 进行更新时间设置
-     * 参数1: 需要设置更新时间的字段名
-     */
-    FastDaoConfig.openAutoSetUpdateTime("update_time");
-
-    /**
-     * 开启逻辑删除功能,开启后会对逻辑删除标记的数据在 更新|删除|查询 时进行保护,可通过模板进行单次操作逻辑删除保护的关闭
-     * 参数1:  逻辑删除字段名
-     * 参数2:  逻辑删除标记默认值
-     */
-    FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
-
-    /**
-     * 设置全局缓存时间,支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
-     * 参数1:  默认缓存时间
-     * 参数2:  默认缓存时间类型
-     */
-    FastDaoConfig.openCache(10L, TimeUnit.SECONDS);
-
-}
+//配置数据源
+FastDaoConfig.dataSource(getDataSource());
 
 private static DataSource getDataSource() {
     DruidDataSource dataSource = new DruidDataSource();
@@ -167,40 +53,20 @@ private static DataSource getDataSource() {
     dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
     return dataSource;
 }
-
-private static RedisConnectionFactory getRedisConnectionFactory() {
-    RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
-    redisConfig.setHostName("127.0.0.1");
-    redisConfig.setPort(6379);
-    redisConfig.setDatabase(1);
-    return new JedisConnectionFactory(redisConfig);
-}
 ```
 
 
 ### 1.3 文件生成
 ```java
-    public static void main(String[] args) {
-        FileCreateConfig config = new FileCreateConfig();
-        //数据库连接
-        config.setDBInfo("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC","root","123456","com.mysql.cj.jdbc.Driver");
-        //文件生成的包路径
-        config.setBasePackage("com.fast.dao.test");
-        //是否过滤表前缀
-        config.setPrefix(false,false,null);
-        //是否使用lombok插件,默认false
-        config.setUseLombok(false);
-        //列名驼峰转换字段名,默认true
-        config.setUnderline2CamelStr(true);
-        //是否覆盖原文件,默认true
-        config.setReplaceFile(false);
-        //项目多模块路径,项目如果使用了多模块,需要在这里设置文件生成到具体哪个模块中
-        //config.setChildModuleName("service");
-        //需要生成的表名,多个表用逗号隔开 (参数 all 生成所有表)
-        config.setCreateTables("all");
-        //生成代码
-        TableFileCreateUtils.create(config);
-    }
+public static void main(String[] args) {
+    FileCreateConfig config = new FileCreateConfig();
+    //数据库连接
+    config.setDBInfo("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC","root","123456","com.mysql.cj.jdbc.Driver");
+    //文件生成的包路径
+    config.setBasePackage("com.fast.dao.test");
+    //生成代码
+    TableFileCreateUtils.create(config);
+}
 ```
 ----
 ## 2. 使用说明
@@ -208,7 +74,8 @@ private static RedisConnectionFactory getRedisConnectionFactory() {
 ### 2.1 条件设置
 
 ```java
-UserFastDao fastDao = UserFastDao.create();
+//文件生成对象
+UserFastDao fastDao = new UserFastDao();
 ```
 
 
@@ -234,7 +101,7 @@ UserFastDao fastDao = UserFastDao.create();
 |字段去求平均值设置|fastDao.fieldName().avgField()|`fastDao.age().avgField()`|
 |字段去求最小值设置|fastDao.fieldName().minField()|`fastDao.age().minField()`|
 |字段去求最大值设置|fastDao.fieldName().maxField()|`fastDao.age().maxField()`|
-|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需要使用 #{参数名} 声明<br>传递参数MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
+|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有参数需要使用 :参数名 声明<br>传递参数MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = :userName",params)`|
 |关闭逻辑删除保护|fastDao.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
 |OR条件设置|fastDao.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`fastDao.userName().valEqual("张三").or().isNull()`
 
@@ -243,6 +110,7 @@ UserFastDao fastDao = UserFastDao.create();
 ### 2.2 Dao执行器
 Dao执行器调用:
 ```java
+//文件生成对象
 FastDao<User> dao = UserFastDao.create().dao();
 ```
 执行器方法:
@@ -267,7 +135,7 @@ FastCustomSqlDao.create(Class, SQL语句, 参数)
 
 ```java
 //例:
-String sql = "SELECT * FROM user WHERE `user_name` LIKE #{userName}";
+String sql = "SELECT * FROM user WHERE `user_name` LIKE :userName";
 
 HashMap<String, Object> params = new HashMap<>();
 params.put("userName","%张亚伟%");
