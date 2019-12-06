@@ -69,7 +69,7 @@ public class FastSqlUtil {
         String paramKey = paramIndex.getParamType() + paramIndex.get();
         paramMap.put(paramKey, value);
         paramIndex.add();
-        return FastDaoAttributes.IS_JDBC_PARAM_TYPE ? packJdbcParam(sqlBuilder, paramKey) : packMyBaitsParam(sqlBuilder, paramKey);
+        return packJdbcParam(sqlBuilder, paramKey);
     }
 
     private static StrBuilder packJdbcParam(StrBuilder sqlBuilder, String paramKey) {
@@ -77,10 +77,6 @@ public class FastSqlUtil {
         return sqlBuilder;
     }
 
-    private static StrBuilder packMyBaitsParam(StrBuilder sqlBuilder, String paramKey) {
-        sqlBuilder.append(MYBATIS_PARAM_PREFIX).append(paramKey).append(MYBATIS_PARAM_suffix);
-        return sqlBuilder;
-    }
 
     /**
      * 参数索引
@@ -190,7 +186,7 @@ public class FastSqlUtil {
                 if (CollUtil.isNotEmpty(condition.getParams())) {
                     paramMap.putAll(condition.getParams());
                 }
-                sqlBuilder.append(sqlConversion(condition.getSql()));
+                sqlBuilder.append(condition.getSql());
                 sqlBuilder.append(CRLF);
                 break;
             case Obj:
@@ -457,16 +453,5 @@ public class FastSqlUtil {
         return fastSQL;
     }
 
-    public static String conversionMyBatisSql(String sql) {
-        return sql.replaceAll("[:](\\w*)[\\s]", "#{paramMap." + "$1" + "}");
-    }
-
-    public static String sqlConversion(String sql) {
-        if (FastDaoAttributes.IS_JDBC_PARAM_TYPE) {
-            return sql.replaceAll("[#][{](\\w*)[}]", ":$1");
-        } else {
-            return sql.replaceAll("[#][{]", "#{paramMap.");
-        }
-    }
 
 }

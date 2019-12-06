@@ -47,7 +47,6 @@ public class JdbcRowMapper<T> implements RowMapper<T> {
             int columnLength = metaData.getColumnCount();
             JSONObject jsonObject = new JSONObject();
             Map<String, String> tableFieldNames = mapper.getTableFieldNames();
-            Map<String, Class> fieldTypes = mapper.getFieldTypes();
             for (int i = 1; i <= columnLength; i++) {
                 String columnName = metaData.getColumnName(i);
                 String fieldName = tableFieldNames.get(columnName);
