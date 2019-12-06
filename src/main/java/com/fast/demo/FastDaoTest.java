@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * FastDao测试
+ */
 public class FastDaoTest {
 
     static {

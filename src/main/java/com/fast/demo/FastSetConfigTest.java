@@ -7,6 +7,9 @@ import com.fast.config.SqlLogLevel;
 import javax.sql.DataSource;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 框架设置
+ */
 public class FastSetConfigTest {
 
     public static void fastDaoConfig() {

@@ -2,6 +2,9 @@ package com.fast.demo;
 import com.fast.code.TableFileCreateUtils;
 import com.fast.code.bean.FileCreateConfig;
 
+/**
+ * 文件创建
+ */
 public class CreateFileTest {
     public static void main(String[] args) {
         FileCreateConfig config = new FileCreateConfig();
