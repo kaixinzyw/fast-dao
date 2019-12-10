@@ -116,7 +116,7 @@ public class DbUtils {
     public void setPackPath(FileCreateConfig conf, TableInfo tableInfo) {
         String separator = File.separator;
         String resourcesbasePath = new StringBuilder().append(System.getProperty("user.dir")).append(separator).append("src").append(separator).append("main").append(separator).append("resources").append(separator).toString();
-        String javabasePath = new StringBuilder().append(System.getProperty("user.dir")).append(separator).append(conf.getChildModuleName()).append("src").append(separator).append("main").append(separator).append("java").append(separator).toString();
+        String javabasePath = new StringBuilder().append(System.getProperty("user.dir")).append(separator).append(conf.getChildModuleName()).append(separator).append("src").append(separator).append("main").append(separator).append("java").append(separator).toString();
         String javaPath = javabasePath + conf.getBasePackage().replace(".", separator) + separator;
 
         String prefixPath = StrUtil.isNotEmpty(tableInfo.getPrefixName()) ? "." + tableInfo.getPrefixName() : "";
