@@ -93,9 +93,9 @@ public class DataCache<T> {
      */
     public void setOne(T t) {
         if (tableMapper.getCacheType().equals(DataCacheType.StatisCache)) {
-            StaticCacheImpl.set(CollUtil.newArrayList(t),tableMapper,tableName);
+            StaticCacheImpl.set(CollUtil.newArrayList(t),tableMapper,keyName.toString());
         } else if (tableMapper.getCacheType().equals(DataCacheType.RedisCache)) {
-            RedisCacheImpl.set(CollUtil.newArrayList(t),tableMapper,tableName);
+            RedisCacheImpl.set(CollUtil.newArrayList(t),tableMapper,keyName.toString());
         }
     }
 
