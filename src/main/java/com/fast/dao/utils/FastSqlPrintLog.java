@@ -51,11 +51,7 @@ public class FastSqlPrintLog {
                 } else {
                     sqlValue = value.toString();
                 }
-                if (FastDaoAttributes.IS_JDBC_PARAM_TYPE) {
-                    sql = sql.replaceAll("[:](" + key + ")[\\s]", sqlValue);
-                } else {
-                    sql = sql.replaceAll("[#][{](paramMap.)(" + key + ")[}]", sqlValue);
-                }
+                sql = sql.replaceAll("[:](" + key + ")[\\s]", sqlValue);
             }
         }
         printSql(sql, null, param);

@@ -123,7 +123,7 @@ public class DbUtils {
 
         String pojoPackPath = conf.getBasePackage() + "." + conf.getBeanPackage() + prefixPath;
 //        String pojoFieldsPackPath = conf.getBasePackage() + "." + conf.getBeanPackage() + ".fast." + conf.getBeanFieldsPackage() + prefixPath;
-        String pojoFastDaoPackPath = conf.getBasePackage() + "." + conf.getBeanFastDao() + prefixPath;
+        String pojoFastDaoPackPath = conf.getBasePackage()+ "." + conf.getBeanPackage() + "." + conf.getBeanFastDao() + prefixPath;
         String dtoPackPath = conf.getBasePackage() + "." + conf.getDtoPackage() + prefixPath;
 //        String daoPackPath = conf.getBasePackage() + "." + conf.getDaoPackage() + prefixPath;
         String iservicePackPath = conf.getBasePackage() + "." + conf.getServicePackage() + prefixPath;

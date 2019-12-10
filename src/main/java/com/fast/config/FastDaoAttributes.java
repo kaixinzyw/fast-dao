@@ -103,7 +103,6 @@ public class FastDaoAttributes {
      * 如果需要自定义扩展,可以实现DaoActuator接口进行自定义扩展
      */
     private static Class<? extends DaoActuator> daoActuator = JdbcImpl.class;
-    public static Boolean IS_JDBC_PARAM_TYPE = Boolean.TRUE;
 
     public static <T> DaoActuator<T> getDaoActuator() {
         try {
@@ -119,9 +118,6 @@ public class FastDaoAttributes {
 
     public static void setDaoActuator(Class<? extends DaoActuator> dbActuator) {
         FastDaoAttributes.daoActuator = dbActuator;
-        if (!dbActuator.equals(JdbcImpl.class)) {
-            FastDaoAttributes.IS_JDBC_PARAM_TYPE = Boolean.FALSE;
-        }
     }
 
     /**

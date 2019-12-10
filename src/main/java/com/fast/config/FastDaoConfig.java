@@ -4,9 +4,6 @@ import com.fast.aspect.FastDaoExpander;
 import com.fast.aspect.FastDaoExpanderRunner;
 import com.fast.dao.DaoActuator;
 import com.fast.dao.jdbc.JdbcConnection;
-import com.fast.dao.jdbc.JdbcImpl;
-import com.fast.dao.mybatis.FastMyBatisConnection;
-import com.fast.dao.mybatis.FastMyBatisImpl;
 import com.fast.utils.FastValueUtil;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -41,11 +38,7 @@ public class FastDaoConfig {
      * @param dataSource 数据源
      */
     public static void dataSourceThreadLocal(DataSource dataSource) {
-        if (FastDaoAttributes.getDaoActuator().getClass() == FastMyBatisImpl.class) {
-            FastMyBatisConnection.dataSource(dataSource);
-        } else if (FastDaoAttributes.getDaoActuator().getClass() == JdbcImpl.class) {
             JdbcConnection.dataSource(dataSource);
-        }
     }
 
 

@@ -208,11 +208,11 @@ public class FileCreateConfig {
         /**
          * 基本生成类
          */
-        Base("pojo,dao"),
+        Base("pojo,fast"),
 
         Pojo("pojo"),
 
-        PojoFastDao("dao"),
+        PojoFastDao("fast"),
 
 //        PojoFields("fields"),
 
@@ -224,7 +224,7 @@ public class FileCreateConfig {
 
 //        Dao("dao"),
 
-        All("pojo,dao,service,service_impl,dto");
+        All("pojo,fast,service,service_impl,dto");
 
         public String codeModule;
 
