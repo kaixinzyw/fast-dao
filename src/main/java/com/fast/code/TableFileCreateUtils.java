@@ -85,7 +85,10 @@ public class TableFileCreateUtils {
                 if (FileCreateConfig.CodeCreateModule.Pojo.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("Pojo.ftl");
                     createFile(conf, tableInfo.getPojoFilePath(), root, temp);
-                } else if (FileCreateConfig.CodeCreateModule.PojoFastDao.codeModule.equals(module)) {
+                } else if (FileCreateConfig.CodeCreateModule.FastPojo.codeModule.equals(module)) {
+                    Template temp = cfg.getTemplate("FastPojo.ftl");
+                    createFile(conf, tableInfo.getFastPojoFilePath(), root, temp);
+                }else if (FileCreateConfig.CodeCreateModule.PojoFastDao.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("PojoFastDao.ftl");
                     createFile(conf, tableInfo.getPojoFastDaoFilePath(), root, temp);
                 } else if (FileCreateConfig.CodeCreateModule.Service.codeModule.equals(module)) {

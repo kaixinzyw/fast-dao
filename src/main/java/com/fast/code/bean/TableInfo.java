@@ -72,6 +72,11 @@ public class TableInfo {
     private String pojoName;
     private String pojoClassPackPath;
 
+    private String fastPojoPackPath;
+    private String fastPojoFilePath;
+    private String fastPojoName;
+    private String fastPojoClassPackPath;
+
     private String pojoFastDaoPackPath;
     private String pojoFastDaoFilePath;
     private String pojoFastDaoName;
@@ -308,6 +313,38 @@ public class TableInfo {
 
     public void setPojoName(String pojoName) {
         this.pojoName = pojoName;
+    }
+
+    public String getFastPojoPackPath() {
+        return fastPojoPackPath;
+    }
+
+    public void setFastPojoPackPath(String fastPojoPackPath) {
+        this.fastPojoPackPath = fastPojoPackPath;
+    }
+
+    public String getFastPojoFilePath() {
+        return fastPojoFilePath;
+    }
+
+    public void setFastPojoFilePath(String fastPojoFilePath) {
+        this.fastPojoFilePath = fastPojoFilePath;
+    }
+
+    public String getFastPojoName() {
+        return fastPojoName;
+    }
+
+    public void setFastPojoName(String fastPojoName) {
+        this.fastPojoName = fastPojoName;
+    }
+
+    public String getFastPojoClassPackPath() {
+        return fastPojoClassPackPath;
+    }
+
+    public void setFastPojoClassPackPath(String fastPojoClassPackPath) {
+        this.fastPojoClassPackPath = fastPojoClassPackPath;
     }
 
     public String getPojoFastDaoName() {

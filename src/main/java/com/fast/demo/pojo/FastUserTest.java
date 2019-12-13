@@ -1,7 +1,5 @@
 package com.fast.demo.pojo;
 
-import com.fast.cache.FastStatisCache;
-
 import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.Column;
@@ -10,42 +8,41 @@ import java.util.Date;
 
 /**
 * 实体bean 
-* @author 2019-12-7 0:31:12
+* @author 2019-12-14 1:39:04
 */
 @Table(name = "fast_user_test")
-@FastStatisCache
 public class FastUserTest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-    *
+    *主键ID
     */
     @Id
     @Column(name = "id")
     private Long id;
     /**
-    *
+    *用户名
     */
     @Column(name = "user_name")
     private String userName;
     /**
-    *
+    *年龄
     */
     @Column(name = "age")
     private Integer age;
     /**
-    *
+    *创建时间
     */
     @Column(name = "create_time")
     private Date createTime;
     /**
-    *
+    *更新时间
     */
     @Column(name = "update_time")
     private Date updateTime;
     /**
-    *
+    *是否逻辑删除
     */
     @Column(name = "deleted")
     private Boolean deleted;

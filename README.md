@@ -34,7 +34,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>6.1</version>
+    <version>6.2</version>
 </dependency>
 ```
 

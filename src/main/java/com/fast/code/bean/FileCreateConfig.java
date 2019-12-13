@@ -18,6 +18,11 @@ public class FileCreateConfig {
      * Pojo文件路径
      */
     private String beanPackage = CodeCreateModule.Pojo.codeModule;
+
+    /**
+     * Pojo文件路径
+     */
+    private String fastPojoPackage = CodeCreateModule.FastPojo.codeModule;
     /**
      * Pojo字段文件路径
      */
@@ -212,6 +217,8 @@ public class FileCreateConfig {
 
         Pojo("pojo"),
 
+        FastPojo("fastpojo"),
+
         PojoFastDao("fast"),
 
 //        PojoFields("fields"),
@@ -289,7 +296,11 @@ public class FileCreateConfig {
         return beanPackage;
     }
 
-//    public String getBeanFieldsPackage() {
+    public String getFastPojoPackage() {
+        return fastPojoPackage;
+    }
+
+    //    public String getBeanFieldsPackage() {
 //        return beanFieldsPackage;
 //    }
 

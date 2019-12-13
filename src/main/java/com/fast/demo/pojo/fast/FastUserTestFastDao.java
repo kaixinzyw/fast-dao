@@ -6,7 +6,7 @@ import com.fast.condition.FastExample;
 import java.util.Date;
 
 /**
-* @author 2019-12-7 0:31:12
+* @author 2019-12-14 1:39:04
 */
 public class FastUserTestFastDao extends BaseFastDao<FastUserTest> {
 
