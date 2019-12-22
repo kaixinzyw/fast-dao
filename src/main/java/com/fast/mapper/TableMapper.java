@@ -83,9 +83,13 @@ public class TableMapper<T> {
      */
     private Class primaryKeyClass;
     /**
-     *
+     * 主键类型 32位UUID和自增
      */
     private PrimaryKeyType primaryKeyType;
+
+    private Boolean logicDelete = Boolean.FALSE;
+    private Boolean autoSetCreateTime = Boolean.FALSE;
+    private Boolean autoSetUpdateTime = Boolean.FALSE;
 
 
     public String getClassName() {
@@ -215,5 +219,29 @@ public class TableMapper<T> {
 
     public void setPrimaryKeyType(PrimaryKeyType primaryKeyType) {
         this.primaryKeyType = primaryKeyType;
+    }
+
+    public Boolean getLogicDelete() {
+        return logicDelete;
+    }
+
+    public void setLogicDelete(Boolean logicDelete) {
+        this.logicDelete = logicDelete;
+    }
+
+    public Boolean getAutoSetCreateTime() {
+        return autoSetCreateTime;
+    }
+
+    public void setAutoSetCreateTime(Boolean autoSetCreateTime) {
+        this.autoSetCreateTime = autoSetCreateTime;
+    }
+
+    public Boolean getAutoSetUpdateTime() {
+        return autoSetUpdateTime;
+    }
+
+    public void setAutoSetUpdateTime(Boolean autoSetUpdateTime) {
+        this.autoSetUpdateTime = autoSetUpdateTime;
     }
 }

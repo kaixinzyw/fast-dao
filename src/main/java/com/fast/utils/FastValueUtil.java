@@ -12,14 +12,14 @@ import java.util.Date;
 
 public class FastValueUtil {
 
-    public static void setCreateTime(Object o) {
-        if (FastDaoAttributes.isAutoSetCreateTime) {
+    public static void setCreateTime(Object o, TableMapper tableMapper) {
+        if (FastDaoAttributes.isAutoSetCreateTime && tableMapper.getAutoSetCreateTime()) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.createTimeFieldName, new Date());
         }
     }
 
-    public static void setUpdateTime(Object o) {
-        if (FastDaoAttributes.isAutoSetUpdateTime) {
+    public static void setUpdateTime(Object o, TableMapper tableMapper) {
+        if (FastDaoAttributes.isAutoSetUpdateTime && tableMapper.getAutoSetUpdateTime()) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.updateTimeFieldName, new Date());
         }
     }
@@ -30,7 +30,7 @@ public class FastValueUtil {
     }
 
     public static void setPrimaryKey(Object o, TableMapper tableMapper) {
-        if (tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.UUID)) {
+        if (tableMapper.getPrimaryKeyField() != null && tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.UUID)) {
             Object primaryKey = BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
             if (primaryKey == null) {
                 BeanUtil.setFieldValue(o, tableMapper.getPrimaryKeyField(), UUID.randomUUID().toString(true));
@@ -38,14 +38,14 @@ public class FastValueUtil {
         }
     }
 
-    public static void setDeleted(Object o) {
-        if (FastDaoAttributes.isOpenLogicDelete) {
+    public static void setDeleted(Object o, TableMapper tableMapper) {
+        if (FastDaoAttributes.isOpenLogicDelete && tableMapper.getLogicDelete()) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.deleteFieldName, FastDaoAttributes.defaultDeleteValue);
         }
     }
 
-    public static void setNoDelete(Object o) {
-        if (FastDaoAttributes.isOpenLogicDelete) {
+    public static void setNoDelete(Object o, TableMapper tableMapper) {
+        if (FastDaoAttributes.isOpenLogicDelete && tableMapper.getLogicDelete()) {
             BeanUtil.setFieldValue(o, FastDaoAttributes.deleteFieldName, !FastDaoAttributes.defaultDeleteValue);
         }
     }

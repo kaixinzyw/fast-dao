@@ -113,24 +113,20 @@ public class FastSqlUtil {
         ConditionPackages select = param.getFastExample().conditionPackages();
         Map paramMap = param.getParamMap();
         TableMapper tableMapper = param.getTableMapper();
-        sqlBuilder.append(WHERE);
-        if (select == null) {
-            if (FastDaoAttributes.isOpenLogicDelete) {
-                sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
-                        FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
-            }
-            return;
-        }
-
         boolean isFirst = Boolean.TRUE;
-
         if (select.getLogicDeleteProtect()) {
             if (FastDaoAttributes.isOpenLogicDelete) {
-                sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
-                        FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
-                sqlBuilder.append(CRLF);
-                isFirst = Boolean.FALSE;
+                if (tableMapper.getLogicDelete()) {
+                    sqlBuilder.append(WHERE);
+                    sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
+                            FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
+                    sqlBuilder.append(CRLF);
+                    isFirst = Boolean.FALSE;
+                }
             }
+        }
+        if (isFirst && select.getConditions().size() > 0) {
+            sqlBuilder.append(WHERE);
         }
 
         ParamIndex paramIndex = new ParamIndex();
@@ -353,7 +349,7 @@ public class FastSqlUtil {
         } else {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
         }
-        return StrUtil.replace(sql, StrUtil.sub(sql,0,StrUtil.indexOfIgnoreCase(sql, FROM)), StrUtil.strBuilder(SELECT,replaceQueryInfo,CRLF));
+        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, FROM)), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
     }
 
     /**

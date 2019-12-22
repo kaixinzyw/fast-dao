@@ -73,8 +73,8 @@ public class DaoTemplate<T> {
     public T insert(T pojo) {
         if (pojo != null) {
             FastValueUtil.setPrimaryKey(pojo, tableMapper);
-            FastValueUtil.setCreateTime(pojo);
-            FastValueUtil.setNoDelete(pojo);
+            FastValueUtil.setCreateTime(pojo, tableMapper);
+            FastValueUtil.setNoDelete(pojo, tableMapper);
             FastDaoParam.<T>get().setInsertList(Collections.singletonList(pojo));
         }
         List<T> ts = daoActuator.insert();
@@ -95,8 +95,8 @@ public class DaoTemplate<T> {
         if (CollUtil.isNotEmpty(ins)) {
             for (T bean : ins) {
                 FastValueUtil.setPrimaryKey(bean, tableMapper);
-                FastValueUtil.setCreateTime(bean);
-                FastValueUtil.setNoDelete(bean);
+                FastValueUtil.setCreateTime(bean, tableMapper);
+                FastValueUtil.setNoDelete(bean, tableMapper);
             }
             FastDaoParam.<T>get().setInsertList(ins);
         }
@@ -118,8 +118,8 @@ public class DaoTemplate<T> {
         }
         for (T bean : ins) {
             FastValueUtil.setPrimaryKey(bean, tableMapper);
-            FastValueUtil.setCreateTime(bean);
-            FastValueUtil.setNoDelete(bean);
+            FastValueUtil.setCreateTime(bean, tableMapper);
+            FastValueUtil.setNoDelete(bean, tableMapper);
         }
         List<List<T>> inSplit = CollUtil.split(ins, size);
         FastDaoParam<T> daoParam = FastDaoParam.<T>get();
@@ -221,7 +221,7 @@ public class DaoTemplate<T> {
      */
     public Integer update(T pojo, boolean isSelective) {
         if (pojo != null) {
-            FastValueUtil.setUpdateTime(pojo);
+            FastValueUtil.setUpdateTime(pojo, tableMapper);
         }
         FastDaoParam<T> fastDaoParam = FastDaoParam.get();
         fastDaoParam.setUpdate(pojo);
@@ -236,14 +236,14 @@ public class DaoTemplate<T> {
      * @return 删除条数
      */
     public Integer delete() {
-        if (!FastDaoAttributes.isOpenLogicDelete || !fastExample.conditionPackages().getLogicDeleteProtect() || fastExample.conditionPackages().getCustomSql() != null) {
+        if (!FastDaoAttributes.isOpenLogicDelete || !tableMapper.getLogicDelete() || !fastExample.conditionPackages().getLogicDeleteProtect() || fastExample.conditionPackages().getCustomSql() != null) {
             return DataCache.upCache(daoActuator.delete(), tableMapper);
         }
 
         try {
             FastDaoParam.get().setLogicDelete(true);
             T pojo = tableMapper.getObjClass().newInstance();
-            FastValueUtil.setDeleted(pojo);
+            FastValueUtil.setDeleted(pojo, tableMapper);
             return update(pojo, Boolean.TRUE);
         } catch (Exception e) {
             throw new RuntimeException(e);

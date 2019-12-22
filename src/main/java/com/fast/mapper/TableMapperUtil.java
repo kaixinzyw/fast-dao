@@ -127,6 +127,18 @@ public class TableMapperUtil {
                     tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
                 }
             }
+            if (FastDaoAttributes.isOpenLogicDelete && field.getName().equals(FastDaoAttributes.deleteFieldName)) {
+                tableMapper.setLogicDelete(Boolean.TRUE);
+            }
+
+            if (FastDaoAttributes.isAutoSetCreateTime && field.getName().equals(FastDaoAttributes.createTimeFieldName)) {
+                tableMapper.setAutoSetCreateTime(Boolean.TRUE);
+            }
+
+            if (FastDaoAttributes.isAutoSetUpdateTime && field.getName().equals(FastDaoAttributes.updateTimeFieldName)) {
+                tableMapper.setAutoSetUpdateTime(Boolean.TRUE);
+            }
+
             fieldNames.add(field.getName());
             fieldTypes.put(field.getName(), field.getType());
             fieldTableNames.put(field.getName(), tabFieldName);
