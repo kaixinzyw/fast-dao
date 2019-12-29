@@ -3,6 +3,7 @@ package com.fast.dao.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastCondition;
@@ -54,8 +55,9 @@ public class FastSqlUtil {
     private static final String RIGHT_BRACKETS = ")";
     private static final String VALUES = " VALUES ";
     private static final String WILDCARD = "*";
+    private static final String PARAM_PREFIX = "#{";
     private static final String MYBATIS_PARAM_PREFIX = "#{paramMap.";
-    private static final String MYBATIS_PARAM_suffix = "} ";
+    private static final String PARAM_SUFFIX = "} ";
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -73,7 +75,7 @@ public class FastSqlUtil {
     }
 
     private static StrBuilder packJdbcParam(StrBuilder sqlBuilder, String paramKey) {
-        sqlBuilder.append(StrUtil.COLON).append(paramKey).append(StrUtil.SPACE);
+        sqlBuilder.append(PARAM_PREFIX).append(paramKey).append(PARAM_SUFFIX);
         return sqlBuilder;
     }
 
@@ -168,7 +170,7 @@ public class FastSqlUtil {
             case NotBetween:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
-                packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(StrUtil.SPACE).append(AND);
+                packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(AND);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMax(), paramIndex);
                 sqlBuilder.append(CRLF);
                 break;
@@ -447,6 +449,10 @@ public class FastSqlUtil {
             }
         }
         return fastSQL;
+    }
+
+    public static String sqlConversion(String sql) {
+        return ReUtil.replaceAll(sql,"[#][{](\\w*)[}]",":$1");
     }
 
 

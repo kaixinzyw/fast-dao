@@ -4,10 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.fast.config.PrimaryKeyType;
 import com.fast.dao.DaoActuator;
-import com.fast.dao.utils.FastDeleteProvider;
-import com.fast.dao.utils.FastInsertProvider;
-import com.fast.dao.utils.FastSelectProvider;
-import com.fast.dao.utils.FastUpdateProvider;
+import com.fast.dao.utils.*;
 import com.fast.fast.FastDaoParam;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,7 +28,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
 
         if (CollUtil.isNotEmpty(param.getInsertList()) && param.getTableMapper().getPrimaryKeyType() != null && param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO)) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            JdbcConnection.getJdbcTemplate().update(param.getSql(), new MapSqlParameterSource(param.getParamMap()), keyHolder);
+            JdbcConnection.getJdbcTemplate().update(FastSqlUtil.sqlConversion(param.getSql()), new MapSqlParameterSource(param.getParamMap()), keyHolder);
             if (param.getInsertList().size() == 1) {
                 BeanUtil.setFieldValue(param.getInsertList().get(0), param.getTableMapper().getPrimaryKeyField(), Objects.requireNonNull(keyHolder.getKey()).longValue());
             } else {
@@ -41,7 +38,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
                 }
             }
         } else {
-            JdbcConnection.getJdbcTemplate().update(param.getSql(), param.getParamMap());
+            JdbcConnection.getJdbcTemplate().update(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap());
         }
         return param.getInsertList();
     }
@@ -51,7 +48,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
     public List<T> select() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
-        return JdbcConnection.getJdbcTemplate().query(param.getSql(), param.getParamMap(), JdbcRowMapper.init(param));
+        return JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
     }
 
     @Override
@@ -59,7 +56,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findCount(param);
         try {
-            return JdbcConnection.getJdbcTemplate().queryForObject(param.getSql(), param.getParamMap(), Integer.class);
+            return JdbcConnection.getJdbcTemplate().queryForObject(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), Integer.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -69,14 +66,14 @@ public class JdbcImpl<T> implements DaoActuator<T> {
     public Integer update() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastUpdateProvider.update(param);
-        return JdbcConnection.getJdbcTemplate().update(param.getSql(), param.getParamMap());
+        return JdbcConnection.getJdbcTemplate().update(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap());
     }
 
     @Override
     public Integer delete() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastDeleteProvider.delete(param);
-        return JdbcConnection.getJdbcTemplate().update(param.getSql(), param.getParamMap());
+        return JdbcConnection.getJdbcTemplate().update(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap());
     }
 
 }

@@ -1,4 +1,5 @@
 package com.fast.demo;
+
 import com.alibaba.fastjson.JSONObject;
 import com.fast.demo.pojo.FastUserTest;
 import com.fast.demo.pojo.fast.FastUserTestFastDao;
@@ -75,8 +76,8 @@ public class FastDaoTest {
             params.put("age", 20);
 
             FastUserTestFastDao testTemplate = FastUserTestFastDao.create();
-            testTemplate.andSql("user_name = :userName ", params);
-            testTemplate.orSQL("age = :age ", params);
+            testTemplate.andSql("user_name = #{userName}", params);
+            testTemplate.orSQL("age = #{age}", params);
             testTemplate.age().orderByDesc();
             testTemplate.closeLogicDeleteProtect();
             FastUserTest one = testTemplate.dao().findOne();
@@ -229,7 +230,7 @@ public class FastDaoTest {
 
 
     public static void test_p_CustomSql(){
-        String sql = "SELECT * FROM fast_user_test WHERE `user_name` LIKE :userName ";
+        String sql = "SELECT * FROM fast_user_test WHERE `user_name` LIKE #{userName}";
         HashMap<String, Object> params = new HashMap<>();
         params.put("userName","%FastDao%");
         List<FastUserTest> all = FastCustomSqlDao.create(FastUserTest.class, sql, params).findAll();

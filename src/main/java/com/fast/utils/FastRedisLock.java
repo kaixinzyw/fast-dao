@@ -45,11 +45,11 @@ public class FastRedisLock {
      * 阻塞一定时间,在阻塞时间内无释放锁,异常抛出,
      *
      * @param keyStr   锁名
-     * @param time     最大阻塞时间 锁在最大阻塞10倍时间如果还未解锁,则自动释放锁
+     * @param time     最大阻塞时间 超过锁最大时间抛出异常
      * @param timeUnit 时间单位
      * @return 是否阻塞成功
      */
-    public boolean tryLock(String keyStr, long time, TimeUnit timeUnit) {
+    public static boolean throwLock(String keyStr, long time, TimeUnit timeUnit) {
         StringRedisTemplate lock = new StringRedisTemplate(FastDaoAttributes.getRedisConnectionFactory());
         String key = KEY_PRE + keyStr;
         long lockTime = System.currentTimeMillis() + timeUnit.toMillis(time);
@@ -75,6 +75,9 @@ public class FastRedisLock {
     public static void lock(String keyStr) {
         lock(keyStr, 10, TimeUnit.SECONDS);
     }
+    public static void throwLock(String keyStr) {
+        throwLock(keyStr, 10, TimeUnit.SECONDS);
+    }
 
     /**
      * 尝试在一定时间内获取锁
@@ -84,6 +87,9 @@ public class FastRedisLock {
      */
     public static void lock(String keyStr, Integer time) {
         lock(keyStr, time, TimeUnit.SECONDS);
+    }
+    public static void throwLock(String keyStr, Integer time) {
+        throwLock(keyStr, time, TimeUnit.SECONDS);
     }
 
     /**
