@@ -58,6 +58,8 @@ public class FastSqlUtil {
     private static final String PARAM_PREFIX = "#{";
     private static final String MYBATIS_PARAM_PREFIX = "#{paramMap.";
     private static final String PARAM_SUFFIX = "} ";
+    private static final String JDBC_SQL_CONVERSION_RE_RULE = "[#][{](\\w*)[}]";
+    private static final String JDBC_SQL_CONVERSION_RE_RESULT = ":$1";
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -452,7 +454,7 @@ public class FastSqlUtil {
     }
 
     public static String sqlConversion(String sql) {
-        return ReUtil.replaceAll(sql,"[#][{](\\w*)[}]",":$1");
+        return ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE, JDBC_SQL_CONVERSION_RE_RESULT);
     }
 
 

@@ -1,6 +1,8 @@
 package com.fast.dao.utils;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
@@ -11,10 +13,21 @@ import com.fast.config.FastDaoAttributes;
 import com.fast.config.SqlLogLevel;
 import com.fast.fast.FastDaoParam;
 
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
 public class FastSqlPrintLog {
+
+    private static final String APOSTROPHE = "\'";
+    private static final String DATA_STR = "Date";
+    private static final String NULL_STR = "null";
+    private static final String TRUE_STR = "true";
+    private static final String FALSE_STR = "false";
+    private static final String PARAM_PREFIX = "#{";
+    private static final String PARAM_SUFFIX = "}";
+    private static final String SQL_REPORT = ": SQL Report ↓ ";
+    private static final String PARAM = "Param: ";
+    private static final String RESULT = "Result: ";
+    private static final String TIME = "Time: ";
 
     /**
      * SQL日志打印
@@ -36,22 +49,21 @@ public class FastSqlPrintLog {
                 Object value = paramMap.get(key);
                 String sqlValue;
                 if (value == null) {
-                    sqlValue = "null";
-                } else if ("String".equals(value.getClass().getSimpleName())) {
-                    sqlValue = "\'" + value + "\'";
-                } else if ("Date".equals(value.getClass().getSimpleName())) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    sqlValue = "\'" + formatter.format(value) + "\'";
+                    sqlValue = NULL_STR;
+                } else if (value instanceof CharSequence) {
+                    sqlValue = StrUtil.strBuilder(APOSTROPHE, Convert.toStr(value), APOSTROPHE).toString();
+                } else if (DATA_STR.equals(value.getClass().getSimpleName())) {
+                    sqlValue = StrUtil.strBuilder(APOSTROPHE, DateUtil.formatDateTime(Convert.toDate(value)), APOSTROPHE).toString();
                 } else if (BooleanUtil.isBoolean(value.getClass())) {
                     if ((Boolean) value) {
-                        sqlValue = "true";
+                        sqlValue = TRUE_STR;
                     } else {
-                        sqlValue = "false";
+                        sqlValue = FALSE_STR;
                     }
                 } else {
                     sqlValue = value.toString();
                 }
-                sql = StrUtil.replace(sql, StrUtil.strBuilder("#{", key, "}"), sqlValue);
+                sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX, key, PARAM_SUFFIX), sqlValue);
             }
         }
         printSql(sql, null, param);
@@ -59,14 +71,14 @@ public class FastSqlPrintLog {
 
     private static void printSql(String sql, Map<String, Object> sqlParams, FastDaoParam param) {
         Log log = LogFactory.get(param.getTableMapper().getObjClass());
-        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), ": SQL执行报告↓ ", System.lineSeparator(), sql, System.lineSeparator(), "执行耗时: " + param.getSqlTime(), System.lineSeparator());
+        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), SQL_REPORT, System.lineSeparator(), sql, System.lineSeparator(), TIME, param.getSqlTime().toString(), System.lineSeparator());
         if (sqlParams != null) {
-            printLog.append("参数: ");
+            printLog.append(PARAM);
             printLog.append(JSONObject.toJSONString(sqlParams));
             printLog.append(System.lineSeparator());
         }
         if (FastDaoAttributes.isSqlPrintResult) {
-            printLog.append(("执行结果: "));
+            printLog.append((RESULT));
             printLog.append(JSONObject.toJSONString(param.getReturnVal()));
             printLog.append(System.lineSeparator());
         }
@@ -76,6 +88,8 @@ public class FastSqlPrintLog {
                 break;
             case DEBUG:
                 log.debug(printLog.toString());
+                break;
+            default:
                 break;
         }
     }

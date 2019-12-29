@@ -31,7 +31,7 @@ public class FastSetConfigTest {
          * 参数1: 是否打印SQL日志
          * 参数2: 是否打印SQL执行结果
          */
-        FastDaoConfig.openSqlPrint(SqlLogLevel.INFO,false, true);
+        FastDaoConfig.openSqlPrint(SqlLogLevel.INFO,true, true);
         /**
          * 开启自动对数据 新增操作 进行创建时间设置
          * 参数1: 需要设置创建时间的字段名
