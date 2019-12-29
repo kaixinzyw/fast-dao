@@ -51,7 +51,7 @@ public class FastSqlPrintLog {
                 } else {
                     sqlValue = value.toString();
                 }
-                sql = sql.replaceAll("[:](" + key + ")[\\s]", sqlValue);
+                sql = StrUtil.replace(sql, StrUtil.strBuilder(":", key, " "), sqlValue);
             }
         }
         printSql(sql, null, param);
