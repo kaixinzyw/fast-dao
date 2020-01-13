@@ -42,18 +42,14 @@ public class FastRedisLock {
         String key = KEY_PRE + keyStr;
         long lockDurationTime = timeUnit.toMillis(time);
         long lockExpiredTime = System.currentTimeMillis() + lockDurationTime;
-        long redisKeyExpiredTime = time * 2;
-        while (!valueOperations.setIfAbsent(key, KEY_DEF_VALUE, redisKeyExpiredTime, timeUnit)) {
+        long redisKeyExpiredTime = lockDurationTime + 1000L;
+        while (!valueOperations.setIfAbsent(key, KEY_DEF_VALUE, redisKeyExpiredTime, TimeUnit.MILLISECONDS)) {
             if (System.currentTimeMillis() > lockExpiredTime) {
                 lockRelease(key);
                 throw new RedisLockTimeOutException("Redis Lock Time Out Key: " + key);
             }
             try {
-                if (lockDurationTime > 50) {
-                    TimeUnit.MILLISECONDS.sleep(50);
-                } else {
-                    TimeUnit.MILLISECONDS.sleep(lockDurationTime);
-                }
+                TimeUnit.MILLISECONDS.sleep(50);
             } catch (InterruptedException ignore) {
                 lockRelease(key);
                 ignore.printStackTrace();
@@ -130,6 +126,7 @@ public class FastRedisLock {
 
     /**
      * 初始化Redis
+     *
      * @return Redis模板对象
      */
     private static StringRedisTemplate init() {
