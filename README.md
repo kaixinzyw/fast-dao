@@ -14,7 +14,7 @@
 ---- 
 - 极·简化DAO操作，面向对象的数据库操作方式, 大幅度提高编码效率
 - 支持自定义SQL
-- 支持Spring事务管理
+- 支持Spring事务管理和手动事务
 - 支持Redis缓存和内存缓存,支持缓存自动刷新
 
 ----
@@ -34,7 +34,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>6.4</version>
+    <version>6.5</version>
 </dependency>
 ```
 
@@ -227,6 +227,18 @@ public class DemoExpander implements FastDaoExpander {
 #### 2.6.2 配置切面实现,可以添加多个切面
 ```java
 FastDaoConfig.addFastDaoExpander(DemoExpander.class);
+```
+
+### 2.7 手动事务管理
+```java
+FastTransaction.open(); //开启事务
+FastTransaction.commit(); //提交
+FastTransaction.rollback(); //回滚
+
+//示例
+FastTransaction.open(); //开启事务
+FastUserTestFastDao.create().dao().insert(user); //新增数据
+FastTransaction.commit(); //提交
 ```
 
 **感谢使用,希望您能提出宝贵的建议,我会不断改进更新**
