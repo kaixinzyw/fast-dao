@@ -40,6 +40,7 @@ public class FastDaoTest {
         test_n_findPage();
         test_o_FieldOperating();
         test_p_CustomSql();
+        test_q_CustomUpdateColumns();
     }
 
     public static void test_a_insertList() {
@@ -60,7 +61,6 @@ public class FastDaoTest {
             user.setUserName("FastDao" + i);
             user.setAge(i);
             FastUserTest insert = FastUserTestFastDao.create().dao().insert(user);
-            System.out.println(JSONObject.toJSONString(insert,true));
         }
     }
 
@@ -234,6 +234,10 @@ public class FastDaoTest {
         HashMap<String, Object> params = new HashMap<>();
         params.put("userName","%FastDao%");
         List<FastUserTest> all = FastCustomSqlDao.create(FastUserTest.class, sql, params).findAll();
+    }
+
+    public static void test_q_CustomUpdateColumns(){
+        FastUserTestFastDao.create().age().customUpdateValue("age + 1").dao().update(null);
     }
 
 }

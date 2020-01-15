@@ -65,12 +65,12 @@ public class FastExample<T> {
     }
 
     /**
-     * 自定义查询列
+     * 自定义查询列,可使用SQL函数,只有在查询时候生效
      *
      * @param queryColumn SELECT查询时自定义查询列
      */
     public void customQueryColumn(String queryColumn) {
-        if (queryColumn == null) {
+        if (StrUtil.isBlank(queryColumn)) {
             return;
         }
         criteria.conditionPackages.addCustomQueryColumn(queryColumn);
@@ -560,6 +560,16 @@ public class FastExample<T> {
          */
         public Criteria<P> orderByAsc() {
             conditionPackages.addOrderByQuery(fieldName, false);
+            return this;
+        }
+
+        /**
+         * 自定义更新,可使用SQL函数,只有在更新时候生效
+         *
+         * @param value 更新数据
+         */
+        public Criteria<P> customUpdateValue(String value) {
+            conditionPackages.addCustomUpdateColumns(fieldName, value);
             return this;
         }
 

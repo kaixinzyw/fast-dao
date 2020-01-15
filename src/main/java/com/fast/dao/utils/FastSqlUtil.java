@@ -60,6 +60,7 @@ public class FastSqlUtil {
     private static final String PARAM_SUFFIX = "} ";
     private static final String JDBC_SQL_CONVERSION_RE_RULE = "[#][{](\\w*)[}]";
     private static final String JDBC_SQL_CONVERSION_RE_RESULT = ":$1";
+    private static final String JDBC_SQL_NEW_TIME_FUNCTION = "NOW()";
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -371,24 +372,45 @@ public class FastSqlUtil {
 
         List<String> fieldNames = tableMapper.getFieldNames();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
-        for (int i = 0; i < fieldNames.size(); i++) {
-            String fieldName = fieldNames.get(i);
-            if (FastDaoAttributes.isAutoSetCreateTime && fieldName.equals(FastDaoAttributes.createTimeFieldName)) {
-                continue;
-            }
-            Object fieldValue = BeanUtil.getFieldValue(param.getUpdate(), fieldName);
-            if (fieldValue == null) {
-                if (param.getUpdateSelective()) {
+        Object updateData = param.getUpdate();
+        if (updateData != null) {
+            for (int i = 0; i < fieldNames.size(); i++) {
+                String fieldName = fieldNames.get(i);
+                if (FastDaoAttributes.isAutoSetCreateTime && fieldName.equals(FastDaoAttributes.createTimeFieldName)) {
                     continue;
                 }
-                if (FastDaoAttributes.isOpenLogicDelete && fieldName.equals(FastDaoAttributes.deleteFieldName)) {
-                    continue;
+                Object fieldValue = BeanUtil.getFieldValue(updateData, fieldName);
+                if (fieldValue == null) {
+                    if (param.getUpdateSelective()) {
+                        continue;
+                    }
+                    if (FastDaoAttributes.isOpenLogicDelete && fieldName.equals(FastDaoAttributes.deleteFieldName)) {
+                        continue;
+                    }
                 }
+                sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL);
+                packParam(sqlBuilder, paramMap, fieldValue, paramIndex);
+                sqlBuilder.append(COMMA);
             }
-            sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL);
-            packParam(sqlBuilder, paramMap, fieldValue, paramIndex);
-            sqlBuilder.append(COMMA);
         }
+
+        if (param.getFastExample() != null && param.getFastExample().conditionPackages() != null) {
+            Map<String, String> customUpdateColumns = param.getFastExample().conditionPackages().getCustomUpdateColumns();
+            if (CollUtil.isNotEmpty(customUpdateColumns)) {
+                for (String fieldName : customUpdateColumns.keySet()) {
+                    sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL).append(customUpdateColumns.get(fieldName)).append(COMMA);
+                }
+            }
+        }
+
+        if (!sqlBuilder.toString().contains(COMMA)) {
+            throw new RuntimeException(tableMapper.getTableName() + ": update未更新任何数据!!!");
+        }
+
+        if (updateData == null && FastDaoAttributes.isAutoSetUpdateTime && tableMapper.getAutoSetUpdateTime()) {
+            sqlBuilder.append(QUOTATION).append(FastDaoAttributes.updateTimeTableColumnName).append(QUOTATION).append(EQUAL).append(JDBC_SQL_NEW_TIME_FUNCTION).append(COMMA);
+        }
+
         return sqlBuilder.del(sqlBuilder.length() - 2, sqlBuilder.length()).append(CRLF);
     }
 

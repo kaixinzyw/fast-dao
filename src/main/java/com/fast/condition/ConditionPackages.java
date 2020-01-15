@@ -55,6 +55,8 @@ public class ConditionPackages {
 
     private Set<String> customQueryColumns;
 
+    private Map<String, String> customUpdateColumns;
+
     /**
      * 逻辑删除保护,默认开启
      */
@@ -85,6 +87,7 @@ public class ConditionPackages {
     public void addEqualFieldQuery(String fieldName, Object value) {
         conditions.add(FastCondition.equal(fieldName, value, way));
     }
+
     public void addNotEqualFieldQuery(String fieldName, Object value) {
         conditions.add(FastCondition.notEqual(fieldName, value, way));
     }
@@ -92,6 +95,7 @@ public class ConditionPackages {
     public void addLikeQuery(String fieldName, Object value) {
         conditions.add(FastCondition.like(fieldName, value, way));
     }
+
     public void addNotLikeQuery(String fieldName, Object value) {
         conditions.add(FastCondition.notLike(fieldName, value, way));
     }
@@ -99,12 +103,15 @@ public class ConditionPackages {
     public void addInQuery(String inName, Object... inValues) {
         conditions.add(FastCondition.in(inName, new ArrayList<>(Arrays.asList(inValues)), way));
     }
+
     public void addInQuery(String inName, Collection inValues) {
         conditions.add(FastCondition.in(inName, inValues, way));
     }
+
     public void addNotInQuery(String inName, Object... inValues) {
         conditions.add(FastCondition.notIn(inName, new ArrayList<>(Arrays.asList(inValues)), way));
     }
+
     public void addNotInQuery(String inName, Collection inValues) {
         conditions.add(FastCondition.notIn(inName, inValues, way));
     }
@@ -112,6 +119,7 @@ public class ConditionPackages {
     public void addBetweenQuery(String betweenName, Object betweenMin, Object betweenMax) {
         conditions.add(FastCondition.betweenQuery(betweenName, betweenMin, betweenMax, way));
     }
+
     public void addNotBetweenQuery(String betweenName, Object betweenMin, Object betweenMax) {
         conditions.add(FastCondition.notBetweenQuery(betweenName, betweenMin, betweenMax, way));
     }
@@ -157,12 +165,10 @@ public class ConditionPackages {
     }
 
     public void addShowField(String showField) {
-        if (this.showFields != null) {
-            this.showFields.add(showField);
-        } else {
+        if (this.showFields == null) {
             this.showFields = new HashSet<>();
-            this.showFields.add(showField);
         }
+        this.showFields.add(showField);
     }
 
     public Set<String> getHideFields() {
@@ -170,12 +176,10 @@ public class ConditionPackages {
     }
 
     public void addHideField(String hideField) {
-        if (this.hideFields != null) {
-            this.hideFields.add(hideField);
-        } else {
+        if (this.hideFields == null) {
             this.hideFields = new HashSet<>();
-            this.hideFields.add(hideField);
         }
+        this.hideFields.add(hideField);
     }
 
     public Set<String> getDistinctFields() {
@@ -183,89 +187,90 @@ public class ConditionPackages {
     }
 
     public void addDistinctField(String distinctField) {
-        if (this.distinctFields != null) {
-            this.distinctFields.add(distinctField);
-        } else {
+        if (this.distinctFields == null) {
             this.distinctFields = new HashSet<>();
-            this.distinctFields.add(distinctField);
         }
+        this.distinctFields.add(distinctField);
     }
 
     public Set<String> getSumFields() {
         return sumFields;
     }
+
     public void addSumFields(String sumField) {
-        if (this.sumFields != null) {
-            this.sumFields.add(sumField);
-        } else {
+        if (this.sumFields == null) {
             this.sumFields = new HashSet<>();
-            this.sumFields.add(sumField);
         }
+        this.sumFields.add(sumField);
     }
 
     public Set<String> getAvgFields() {
         return avgFields;
     }
+
     public void addAvgFields(String avgField) {
-        if (this.avgFields != null) {
-            this.avgFields.add(avgField);
-        } else {
+        if (this.avgFields == null) {
             this.avgFields = new HashSet<>();
-            this.avgFields.add(avgField);
         }
+        this.avgFields.add(avgField);
     }
 
     public Set<String> getMinFields() {
         return minFields;
     }
+
     public void addMinFields(String minField) {
-        if (this.minFields != null) {
-            this.minFields.add(minField);
-        } else {
+        if (this.minFields == null) {
             this.minFields = new HashSet<>();
-            this.minFields.add(minField);
         }
+        this.minFields.add(minField);
     }
 
     public Set<String> getMaxFields() {
         return maxFields;
     }
+
     public void addMaxFields(String maxField) {
-        if (this.maxFields != null) {
-            this.maxFields.add(maxField);
-        } else {
+        if (this.maxFields == null) {
             this.maxFields = new HashSet<>();
-            this.maxFields.add(maxField);
         }
+        this.maxFields.add(maxField);
     }
 
     public Set<String> getCustomQueryColumns() {
         return customQueryColumns;
     }
+
     public void addCustomQueryColumn(String customField) {
-        if (this.customQueryColumns != null) {
-            this.customQueryColumns.add(customField);
-        } else {
-            this.customQueryColumns = new HashSet<>();
-            this.customQueryColumns.add(customField);
+        if (this.customQueryColumns == null) {
+            this.customQueryColumns = new HashSet<String>();
         }
+        this.customQueryColumns.add(customField);
     }
 
+    public Map<String, String> getCustomUpdateColumns() {
+        return customUpdateColumns;
+    }
 
+    public void addCustomUpdateColumns(String fieldName, String value) {
+        if (this.customUpdateColumns == null) {
+            this.customUpdateColumns = new HashMap<>();
+        }
+        this.customUpdateColumns.put(fieldName, value);
+    }
 
     public List<OrderByQuery> getOrderByQuery() {
         return orderByQuery;
     }
 
     public void addOrderByQuery(String orderByName, Boolean isDesc) {
-        if (this.orderByQuery != null) {
-            this.orderByQuery.add(new OrderByQuery(orderByName, isDesc));
-        } else {
-            this.orderByQuery = new ArrayList<>(Arrays.asList(new OrderByQuery(orderByName, isDesc)));
+        if (this.orderByQuery == null) {
+            this.orderByQuery = new ArrayList<>();
         }
+        this.orderByQuery.add(new OrderByQuery(orderByName, isDesc));
     }
 
-    public void customSQL(String customSQL, Map<String, Object> customSQLParams){
+    public void customSQL(String customSQL, Map<String, Object> customSQLParams) {
         this.customSql = customSQL + StrUtil.SPACE;
         this.customSqlParams = customSQLParams;
     }
