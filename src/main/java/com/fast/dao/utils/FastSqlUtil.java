@@ -394,20 +394,17 @@ public class FastSqlUtil {
             }
         }
 
-        if (param.getFastExample() != null && param.getFastExample().conditionPackages() != null) {
+        if (param.getFastExample() != null && CollUtil.isNotEmpty(param.getFastExample().conditionPackages().getCustomUpdateColumns())) {
             Map<String, String> customUpdateColumns = param.getFastExample().conditionPackages().getCustomUpdateColumns();
-            if (CollUtil.isNotEmpty(customUpdateColumns)) {
-                for (String fieldName : customUpdateColumns.keySet()) {
-                    sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL).append(customUpdateColumns.get(fieldName)).append(COMMA);
-                }
+            for (String fieldName : customUpdateColumns.keySet()) {
+                sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL).append(customUpdateColumns.get(fieldName)).append(COMMA);
             }
         }
 
-        if (!sqlBuilder.toString().contains(COMMA)) {
-            throw new RuntimeException(tableMapper.getTableName() + ": update未更新任何数据!!!");
-        }
-
         if (updateData == null && FastDaoAttributes.isAutoSetUpdateTime && tableMapper.getAutoSetUpdateTime()) {
+            if (!sqlBuilder.toString().contains(COMMA)) {
+                throw new RuntimeException(tableMapper.getTableName() + ": update未更新任何数据!!!");
+            }
             sqlBuilder.append(QUOTATION).append(FastDaoAttributes.updateTimeTableColumnName).append(QUOTATION).append(EQUAL).append(JDBC_SQL_NEW_TIME_FUNCTION).append(COMMA);
         }
 
