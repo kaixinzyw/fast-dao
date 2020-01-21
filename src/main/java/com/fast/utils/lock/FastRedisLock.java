@@ -1,6 +1,7 @@
-package com.fast.utils;
+package com.fast.utils.lock;
 
 import com.fast.config.FastDaoAttributes;
+import com.fast.utils.RedisLockTimeOutException;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -9,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 分布式锁
+ *
+ * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class FastRedisLock {
 
@@ -37,7 +40,7 @@ public class FastRedisLock {
      * @param timeUnit 时间单位
      * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static void lockTime(String keyStr, long time, TimeUnit timeUnit) throws RedisLockTimeOutException {
+    public static BlockingLock lockTime(String keyStr, long time, TimeUnit timeUnit) throws RedisLockTimeOutException {
         ValueOperations<String, String> valueOperations = init().opsForValue();
         String key = KEY_PRE + keyStr;
         long lockDurationTime = timeUnit.toMillis(time);
@@ -56,6 +59,8 @@ public class FastRedisLock {
                 throw new RedisLockTimeOutException("Redis Lock Time Error Key: " + key);
             }
         }
+        return new BlockingLock(keyStr);
+
     }
 
     /**
@@ -65,8 +70,8 @@ public class FastRedisLock {
      * @param seconds 最大阻塞时间,秒
      * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static void lockTime(String keyStr, Integer seconds) throws RedisLockTimeOutException {
-        lockTime(keyStr, seconds, TimeUnit.SECONDS);
+    public static BlockingLock lockTime(String keyStr, Integer seconds) throws RedisLockTimeOutException {
+        return lockTime(keyStr, seconds, TimeUnit.SECONDS);
     }
 
     /**
@@ -75,8 +80,8 @@ public class FastRedisLock {
      * @param keyStr 锁名
      * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static void lockTime(String keyStr) throws RedisLockTimeOutException {
-        lockTime(keyStr, 10L, TimeUnit.SECONDS);
+    public static BlockingLock lockTime(String keyStr) throws RedisLockTimeOutException {
+        return lockTime(keyStr, 10L, TimeUnit.SECONDS);
     }
 
 
@@ -88,8 +93,8 @@ public class FastRedisLock {
      * @param timeUnit 时间单位
      * @return key存在期间有相同的key进行访问, 返回false
      */
-    public static Boolean lock(String keyStr, long time, TimeUnit timeUnit) {
-        return init().opsForValue().setIfAbsent(KEY_PRE + keyStr, KEY_DEF_VALUE, time, timeUnit);
+    public static StatusLock lock(String keyStr, long time, TimeUnit timeUnit) {
+        return new StatusLock(keyStr, init().opsForValue().setIfAbsent(KEY_PRE + keyStr, KEY_DEF_VALUE, time, timeUnit));
     }
 
 
@@ -100,7 +105,7 @@ public class FastRedisLock {
      * @param seconds key最大生效时间,秒
      * @return key存在期间有相同的key进行访问, 返回false
      */
-    public static Boolean lock(String keyStr, Integer seconds) {
+    public static StatusLock lock(String keyStr, Integer seconds) {
         return lock(keyStr, seconds, TimeUnit.SECONDS);
     }
 
@@ -110,7 +115,7 @@ public class FastRedisLock {
      * @param keyStr 锁名
      * @return key存在期间有相同的key进行访问, 返回false
      */
-    public static Boolean lock(String keyStr) {
+    public static StatusLock lock(String keyStr) {
         return lock(keyStr, 10, TimeUnit.SECONDS);
     }
 
