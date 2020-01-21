@@ -1,7 +1,6 @@
 package com.fast.utils.lock;
 
 import com.fast.config.FastDaoAttributes;
-import com.fast.utils.RedisLockTimeOutException;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -39,9 +38,9 @@ public class FastRedisLock {
      * @param keyStr   锁名
      * @param time     最大阻塞时间
      * @param timeUnit 时间单位
-     * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
+     * @throws BlockingLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static BlockingLock blockingLock(String keyStr, long time, TimeUnit timeUnit) throws RedisLockTimeOutException {
+    public static BlockingLock blockingLock(String keyStr, long time, TimeUnit timeUnit) throws BlockingLockTimeOutException {
         ValueOperations<String, String> valueOperations = init().opsForValue();
         String key = KEY_PRE + keyStr;
         long lockDurationTime = timeUnit.toMillis(time);
@@ -50,14 +49,14 @@ public class FastRedisLock {
         while (!valueOperations.setIfAbsent(key, KEY_DEF_VALUE, redisKeyExpiredTime, TimeUnit.MILLISECONDS)) {
             if (System.currentTimeMillis() > lockExpiredTime) {
                 lockRelease(key);
-                throw new RedisLockTimeOutException("Redis Lock Time Out Key: " + keyStr);
+                throw new BlockingLockTimeOutException("Redis Lock Time Out Key: " + keyStr);
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(50);
             } catch (InterruptedException ignore) {
                 lockRelease(key);
                 ignore.printStackTrace();
-                throw new RedisLockTimeOutException("Redis Lock Time Error Key: " + keyStr);
+                throw new BlockingLockTimeOutException("Redis Lock Time Error Key: " + keyStr);
             }
         }
         return new BlockingLock(keyStr);
@@ -70,9 +69,9 @@ public class FastRedisLock {
      *
      * @param keyStr  锁名
      * @param seconds 最大阻塞时间,秒
-     * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
+     * @throws BlockingLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static BlockingLock blockingLock(String keyStr, Integer seconds) throws RedisLockTimeOutException {
+    public static BlockingLock blockingLock(String keyStr, Integer seconds) throws BlockingLockTimeOutException {
         return blockingLock(keyStr, seconds, TimeUnit.SECONDS);
     }
 
@@ -81,9 +80,9 @@ public class FastRedisLock {
      * 对指定Key存储10秒,Key存在时如果有相同Key进行请求,则进行阻塞,可使用lockRelease(KEY) 进行提前解锁
      *
      * @param keyStr 锁名
-     * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
+     * @throws BlockingLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static BlockingLock blockingLock(String keyStr) throws RedisLockTimeOutException {
+    public static BlockingLock blockingLock(String keyStr) throws BlockingLockTimeOutException {
         return blockingLock(keyStr, 10L, TimeUnit.SECONDS);
     }
 
