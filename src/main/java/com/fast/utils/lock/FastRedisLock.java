@@ -32,6 +32,7 @@ public class FastRedisLock {
 
 
     /**
+     * 阻塞锁
      * 对指定Key存储,Key存在时如果有相同Key进行请求,则进行阻塞,可使用lockRelease(KEY) 进行提前解锁
      * 每50毫秒对key进行重复检测,如果不存在则取消阻塞
      *
@@ -40,7 +41,7 @@ public class FastRedisLock {
      * @param timeUnit 时间单位
      * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static BlockingLock lockTime(String keyStr, long time, TimeUnit timeUnit) throws RedisLockTimeOutException {
+    public static BlockingLock blockingLock(String keyStr, long time, TimeUnit timeUnit) throws RedisLockTimeOutException {
         ValueOperations<String, String> valueOperations = init().opsForValue();
         String key = KEY_PRE + keyStr;
         long lockDurationTime = timeUnit.toMillis(time);
@@ -49,14 +50,14 @@ public class FastRedisLock {
         while (!valueOperations.setIfAbsent(key, KEY_DEF_VALUE, redisKeyExpiredTime, TimeUnit.MILLISECONDS)) {
             if (System.currentTimeMillis() > lockExpiredTime) {
                 lockRelease(key);
-                throw new RedisLockTimeOutException("Redis Lock Time Out Key: " + key);
+                throw new RedisLockTimeOutException("Redis Lock Time Out Key: " + keyStr);
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(50);
             } catch (InterruptedException ignore) {
                 lockRelease(key);
                 ignore.printStackTrace();
-                throw new RedisLockTimeOutException("Redis Lock Time Error Key: " + key);
+                throw new RedisLockTimeOutException("Redis Lock Time Error Key: " + keyStr);
             }
         }
         return new BlockingLock(keyStr);
@@ -64,28 +65,31 @@ public class FastRedisLock {
     }
 
     /**
+     * 阻塞锁
      * 对指定Key存储,Key存在时如果有相同Key进行请求,则进行阻塞,可使用lockRelease(KEY) 进行提前解锁
      *
      * @param keyStr  锁名
      * @param seconds 最大阻塞时间,秒
      * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static BlockingLock lockTime(String keyStr, Integer seconds) throws RedisLockTimeOutException {
-        return lockTime(keyStr, seconds, TimeUnit.SECONDS);
+    public static BlockingLock blockingLock(String keyStr, Integer seconds) throws RedisLockTimeOutException {
+        return blockingLock(keyStr, seconds, TimeUnit.SECONDS);
     }
 
     /**
+     * 阻塞锁
      * 对指定Key存储10秒,Key存在时如果有相同Key进行请求,则进行阻塞,可使用lockRelease(KEY) 进行提前解锁
      *
      * @param keyStr 锁名
      * @throws RedisLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
      */
-    public static BlockingLock lockTime(String keyStr) throws RedisLockTimeOutException {
-        return lockTime(keyStr, 10L, TimeUnit.SECONDS);
+    public static BlockingLock blockingLock(String keyStr) throws RedisLockTimeOutException {
+        return blockingLock(keyStr, 10L, TimeUnit.SECONDS);
     }
 
 
     /**
+     * 状态锁
      * 对指定key进行存储,可使用lockRelease(KEY) 进行提前删除
      *
      * @param keyStr   锁名
@@ -93,34 +97,36 @@ public class FastRedisLock {
      * @param timeUnit 时间单位
      * @return key存在期间有相同的key进行访问, 返回false
      */
-    public static StatusLock lock(String keyStr, long time, TimeUnit timeUnit) {
+    public static StatusLock statusLock(String keyStr, long time, TimeUnit timeUnit) {
         return new StatusLock(keyStr, init().opsForValue().setIfAbsent(KEY_PRE + keyStr, KEY_DEF_VALUE, time, timeUnit));
     }
 
 
     /**
+     * 状态锁
      * 对指定key进行存储,可使用lockRelease(KEY) 进行提前删除
      *
      * @param keyStr  锁名
      * @param seconds key最大生效时间,秒
      * @return key存在期间有相同的key进行访问, 返回false
      */
-    public static StatusLock lock(String keyStr, Integer seconds) {
-        return lock(keyStr, seconds, TimeUnit.SECONDS);
+    public static StatusLock statusLock(String keyStr, Integer seconds) {
+        return statusLock(keyStr, seconds, TimeUnit.SECONDS);
     }
 
     /**
+     * 状态锁
      * 对指定key进行存储10秒,可使用lockRelease(KEY) 进行提前删除
      *
      * @param keyStr 锁名
      * @return key存在期间有相同的key进行访问, 返回false
      */
-    public static StatusLock lock(String keyStr) {
-        return lock(keyStr, 10, TimeUnit.SECONDS);
+    public static StatusLock statusLock(String keyStr) {
+        return statusLock(keyStr, 10, TimeUnit.SECONDS);
     }
 
     /**
-     * 解锁,删除Redis中指定key
+     * 释放锁,释放Redis中指定key
      *
      * @param keyStr key
      */
