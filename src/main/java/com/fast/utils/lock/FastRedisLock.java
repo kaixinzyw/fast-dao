@@ -134,7 +134,7 @@ public class FastRedisLock {
         lock.delete(KEY_PRE + lockKey);
     }
 
-    public static Boolean lockKeyIsExist(String lockKey) {
+    public static Boolean lockIsExist(String lockKey) {
         return init().opsForValue().get(KEY_PRE + lockKey) == null ? Boolean.FALSE : Boolean.TRUE;
     }
 

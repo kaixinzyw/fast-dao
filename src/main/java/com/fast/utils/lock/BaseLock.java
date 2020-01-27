@@ -31,6 +31,6 @@ public class BaseLock {
      * @return 检测锁是否存在,此查询为实时查询
      */
     public Boolean lockIsExist() {
-        return FastRedisLock.lockKeyIsExist(lockKey);
+        return FastRedisLock.lockIsExist(lockKey);
     }
 }
