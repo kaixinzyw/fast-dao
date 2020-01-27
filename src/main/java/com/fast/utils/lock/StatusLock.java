@@ -8,20 +8,20 @@ package com.fast.utils.lock;
 public class StatusLock extends BaseLock {
 
     /**
-     * 锁是否可用
+     * 锁是否被占用
      */
-    private Boolean lockStatus;
+    private final Boolean isLock;
 
-    public StatusLock(String lockKey, Boolean lockStatus) {
+    public StatusLock(String lockKey, Boolean isLock) {
         super(lockKey);
-        this.lockStatus = lockStatus;
+        this.isLock = isLock;
     }
 
     /**
-     * @return 获取锁是否被占用
+     * @return 锁是否被占用,此状态为调用状态锁时的结果,后续修改不会改变,请注意使用
      */
     public Boolean isLock() {
-        return !lockStatus;
+        return isLock;
     }
 
 }
