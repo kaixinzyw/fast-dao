@@ -179,7 +179,9 @@ public class FastExample<T> {
                 }
                 Object[] vs = ArrayUtil.wrap(value);
                 if (vs.length == 1) {
-                    conditionPackages.addEqualFieldQuery(fieldName, vs[0]);
+                    if (vs[0] != null) {
+                        conditionPackages.addEqualFieldQuery(fieldName, vs[0]);
+                    }
                     return this;
                 } else {
                     in(vs);
@@ -204,7 +206,9 @@ public class FastExample<T> {
                 }
                 Object[] vs = ArrayUtil.wrap(value);
                 if (vs.length == 1) {
-                    conditionPackages.addNotEqualFieldQuery(fieldName, vs[0]);
+                    if (vs[0] != null) {
+                        conditionPackages.addNotEqualFieldQuery(fieldName, vs[0]);
+                    }
                     return this;
                 } else {
                     in(vs);
