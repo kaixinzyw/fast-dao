@@ -40,7 +40,7 @@ public class BeanCopyUtil {
         return BeanUtil.mapToBeanIgnoreCase(m, clazz, true);
     }
 
-    public static <T> PageInfo<T> cope(PageInfo page, Class<T> clazz) {
+    public static <T> PageInfo<T> copy(PageInfo page, Class<T> clazz) {
         if (page == null) {
             return null;
         }
