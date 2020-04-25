@@ -39,6 +39,7 @@ public class FastRedisLock {
      * @param time     最大阻塞时间
      * @param timeUnit 时间单位
      * @throws BlockingLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
+     * @return 锁
      */
     public static BlockingLock blockingLock(String lockKey, long time, TimeUnit timeUnit) throws BlockingLockTimeOutException {
         ValueOperations<String, String> valueOperations = init().opsForValue();
@@ -70,6 +71,7 @@ public class FastRedisLock {
      * @param lockKey 锁名
      * @param seconds 最大阻塞时间,秒
      * @throws BlockingLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
+     * @return 锁
      */
     public static BlockingLock blockingLock(String lockKey, Integer seconds) throws BlockingLockTimeOutException {
         return blockingLock(lockKey, seconds, TimeUnit.SECONDS);
@@ -81,6 +83,7 @@ public class FastRedisLock {
      *
      * @param lockKey 锁名
      * @throws BlockingLockTimeOutException 如果阻塞时间超出还未进行解锁操作,则抛出此异常信息
+     * @return 锁
      */
     public static BlockingLock blockingLock(String lockKey) throws BlockingLockTimeOutException {
         return blockingLock(lockKey, 10L, TimeUnit.SECONDS);

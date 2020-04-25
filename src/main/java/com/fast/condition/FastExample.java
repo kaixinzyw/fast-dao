@@ -571,6 +571,7 @@ public class FastExample<T> {
          * 自定义更新,可使用SQL函数,只有在更新时候生效
          *
          * @param value 更新数据
+         * @return 查询封装
          */
         public Criteria<P> customUpdateValue(String value) {
             conditionPackages.addCustomUpdateColumns(fieldName, value);
