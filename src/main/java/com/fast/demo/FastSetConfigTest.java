@@ -48,7 +48,7 @@ public class FastSetConfigTest {
          * 参数1:  逻辑删除字段名
          * 参数2:  逻辑删除标记默认值
          */
-        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
+//        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
 
 
 

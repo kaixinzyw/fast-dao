@@ -23,27 +23,34 @@ public class FastDaoTest {
 
     public static void main(String[] args) {
         test_a_insert();
-//        test_a_insertList();
-//        test_b_findByAge();
-//        test_c_findSQL();
-//        test_c_findOne();
-//        test_d_findByIn();
-//        test_e_updateByAgeOverwrite();
-//        test_f_updateByAge();
-//        test_g_updateOverwrite();
-//        test_h_update();
-//        test_i_deleteByAge();
-//        test_g_deleteByAgeDisk();
-//        test_k_delete();
-//        test_l_deleteDisk();
-//        test_m_findAll();
-//        test_n_findPage();
-//        test_o_FieldOperating();
-//        test_p_CustomSql();
-//        test_q_CustomUpdateColumns();
+        test_a_insertList();
+        test_b_findByAge();
+        test_c_findSQL();
+        test_c_findOne();
+        test_d_findByIn();
+        test_e_updateByAgeOverwrite();
+        test_f_updateByAge();
+        test_g_updateOverwrite();
+        test_h_update();
+        test_i_deleteByAge();
+        test_g_deleteByAgeDisk();
+        test_k_delete();
+        test_l_deleteDisk();
+        test_m_findAll();
+        test_n_findPage();
+        test_o_FieldOperating();
+        test_p_CustomSql();
+        test_q_CustomUpdateColumns();
+        test_a_findPage();
     }
 
-    public static void test_a_insertList() {
+    public static void test_a_findPage() {
+
+        PageInfo<FastUserTest> page = FastUserTestFastDao.create(new FastDaoTest()).id(null).dao().findPage(1, 1);
+        System.out.println(JSONObject.toJSONString(page));
+    }
+
+        public static void test_a_insertList() {
         List<FastUserTest> userList = new ArrayList<>();
         for (int i = 100; i <= 200; i++) {
             FastUserTest user = new FastUserTest();

@@ -31,6 +31,8 @@ public class FastSqlUtil {
     private static final String AND = FastCondition.Way.AND.expression;
     private static final String OR = FastCondition.Way.OR.expression;
     private static final String WHERE = "WHERE ";
+    private static final String WHERE_CRLF = "WHERE " + System.lineSeparator();
+    private static final Integer WHERE_CRLF_LENGTH = ("WHERE " + System.lineSeparator()).length();
     private static final String SELECT = "SELECT ";
     private static final String UPDATE = "UPDATE ";
     private static final String DELETE = "DELETE FROM ";
@@ -130,8 +132,10 @@ public class FastSqlUtil {
                 }
             }
         }
+        boolean isWHERE = false;
         if (isFirst && select.getConditions().size() > 0) {
             sqlBuilder.append(WHERE);
+            isWHERE = true;
         }
 
         ParamIndex paramIndex = new ParamIndex();
@@ -144,6 +148,9 @@ public class FastSqlUtil {
                 isFirst = Boolean.FALSE;
             }
             whereCondition(condition, sqlBuilder, paramMap, tableMapper, paramIndex);
+        }
+        if (isWHERE && sqlBuilder.subSequence(sqlBuilder.length() - WHERE_CRLF_LENGTH,sqlBuilder.length()).equals(WHERE_CRLF)) {
+            sqlBuilder.del(sqlBuilder.toString().indexOf(WHERE), sqlBuilder.length());
         }
     }
 

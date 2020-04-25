@@ -99,7 +99,7 @@ public class FastDao<Pojo> {
      * @param navigatePages 页面数量
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
-    public PageInfo<Pojo> findPage(int pageNum, int pageSize, int navigatePages) {
+    public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize, Integer navigatePages) {
         return DaoTemplate.init(clazz, fastExample).findPage(pageNum, pageSize, navigatePages);
     }
 
@@ -110,7 +110,7 @@ public class FastDao<Pojo> {
      * @param pageSize 条数
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
-    public PageInfo<Pojo> findPage(int pageNum, int pageSize) {
+    public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize) {
         return DaoTemplate.init(clazz, fastExample).findPage(pageNum, pageSize, 9);
     }
 

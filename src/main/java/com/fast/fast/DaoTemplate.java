@@ -4,6 +4,7 @@ import cn.hutool.aop.ProxyUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.fast.aspect.DaoActuatorAspect;
 import com.fast.cache.DataCache;
+import com.fast.condition.FastDaoParameterException;
 import com.fast.condition.FastExample;
 import com.fast.config.FastDaoAttributes;
 import com.fast.dao.DaoActuator;
@@ -193,7 +194,10 @@ public class DaoTemplate<T> {
      * @param navigatePages 显示页数
      * @return 查询结果
      */
-    public PageInfo<T> findPage(int pageNum, int pageSize, int navigatePages) {
+    public PageInfo<T> findPage(Integer pageNum, Integer pageSize, Integer navigatePages) {
+        if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1 || navigatePages == null || navigatePages < 1) {
+            throw new FastDaoParameterException("分页参数错误!!!");
+        }
         Integer count = findCount();
         if (count == null || count < 1) {
             return new PageInfo<>(0, pageNum, pageSize, new ArrayList<T>(), navigatePages);
