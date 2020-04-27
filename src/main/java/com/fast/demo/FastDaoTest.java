@@ -22,24 +22,24 @@ public class FastDaoTest {
     }
 
     public static void main(String[] args) {
-//        test_a_insert();
-//        test_a_insertList();
-//        test_b_findByAge();
-//        test_c_findSQL();
-//        test_c_findOne();
-//        test_d_findByIn();
-//        test_e_updateByAgeOverwrite();
-//        test_f_updateByAge();
-//        test_g_updateOverwrite();
-//        test_h_update();
-//        test_i_deleteByAge();
-//        test_g_deleteByAgeDisk();
-//        test_k_delete();
-//        test_l_deleteDisk();
-//        test_m_findAll();
-//        test_n_findPage();
-//        test_o_FieldOperating();
-//        test_p_CustomSql();
+        test_a_insert();
+        test_a_insertList();
+        test_b_findByAge();
+        test_c_findSQL();
+        test_c_findOne();
+        test_d_findByIn();
+        test_e_updateByAgeOverwrite();
+        test_f_updateByAge();
+        test_g_updateOverwrite();
+        test_h_update();
+        test_i_deleteByAge();
+        test_g_deleteByAgeDisk();
+        test_k_delete();
+        test_l_deleteDisk();
+        test_m_findAll();
+        test_n_findPage();
+        test_o_FieldOperating();
+        test_p_CustomSql();
         test_q_CustomUpdateColumns();
     }
 
@@ -231,11 +231,11 @@ public class FastDaoTest {
     }
 
     public static void test_q_CustomUpdateColumns() {
-        FastUserTestFastDao.create().age().customUpdateValue().thisAdd(5).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customUpdateValue().thisMinus(5).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customUpdateValue().thisCustomize("+", 1).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customUpdateValue().customize("age", "+", 1).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customUpdateValue().customize("age - 2").greaterOrEqual(10).dao().update(null);
+        FastUserTestFastDao.create().age().customizeUpdateValue().thisAdd(5).greaterOrEqual(10).dao().update(null);
+        FastUserTestFastDao.create().age().customizeUpdateValue().thisMinus(5).greaterOrEqual(10).dao().update(null);
+        FastUserTestFastDao.create().age().customizeUpdateValue().thisCustomize("+", 1).greaterOrEqual(10).dao().update(null);
+        FastUserTestFastDao.create().age().customizeUpdateValue().customize("age", "+", 1).greaterOrEqual(10).dao().update(null);
+        FastUserTestFastDao.create().age().customizeUpdateValue().customize("age - 2").greaterOrEqual(10).dao().update(null);
     }
 
 }
