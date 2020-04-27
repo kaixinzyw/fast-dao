@@ -8,7 +8,7 @@ import com.fast.mapper.TableMapperUtil;
  * 注意,同一列操作不能进行多次操作,多次操作只会最后一次生效
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class CustomUpdate<Pojo> {
+public class CustomizeUpdate<Pojo> {
 
     /**
      * 条件封装
@@ -23,7 +23,7 @@ public class CustomUpdate<Pojo> {
      */
     private String tableColumnName;
 
-    public CustomUpdate(Class<Pojo> pojoClass, FastExample fastExample, String fieldName) {
+    public CustomizeUpdate(Class<Pojo> pojoClass, FastExample fastExample, String fieldName) {
         this.fastExample = fastExample;
         this.fieldName = fieldName;
         TableMapper<Pojo> tableMapper = TableMapperUtil.getTableMappers(pojoClass);

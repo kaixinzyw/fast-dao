@@ -571,8 +571,8 @@ public class FastExample<T> {
          * 自定义更新,可使用SQL函数,只有在更新时候生效
          * @return 查询封装
          */
-        public CustomUpdate<P> customUpdateValue() {
-            return new CustomUpdate<P>(pojoClass,fastExample,fieldName);
+        public CustomizeUpdate<P> customizeUpdateValue() {
+            return new CustomizeUpdate<P>(pojoClass,fastExample,fieldName);
         }
 
         /**
