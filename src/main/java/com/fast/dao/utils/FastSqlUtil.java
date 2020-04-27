@@ -7,6 +7,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastCondition;
+import com.fast.condition.FastDaoParameterException;
 import com.fast.config.FastDaoAttributes;
 import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
@@ -410,7 +411,7 @@ public class FastSqlUtil {
 
         if (updateData == null && FastDaoAttributes.isAutoSetUpdateTime && tableMapper.getAutoSetUpdateTime()) {
             if (!sqlBuilder.toString().contains(COMMA)) {
-                throw new RuntimeException(tableMapper.getTableName() + ": update未更新任何数据!!!");
+                throw new FastDaoParameterException(tableMapper.getTableName() + ": update未更新任何数据!!!");
             }
             sqlBuilder.append(QUOTATION).append(FastDaoAttributes.updateTimeTableColumnName).append(QUOTATION).append(EQUAL).append(JDBC_SQL_NEW_TIME_FUNCTION).append(COMMA);
         }

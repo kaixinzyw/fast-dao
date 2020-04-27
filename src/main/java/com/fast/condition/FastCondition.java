@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 条件封装
+ * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class FastCondition {
 

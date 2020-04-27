@@ -48,7 +48,7 @@ public class FastSetConfigTest {
          * 参数1:  逻辑删除字段名
          * 参数2:  逻辑删除标记默认值
          */
-//        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
+        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
 
 
 
@@ -72,7 +72,7 @@ public class FastSetConfigTest {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/fast-test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
         dataSource.setUsername("root");
-        dataSource.setPassword("kaixin001");
+        dataSource.setPassword("kaixinzyw");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         return dataSource;
     }
