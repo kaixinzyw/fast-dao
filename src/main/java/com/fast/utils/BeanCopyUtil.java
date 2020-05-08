@@ -1,6 +1,7 @@
 package com.fast.utils;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.fast.utils.page.PageInfo;
 
 import java.util.*;
@@ -37,6 +38,9 @@ public class BeanCopyUtil {
     }
 
     public static <T> T copy(Map<String, Object> m, Class<T> clazz) {
+        if (CollUtil.isEmpty(m)) {
+            return null;
+        }
         return BeanUtil.mapToBeanIgnoreCase(m, clazz, true);
     }
 
@@ -50,6 +54,9 @@ public class BeanCopyUtil {
 
     public static <T> T copy(Object obj, Class<T> clazz) {
         try {
+            if (obj == null) {
+                return null;
+            }
             T t = clazz.newInstance();
             BeanUtil.copyProperties(obj, t, true);
             return t;
