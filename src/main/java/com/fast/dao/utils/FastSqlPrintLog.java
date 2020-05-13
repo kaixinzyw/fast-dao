@@ -27,7 +27,7 @@ public class FastSqlPrintLog {
     private static final String SQL_REPORT = ": SQL 执行 ↓ " + System.lineSeparator();
     private static final String PARAM = "参数: ";
     private static final String RESULT = "执行结果: ";
-    private static final String TIME = System.lineSeparator() + "用时: ";
+    private static final String TIME = "用时: ";
     private static final String TIME_TYPE = "毫秒" + System.lineSeparator();
 
     /**

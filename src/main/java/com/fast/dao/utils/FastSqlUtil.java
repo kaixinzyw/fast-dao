@@ -456,6 +456,7 @@ public class FastSqlUtil {
                 }
             }
             fastSQL.del(fastSQL.length() - 2, fastSQL.length());
+            fastSQL.append(CRLF);
         } else {
             fastSQL.append(LEFT_BRACKETS);
             fastSQL.append(tableMapper.getShowAllTableNames());
