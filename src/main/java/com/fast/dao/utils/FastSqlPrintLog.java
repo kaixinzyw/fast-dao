@@ -29,6 +29,7 @@ public class FastSqlPrintLog {
     private static final String RESULT = "执行结果: ";
     private static final String TIME = "用时: ";
     private static final String TIME_TYPE = "毫秒";
+
     /**
      * SQL日志打印
      *
@@ -71,7 +72,7 @@ public class FastSqlPrintLog {
 
     private static void printSql(String sql, Map<String, Object> sqlParams, FastDaoParam param) {
         Log log = LogFactory.get(param.getTableMapper().getObjClass());
-        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), SQL_REPORT, System.lineSeparator(), sql, TIME, param.getSqlTime().toString(),TIME_TYPE, System.lineSeparator());
+        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), SQL_REPORT, System.lineSeparator(), sql, System.lineSeparator(), TIME, param.getSqlTime().toString(), TIME_TYPE, System.lineSeparator());
         if (sqlParams != null) {
             printLog.append(PARAM);
             printLog.append(JSONObject.toJSONString(sqlParams));
