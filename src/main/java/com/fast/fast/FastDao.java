@@ -65,6 +65,16 @@ public class FastDao<Pojo> {
     }
 
     /**
+     * 通过主键查询数据
+     *
+     * @param primaryKeyValue 主键参数
+     * @return 查询到的数据结果
+     */
+    public Pojo findByPrimaryKey(Object primaryKeyValue){
+        return DaoTemplate.init(clazz, fastExample).findByPrimaryKey(primaryKeyValue);
+    }
+
+    /**
      * 通过查询条件查询一条数据
      *
      * @return 数据结果
@@ -72,6 +82,7 @@ public class FastDao<Pojo> {
     public Pojo findOne() {
         return DaoTemplate.init(clazz, fastExample).findOne();
     }
+
 
     /**
      * 通过查询条件查询所符合要求的所有数据

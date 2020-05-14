@@ -2,6 +2,7 @@ package com.fast.fast;
 
 import cn.hutool.aop.ProxyUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.fast.aspect.DaoActuatorAspect;
 import com.fast.cache.DataCache;
 import com.fast.condition.FastDaoParameterException;
@@ -133,6 +134,21 @@ public class DaoTemplate<T> {
         return ins;
     }
 
+    /**
+     * 通过主键查询数据
+     *
+     * @param primaryKeyValue 主键参数
+     * @return 查询到的数据结果
+     */
+    public T findByPrimaryKey(Object primaryKeyValue) {
+        String primaryKeyField = tableMapper.getPrimaryKeyField();
+        if (StrUtil.isBlank(primaryKeyField)) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
+        }
+        this.fastExample = new FastExample<>(tableMapper.getObjClass());
+        this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
+        return findOne();
+    }
 
     /**
      * 单条数据查询
