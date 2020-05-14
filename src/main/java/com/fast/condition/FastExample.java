@@ -66,7 +66,7 @@ public class FastExample<T> {
 
     /**
      * 自定义查询列,可使用SQL函数,只有在查询时候生效
-     *
+     * 警告! 此方法有SQL注入风险,请严格检查所传参数
      * @param queryColumn SELECT查询时自定义查询列
      */
     public void customQueryColumn(String queryColumn) {
@@ -569,6 +569,7 @@ public class FastExample<T> {
 
         /**
          * 自定义更新,可使用SQL函数,只有在更新时候生效
+         * 警告! 此方法有SQL注入风险,请严格检查所传参数
          * @return 查询封装
          */
         public CustomizeUpdate<P> customizeUpdateValue() {
