@@ -37,9 +37,10 @@ public class CustomizeUpdate<Pojo> {
      * this加value加法运算
      * tableColumnName = tableColumnName + val
      * 如:thisAdd(10) 则 tableColumnName = tableColumnName + 10
-     * 可以使用#{参数名}  new HashMap<>(参数名,数据) 进行占位
+     * 可以使用#{参数名}  new HashMap(参数名,数据) 进行占位
      *
-     * @param val 参数
+     * @param val  参数
+     * @param data 条件
      * @return 条件封装
      */
     public FastExample.Criteria<Pojo> thisAdd(Object val, Map<String, Object> data) {
@@ -51,9 +52,10 @@ public class CustomizeUpdate<Pojo> {
      * this加value减法运算
      * tableColumnName = tableColumnName - val
      * 如:thisMinus(10) 则 tableColumnName = tableColumnName - 10
-     * 可以使用#{参数名}  new HashMap<>(参数名,数据) 进行占位
+     * 可以使用#{参数名}  new HashMap(参数名,数据) 进行占位
      *
-     * @param val 参数
+     * @param val  参数
+     * @param data 条件
      * @return 条件封装
      */
     public FastExample.Criteria<Pojo> thisSbu(Object val, Map<String, Object> data) {
@@ -65,9 +67,10 @@ public class CustomizeUpdate<Pojo> {
      * this加value乘法运算
      * tableColumnName = tableColumnName * val
      * 如:thisMinus(10) 则 tableColumnName = tableColumnName * 10
-     * 可以使用#{参数名}  new HashMap<>(参数名,数据) 进行占位
+     * 可以使用#{参数名}  new HashMap(参数名,数据) 进行占位
      *
-     * @param val 参数
+     * @param val  参数
+     * @param data 条件
      * @return 条件封装
      */
     public FastExample.Criteria<Pojo> thisMul(Object val, Map<String, Object> data) {
@@ -79,9 +82,10 @@ public class CustomizeUpdate<Pojo> {
      * this加value除法运算
      * tableColumnName = tableColumnName / val
      * 如:thisMinus(10) 则 tableColumnName = tableColumnName / 10
-     * 可以使用#{参数名}  new HashMap<>(参数名,数据) 进行占位
+     * 可以使用#{参数名}  new HashMap(参数名,数据) 进行占位
      *
-     * @param val 参数
+     * @param val  参数
+     * @param data 条件
      * @return 条件封装
      */
     public FastExample.Criteria<Pojo> thisDiv(Object val, Map<String, Object> data) {
@@ -93,9 +97,10 @@ public class CustomizeUpdate<Pojo> {
      * this加value取模运算
      * tableColumnName = tableColumnName % val
      * 如:thisMinus(10) 则 tableColumnName = tableColumnName % 10
-     * 可以使用#{参数名}  new HashMap<>(参数名,数据) 进行占位
+     * 可以使用#{参数名}  new HashMap(参数名,数据) 进行占位
      *
-     * @param val 参数
+     * @param val  参数
+     * @param data 条件
      * @return 条件封装
      */
     public FastExample.Criteria<Pojo> thisModulo(Object val, Map<String, Object> data) {
@@ -108,9 +113,10 @@ public class CustomizeUpdate<Pojo> {
      * 自定义字段运算
      * tableColumnName = customizeVal
      * 如:customize("user_age + 1") 则 tableColumnName = user_age + 1
-     * 可以使用#{参数名}  new HashMap<>(参数名,数据) 进行占位
+     * 可以使用#{参数名}  new HashMap(参数名,数据) 进行占位
      *
      * @param customizeVal 操作列后的自定义信息
+     * @param data         条件
      * @return 条件封装
      */
     public FastExample.Criteria<Pojo> customize(String customizeVal, Map<String, Object> data) {
