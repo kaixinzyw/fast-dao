@@ -55,7 +55,7 @@ public class ConditionPackages {
 
     private Set<String> customQueryColumns;
 
-    private Map<String, String> customUpdateColumns;
+    private Map<String, CustomizeUpdate.CustomizeUpdateData> customUpdateColumns;
 
     /**
      * 逻辑删除保护,默认开启
@@ -83,6 +83,26 @@ public class ConditionPackages {
      */
     private Map<String, Object> customSqlParams;
 
+    public void init() {
+        this.conditions = new ArrayList<>();
+        this.way = FastCondition.Way.AND;
+        this.showFields = null;
+        this.hideFields = null;
+        this.distinctFields = null;
+        this.sumFields = null;
+        this.avgFields = null;
+        this.minFields = null;
+        this.maxFields = null;
+        this.customQueryColumns = null;
+        this.customUpdateColumns = null;
+        this.logicDeleteProtect = Boolean.TRUE;
+        this.orderByQuery = null;
+        this.page = null;
+        this.size = null;
+        this.limit = null;
+        this.customSql = null;
+        this.customSqlParams = null;
+    }
 
     public void addEqualFieldQuery(String fieldName, Object value) {
         conditions.add(FastCondition.equal(fieldName, value, way));
@@ -248,11 +268,11 @@ public class ConditionPackages {
         this.customQueryColumns.add(customField);
     }
 
-    public Map<String, String> getCustomUpdateColumns() {
+    public Map<String, CustomizeUpdate.CustomizeUpdateData> getCustomUpdateColumns() {
         return customUpdateColumns;
     }
 
-    public void addCustomUpdateColumns(String fieldName, String value) {
+    public void addCustomUpdateColumns(String fieldName, CustomizeUpdate.CustomizeUpdateData value) {
         if (this.customUpdateColumns == null) {
             this.customUpdateColumns = new HashMap<>();
         }

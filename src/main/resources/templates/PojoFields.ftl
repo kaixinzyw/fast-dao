@@ -6,8 +6,7 @@
 package ${table.pojoFieldsPackPath};
 
 /**
-* 实体bean字段表 ${table.tableDesc}
-* @author ${.now}
+* 字段表 ${table.tableDesc}
 */
 public class ${table.pojoFieldsName} {
 

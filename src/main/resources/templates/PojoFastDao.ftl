@@ -5,16 +5,16 @@
 package ${table.pojoFastDaoPackPath};
 
 import ${table.pojoClassPackPath};
-import com.fast.base.BaseFastDao;
+import com.fast.base.BaseFastDAO;
 import com.fast.condition.FastExample;
 <#list table.packages as package>
 ${package}
 </#list>
 
 /**
-* @author ${.now}
+* ${table.tableDesc}
 */
-public class ${table.pojoFastDaoName} extends BaseFastDao<${beanName}> {
+public class ${table.pojoFastDaoName} extends BaseFastDAO<${beanName}> {
 
     public static ${table.pojoFastDaoName} create(){return new ${table.pojoFastDaoName}();}
     public static ${table.pojoFastDaoName} create(Object object) {

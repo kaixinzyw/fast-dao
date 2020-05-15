@@ -26,7 +26,14 @@ public class FastExample<T> {
      * @param pojoClass 操作类信息
      */
     public FastExample(Class<T> pojoClass) {
+        if (pojoClass == null) {
+            throw new RuntimeException("FastExample初始化失败 pojoClass不能为null");
+        }
         criteria = new Criteria<>(pojoClass, this);
+    }
+
+    public Class<T> getPojoClass() {
+        return criteria.pojoClass;
     }
 
     /**
@@ -569,7 +576,6 @@ public class FastExample<T> {
 
         /**
          * 自定义更新,可使用SQL函数,只有在更新时候生效
-         * 警告! 此方法有SQL注入风险,请严格检查所传参数
          * @return 查询封装
          */
         public CustomizeUpdate<P> customizeUpdateValue() {

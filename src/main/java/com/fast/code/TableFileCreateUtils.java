@@ -100,6 +100,9 @@ public class TableFileCreateUtils {
                 }  else if (FileCreateConfig.CodeCreateModule.Dto.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("Dto.ftl");
                     createFile(conf, tableInfo.getDtoFilePath(), root, temp);
+                }  else if (FileCreateConfig.CodeCreateModule.Dao.codeModule.equals(module)) {
+                    Template temp = cfg.getTemplate("Dao.ftl");
+                    createFile(conf, tableInfo.getDaoFilePath(), root, temp);
                 }
 //                else if (FileCreateConfig.CodeCreateModule.PojoFields.codeModule.equals(module)) {
 //                    Template temp = cfg.getTemplate("PojoFields.ftl");

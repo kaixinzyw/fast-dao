@@ -12,14 +12,14 @@ import java.util.Map;
  * @param <T> 需要操作的对象泛型
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class BaseFastDao<T> {
+public class BaseFastDAO<T> {
 
     /**
      * 条件封装器
      */
     protected FastExample<T> fastExample;
 
-    protected BaseFastDao() {
+    protected BaseFastDAO() {
         fastExample = new FastExample<>((Class<T>) ClassUtil.getTypeArgument(this.getClass()));
     }
 

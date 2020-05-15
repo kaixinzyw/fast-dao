@@ -6,6 +6,7 @@ import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.condition.ConditionPackages;
+import com.fast.condition.CustomizeUpdate;
 import com.fast.condition.FastCondition;
 import com.fast.condition.FastDaoParameterException;
 import com.fast.config.FastDaoAttributes;
@@ -409,9 +410,13 @@ public class FastSqlUtil {
         }
 
         if (param.getFastExample() != null && CollUtil.isNotEmpty(param.getFastExample().conditionPackages().getCustomUpdateColumns())) {
-            Map<String, String> customUpdateColumns = param.getFastExample().conditionPackages().getCustomUpdateColumns();
+            Map<String, CustomizeUpdate.CustomizeUpdateData> customUpdateColumns = param.getFastExample().conditionPackages().getCustomUpdateColumns();
             for (String fieldName : customUpdateColumns.keySet()) {
-                sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL).append(customUpdateColumns.get(fieldName)).append(COMMA);
+                CustomizeUpdate.CustomizeUpdateData customizeUpdateData = customUpdateColumns.get(fieldName);
+                if (CollUtil.isNotEmpty(customizeUpdateData.getData())) {
+                    paramMap.putAll(customizeUpdateData.getData());
+                }
+                sqlBuilder.append(fieldTableNames.get(fieldName)).append(EQUAL).append(customizeUpdateData.getSql()).append(COMMA);
             }
         }
 

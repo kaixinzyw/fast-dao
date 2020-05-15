@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class FastCustomSqlDao<T> {
     private FastExample<T> fastExample;
-    private Class<T> clazz;
 
     private FastCustomSqlDao() {
     }
@@ -30,8 +29,7 @@ public class FastCustomSqlDao<T> {
      */
     public static <T> FastCustomSqlDao<T> create(Class<T> clazz, String sql, Map<String, Object> params) {
         FastCustomSqlDao<T> customSqlDao = new FastCustomSqlDao<>();
-        customSqlDao.clazz = clazz;
-        customSqlDao.fastExample = new FastExample<>(null);
+        customSqlDao.fastExample = new FastExample<>(clazz);
         customSqlDao.fastExample.conditionPackages().customSQL(sql, params);
         return customSqlDao;
     }
@@ -40,7 +38,7 @@ public class FastCustomSqlDao<T> {
      * 新增操作
      */
     public void insert() {
-        DaoTemplate.<T>init(clazz, fastExample).insert(null);
+        DaoTemplate.<T>init(fastExample).insert(null);
     }
 
     /**
@@ -49,7 +47,7 @@ public class FastCustomSqlDao<T> {
      * @return 数据结果
      */
     public T findOne() {
-        return DaoTemplate.<T>init(clazz, fastExample).findOne();
+        return DaoTemplate.<T>init(fastExample).findOne();
     }
 
     /**
@@ -58,7 +56,7 @@ public class FastCustomSqlDao<T> {
      * @return 数据结果
      */
     public List<T> findAll() {
-        return DaoTemplate.<T>init(clazz, fastExample).findAll();
+        return DaoTemplate.<T>init(fastExample).findAll();
     }
 
     /**
@@ -67,7 +65,7 @@ public class FastCustomSqlDao<T> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.<T>init(clazz, fastExample).findCount();
+        return DaoTemplate.<T>init(fastExample).findCount();
     }
 
     /**
@@ -79,7 +77,7 @@ public class FastCustomSqlDao<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(int pageNum, int pageSize, int navigatePages) {
-        return DaoTemplate.<T>init(clazz, fastExample).findPage(pageNum, pageSize, navigatePages);
+        return DaoTemplate.<T>init(fastExample).findPage(pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -90,7 +88,7 @@ public class FastCustomSqlDao<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(int pageNum, int pageSize) {
-        return DaoTemplate.<T>init(clazz, fastExample).findPage(pageNum, pageSize, 9);
+        return DaoTemplate.<T>init(fastExample).findPage(pageNum, pageSize, 9);
     }
 
     /**
@@ -99,7 +97,7 @@ public class FastCustomSqlDao<T> {
      * @return 更新影响到的数据
      */
     public Integer update() {
-        return DaoTemplate.<T>init(clazz, fastExample).update(null, true);
+        return DaoTemplate.<T>init(fastExample).update(null, true);
     }
 
     /**
@@ -108,7 +106,7 @@ public class FastCustomSqlDao<T> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.<T>init(clazz, fastExample).delete();
+        return DaoTemplate.<T>init(fastExample).delete();
     }
 
 }

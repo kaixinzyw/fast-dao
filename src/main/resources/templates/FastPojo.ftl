@@ -11,25 +11,26 @@ import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.Column;
 import java.io.Serializable;
-import com.fast.base.BaseFastDao;
+import com.fast.base.BaseFastDAO;
 import com.fast.condition.FastExample;
 
 <#if conf.useLombok>
 import lombok.Data;
+import lombok.experimental.Accessors;
 </#if>
 <#list table.packages as package>
 ${package}
 </#list>
 
 /**
-* 实体bean ${table.tableDesc}
-* @author ${.now}
+* ${table.tableDesc}
 */
 <#if conf.useLombok>
 @Data
+@Accessors(chain=true)
 </#if>
 @Table(name = "${table.tableName}")
-public class ${table.fastPojoName} extends BaseFastDao<${table.fastPojoName}> implements Serializable {
+public class ${table.fastPojoName} extends BaseFastDAO<${table.fastPojoName}> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,12 +42,14 @@ public class ${table.fastPojoName} extends BaseFastDao<${table.fastPojoName}> im
     @Id
     @Column(name = "${propertiesAnColumns[bean.propertyName]}")
     private ${bean.propertyType} ${bean.propertyName};
+
     <#else>
     /**
     *${bean.propertyDesc}
     */
     @Column(name = "${propertiesAnColumns[bean.propertyName]}")
     private ${bean.propertyType} ${bean.propertyName};
+
     </#if>
 </#list>
 
@@ -56,11 +59,12 @@ public class ${table.fastPojoName} extends BaseFastDao<${table.fastPojoName}> im
 
 <#if !conf.useLombok>
     <#list keys as key>
-    public  ${properties["${key}"]} get${key?cap_first}() {
+    public ${properties["${key}"]} get${key?cap_first}() {
         return this.${key};
     }
-    public  void set${key?cap_first}(${properties["${key}"]} ${key}) {
+    public ${table.fastPojoName} set${key?cap_first}(${properties["${key}"]} ${key}) {
         this.${key} = ${key};
+        return this;
     }
 
     </#list>

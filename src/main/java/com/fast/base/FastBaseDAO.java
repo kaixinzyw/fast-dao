@@ -1,5 +1,11 @@
 package com.fast.base;
 
+/**
+ * DAO层基类封装
+ *
+ * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
+ */
+
 import com.fast.condition.FastExample;
 import com.fast.fast.DaoTemplate;
 import com.fast.utils.page.PageInfo;
@@ -8,9 +14,12 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
+ * DAO层基类封装
+ *
+ * @param <T> 操作的对象泛型
  * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
-public class FastBaseServiceImpl<T> {
+public class FastBaseDAO<T> {
 
     private Class<T> fastDaoPojoClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
@@ -125,4 +134,5 @@ public class FastBaseServiceImpl<T> {
     public Boolean deleteByPrimaryKey(Object primaryKey) {
         return DaoTemplate.init(new FastExample<>(fastDaoPojoClass)).deleteByPrimaryKey(primaryKey);
     }
+
 }

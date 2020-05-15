@@ -1,6 +1,7 @@
 package com.fast.fast;
 
 import cn.hutool.aop.ProxyUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.aspect.DaoActuatorAspect;
@@ -49,10 +50,12 @@ public class DaoTemplate<T> {
      *
      * @param <T>         操作对象的泛型信息
      * @param fastExample 条件封装
-     * @param clazz       执行类
      * @return ORM执行器
      */
-    public static <T> DaoTemplate<T> init(Class<T> clazz, FastExample<T> fastExample) {
+    public static <T> DaoTemplate<T> init(FastExample<T> fastExample) {
+        if (fastExample == null) {
+            throw new RuntimeException("Fast-Dao初始化失败 FastExample不能为null");
+        }
         DaoTemplate<T> template = daoTemplateThreadLocal.get();
         if (template == null) {
             template = new DaoTemplate<>();
@@ -60,7 +63,7 @@ public class DaoTemplate<T> {
             daoTemplateThreadLocal.set(template);
         }
         template.fastExample = fastExample;
-        template.tableMapper = TableMapperUtil.getTableMappers(clazz);
+        template.tableMapper = TableMapperUtil.getTableMappers(fastExample.getPojoClass());
         FastDaoParam.init(template.tableMapper, template.fastExample);
         return template;
     }
@@ -136,16 +139,20 @@ public class DaoTemplate<T> {
 
     /**
      * 通过主键查询数据
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
      *
      * @param primaryKeyValue 主键参数
      * @return 查询到的数据结果
      */
     public T findByPrimaryKey(Object primaryKeyValue) {
+        if (primaryKeyValue == null) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "主键查询参数不能为空!!!");
+        }
         String primaryKeyField = tableMapper.getPrimaryKeyField();
         if (StrUtil.isBlank(primaryKeyField)) {
             throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
         }
-        this.fastExample = new FastExample<>(tableMapper.getObjClass());
+        this.fastExample.conditionPackages().init();
         this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
         return findOne();
     }
@@ -233,6 +240,33 @@ public class DaoTemplate<T> {
     }
 
     /**
+     * 通过对象中的主键更新数据
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
+     *
+     * @param t           需要更新的数据,对象中必须有主键参数
+     * @param isSelective 是否对null值属性不操作
+     * @return 是否更新成功
+     */
+    public Boolean updateByPrimaryKey(T t, boolean isSelective) {
+        if (t == null) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "更新数据不能为空!!!");
+        }
+
+        String primaryKeyField = tableMapper.getPrimaryKeyField();
+        if (StrUtil.isBlank(primaryKeyField)) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
+        }
+
+        Object fieldValue = BeanUtil.getFieldValue(t, primaryKeyField);
+        if (fieldValue == null) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "主键参数不能为空!!!");
+        }
+        this.fastExample.conditionPackages().init();
+        this.fastExample.conditionPackages().addEqualFieldQuery(primaryKeyField, fieldValue);
+        return update(t, isSelective) > 0 ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    /**
      * 数据更新
      *
      * @param pojo        需要更新的数据
@@ -249,6 +283,25 @@ public class DaoTemplate<T> {
         return DataCache.upCache(daoActuator.update(), tableMapper);
     }
 
+    /**
+     * 通过主键删除数据
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
+     *
+     * @param primaryKeyValue 主键参数
+     * @return 查询到的数据结果
+     */
+    public Boolean deleteByPrimaryKey(Object primaryKeyValue) {
+        if (primaryKeyValue == null) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "主键查询参数不能为空!!!");
+        }
+        String primaryKeyField = tableMapper.getPrimaryKeyField();
+        if (StrUtil.isBlank(primaryKeyField)) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
+        }
+        this.fastExample.conditionPackages().init();
+        this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
+        return delete() > 0 ? Boolean.TRUE : Boolean.FALSE;
+    }
 
     /**
      * 删除数据
@@ -269,5 +322,6 @@ public class DaoTemplate<T> {
             throw new RuntimeException(e);
         }
     }
+
 
 }

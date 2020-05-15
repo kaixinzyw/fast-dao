@@ -40,7 +40,7 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public Pojo insert(Pojo pojo) {
-        return DaoTemplate.init(clazz, fastExample).insert(pojo);
+        return DaoTemplate.init(fastExample).insert(pojo);
     }
 
     /**
@@ -50,28 +50,18 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public List<Pojo> insertList(List<Pojo> pojos) {
-        return DaoTemplate.init(clazz, fastExample).insertList(pojos);
+        return DaoTemplate.init(fastExample).insertList(pojos);
     }
 
     /**
      * 批量新增数据,分多次插入
      *
      * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
-     * @param size 每次插入条数
+     * @param size  每次插入条数
      * @return 是否新增成功
      */
     public List<Pojo> insertList(List<Pojo> pojos, Integer size) {
-        return DaoTemplate.init(clazz, fastExample).insertList(pojos,size);
-    }
-
-    /**
-     * 通过主键查询数据
-     *
-     * @param primaryKeyValue 主键参数
-     * @return 查询到的数据结果
-     */
-    public Pojo findByPrimaryKey(Object primaryKeyValue){
-        return DaoTemplate.init(clazz, fastExample).findByPrimaryKey(primaryKeyValue);
+        return DaoTemplate.init(fastExample).insertList(pojos, size);
     }
 
     /**
@@ -80,9 +70,8 @@ public class FastDao<Pojo> {
      * @return 数据结果
      */
     public Pojo findOne() {
-        return DaoTemplate.init(clazz, fastExample).findOne();
+        return DaoTemplate.init(fastExample).findOne();
     }
-
 
     /**
      * 通过查询条件查询所符合要求的所有数据
@@ -90,7 +79,7 @@ public class FastDao<Pojo> {
      * @return 数据结果
      */
     public List<Pojo> findAll() {
-        return DaoTemplate.init(clazz, fastExample).findAll();
+        return DaoTemplate.init(fastExample).findAll();
     }
 
     /**
@@ -99,7 +88,7 @@ public class FastDao<Pojo> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.init(clazz, fastExample).findCount();
+        return DaoTemplate.init(fastExample).findCount();
     }
 
     /**
@@ -111,7 +100,7 @@ public class FastDao<Pojo> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize, Integer navigatePages) {
-        return DaoTemplate.init(clazz, fastExample).findPage(pageNum, pageSize, navigatePages);
+        return DaoTemplate.init(fastExample).findPage(pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -122,7 +111,7 @@ public class FastDao<Pojo> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize) {
-        return DaoTemplate.init(clazz, fastExample).findPage(pageNum, pageSize, 9);
+        return DaoTemplate.init(fastExample).findPage(pageNum, pageSize, 9);
     }
 
     /**
@@ -132,7 +121,7 @@ public class FastDao<Pojo> {
      * @return 更新影响到的数据
      */
     public Integer update(Pojo pojo) {
-        return DaoTemplate.init(clazz, fastExample).update(pojo, true);
+        return DaoTemplate.init(fastExample).update(pojo, true);
     }
 
     /**
@@ -142,7 +131,7 @@ public class FastDao<Pojo> {
      * @return 更新影响到的数据
      */
     public Integer updateOverwrite(Pojo pojo) {
-        return DaoTemplate.init(clazz, fastExample).update(pojo, false);
+        return DaoTemplate.init(fastExample).update(pojo, false);
     }
 
     /**
@@ -151,7 +140,7 @@ public class FastDao<Pojo> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.init(clazz, fastExample).delete();
+        return DaoTemplate.init(fastExample).delete();
     }
 
 }

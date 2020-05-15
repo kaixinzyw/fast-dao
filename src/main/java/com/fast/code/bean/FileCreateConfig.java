@@ -38,7 +38,7 @@ public class FileCreateConfig {
 //    /**
 //     * DAO文件路径
 //     */
-//    private String daoPackage = CodeCreateModule.Dao.codeModule;
+    private String daoPackage = CodeCreateModule.Dao.codeModule;
     /**
      * DTO文件路径
      */
@@ -229,9 +229,9 @@ public class FileCreateConfig {
 
         Dto("dto"),
 
-//        Dao("dao"),
+        Dao("dao"),
 
-        All("pojo,fast,service,service_impl,dto");
+        All("pojo,fast,service,service_impl,dto,dao");
 
         public String codeModule;
 
@@ -312,9 +312,9 @@ public class FileCreateConfig {
         return servicePackage;
     }
 
-//    public String getDaoPackage() {
-//        return daoPackage;
-//    }
+    public String getDaoPackage() {
+        return daoPackage;
+    }
 
     public String getDtoPackage() {
         return dtoPackage;

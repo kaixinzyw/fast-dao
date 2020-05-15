@@ -126,7 +126,7 @@ public class DbUtils {
 //        String pojoFieldsPackPath = conf.getBasePackage() + "." + conf.getBeanPackage() + ".fast." + conf.getBeanFieldsPackage() + prefixPath;
         String pojoFastDaoPackPath = conf.getBasePackage()+ "." + conf.getBeanPackage() + "." + conf.getBeanFastDao() + prefixPath;
         String dtoPackPath = conf.getBasePackage() + "." + conf.getDtoPackage() + prefixPath;
-//        String daoPackPath = conf.getBasePackage() + "." + conf.getDaoPackage() + prefixPath;
+        String daoPackPath = conf.getBasePackage() + "." + conf.getDaoPackage() + prefixPath;
         String iservicePackPath = conf.getBasePackage() + "." + conf.getServicePackage() + prefixPath;
         String servicePackPath = conf.getBasePackage() + "." + conf.getServicePackage() + prefixPath + "." + "impl";
 
@@ -141,7 +141,7 @@ public class DbUtils {
         tableInfo.setFastPojoFilePath(javabasePath + tableInfo.getFastPojoPackPath().replace(".", separator) + separator + tableInfo.getFastPojoName() + ".java");
 
         tableInfo.setPojoFastDaoPackPath(pojoFastDaoPackPath);
-        tableInfo.setPojoFastDaoName(tableInfo.getPojoName() + "FastDao");
+        tableInfo.setPojoFastDaoName(tableInfo.getPojoName() + "FastDAO");
         tableInfo.setPojoFastDaoClassPackPath(tableInfo.getPojoFastDaoPackPath() + "." + tableInfo.getPojoFastDaoName());
         tableInfo.setPojoFastDaoFilePath(javabasePath + tableInfo.getPojoFastDaoPackPath().replace(".", separator) + separator + tableInfo.getPojoFastDaoName() + ".java");
 
@@ -151,14 +151,14 @@ public class DbUtils {
 //        tableInfo.setPojoFieldsFilePath(javabasePath + tableInfo.getPojoFieldsPackPath().replace(".", separator) + separator + tableInfo.getPojoFieldsName() + ".java");
 
         tableInfo.setDtoPackPath(dtoPackPath);
-        tableInfo.setDtoName(tableInfo.getPojoName() + "Dto");
+        tableInfo.setDtoName(tableInfo.getPojoName() + "DTO");
         tableInfo.setDtoClassPackPath(tableInfo.getDtoPackPath() + "." + tableInfo.getDtoName());
         tableInfo.setDtoFilePath(javabasePath + tableInfo.getDtoPackPath().replace(".", separator) + separator + tableInfo.getDtoName() + ".java");
 
-//        tableInfo.setDaoPackPath(daoPackPath);
-//        tableInfo.setDaoName(tableInfo.getPojoName() + "Dao");
-//        tableInfo.setDaoClassPackPath(tableInfo.getDaoPackPath() + "." + tableInfo.getDaoName());
-//        tableInfo.setDaoFilePath(javabasePath + tableInfo.getDaoPackPath().replace(".", separator) + separator + tableInfo.getDaoName() + ".java");
+        tableInfo.setDaoPackPath(daoPackPath);
+        tableInfo.setDaoName(tableInfo.getPojoName() + "DAO");
+        tableInfo.setDaoClassPackPath(tableInfo.getDaoPackPath() + "." + tableInfo.getDaoName());
+        tableInfo.setDaoFilePath(javabasePath + tableInfo.getDaoPackPath().replace(".", separator) + separator + tableInfo.getDaoName() + ".java");
 
         tableInfo.setIservicePackPath(iservicePackPath);
         tableInfo.setIserviceName("I" + tableInfo.getPojoName() + "Service");

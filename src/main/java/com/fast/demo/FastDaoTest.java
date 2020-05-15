@@ -2,14 +2,11 @@ package com.fast.demo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fast.demo.pojo.FastUserTest;
-import com.fast.demo.pojo.fast.FastUserTestFastDao;
+import com.fast.demo.pojo.fast.FastUserTestFastDAO;
 import com.fast.fast.FastCustomSqlDao;
 import com.fast.utils.page.PageInfo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * FastDao测试
@@ -22,32 +19,42 @@ public class FastDaoTest {
     }
 
     public static void main(String[] args) {
-//        test_a_insert();
-//        test_a_insertList();
-//        test_b_findByAge();
-//        test_c_findSQL();
-//        test_c_findOne();
-//        test_d_findByIn();
-//        test_e_updateByAgeOverwrite();
-//        test_f_updateByAge();
-//        test_g_updateOverwrite();
-//        test_h_update();
-//        test_i_deleteByAge();
-//        test_g_deleteByAgeDisk();
-//        test_k_delete();
-//        test_l_deleteDisk();
-//        test_m_findAll();
-//        test_n_findPage();
-//        test_o_FieldOperating();
-//        test_p_CustomSql();
-//        test_q_CustomUpdateColumns();
+        test_a_insert();
+        test_a_insertList();
+        test_b_findByAge();
+        test_c_findSQL();
+        test_c_findOne();
+        test_d_findByIn();
+        test_e_updateByAgeOverwrite();
+        test_f_updateByAge();
+        test_g_updateOverwrite();
+        test_h_update();
+        test_i_deleteByAge();
+        test_g_deleteByAgeDisk();
+        test_k_delete();
+        test_l_deleteDisk();
+        test_m_findAll();
+        test_n_findPage();
+        test_o_FieldOperating();
+        test_p_CustomSql();
         selectObject();
+        customUpdateColumns();
     }
 
     public static void selectObject(){
         Map<String, Object> data = new HashMap<>();
         data.put("age",1);
-        FastUserTestFastDao.create(data).age().lessOrEqual(10).dao().findAll();
+        FastUserTestFastDAO.create(data).dao().findAll();
+    }
+
+    public static void customUpdateColumns() {
+//        FastUserTestFastDao.create().age().customizeUpdateValue().thisAdd(5,null).greaterOrEqual(10).dao().update(null);
+//        FastUserTestFastDao.create().age().customizeUpdateValue().thisSbu("#{age}", Collections.singletonMap("age",5)).greaterOrEqual(10).dao().update(null);
+//        FastUserTestFastDao.create().age().customizeUpdateValue().thisMul("#{age}", Collections.singletonMap("age",10)).greaterOrEqual(10).dao().update(null);
+//        FastUserTestFastDao.create().age().customizeUpdateValue().thisDiv("#{age}", Collections.singletonMap("age",10)).greaterOrEqual(10).dao().update(null);
+//        FastUserTestFastDao.create().age().customizeUpdateValue().thisModulo("#{age}", Collections.singletonMap("age",2)).greaterOrEqual(10).dao().update(null);
+//        FastUserTestFastDao.create().age().customizeUpdateValue().customize("age + 1", null).dao().update(null);
+        FastUserTestFastDAO.create().age().customizeUpdateValue().customize("age - #{age}",Collections.singletonMap("age",0)).dao().update(null);
     }
 
     public static void test_a_insertList() {
@@ -58,7 +65,7 @@ public class FastDaoTest {
             user.setAge(i);
             userList.add(user);
         }
-        List<FastUserTest> ls = FastUserTestFastDao.create().dao().insertList(userList);
+        List<FastUserTest> ls = FastUserTestFastDAO.create().dao().insertList(userList);
         System.out.println(JSONObject.toJSONString(ls, true));
     }
 
@@ -67,12 +74,12 @@ public class FastDaoTest {
             FastUserTest user = new FastUserTest();
             user.setUserName("FastDao" + i);
             user.setAge(i);
-            FastUserTest insert = FastUserTestFastDao.create().dao().insert(user);
+            FastUserTest insert = FastUserTestFastDAO.create().dao().insert(user);
         }
     }
 
     public static void test_b_findByAge() {
-        FastUserTestFastDao.create().age().distinctField().orderByAsc().dao().findAll();
+        FastUserTestFastDAO.create().age().distinctField().orderByAsc().dao().findAll();
     }
 
 
@@ -82,7 +89,7 @@ public class FastDaoTest {
             params.put("userName", "FastDao19");
             params.put("age", 20);
 
-            FastUserTestFastDao testTemplate = FastUserTestFastDao.create();
+            FastUserTestFastDAO testTemplate = FastUserTestFastDAO.create();
             testTemplate.andSql("user_name = #{userName}", params);
             testTemplate.orSQL("age = #{age}", params);
             testTemplate.age().orderByDesc();
@@ -95,7 +102,7 @@ public class FastDaoTest {
     public static void test_c_findOne() {
         FastUserTest FastUserTest = new FastUserTest();
         FastUserTest.setUserName("FastDao10");
-        FastUserTestFastDao testTemplate = FastUserTestFastDao.create();
+        FastUserTestFastDAO testTemplate = FastUserTestFastDAO.create();
         testTemplate.equalObject(FastUserTest);
         testTemplate.age().orderByAsc();
         for (int i = 0; i < 100; i++) {
@@ -105,7 +112,7 @@ public class FastDaoTest {
                 throw new RuntimeException("查询错误");
             }
             if (i == 50) {
-                FastUserTestFastDao.create().id(one.getId()).dao().update(one);
+                FastUserTestFastDAO.create().id(one.getId()).dao().update(one);
             }
 //            }).start();
         }
@@ -115,82 +122,82 @@ public class FastDaoTest {
 
 
     public static void test_d_findByIn() {
-        List<FastUserTest> byIn = FastUserTestFastDao.create().userName().in("FastDao11", "FastDao12", "FastDao13").dao().findAll();
+        List<FastUserTest> byIn = FastUserTestFastDAO.create().userName().in("FastDao11", "FastDao12", "FastDao13").dao().findAll();
     }
 
 
     public static void test_e_updateByAgeOverwrite() {
-        FastUserTest one = FastUserTestFastDao.create().age(1).dao().findOne();
+        FastUserTest one = FastUserTestFastDAO.create().age(1).dao().findOne();
         FastUserTest u = new FastUserTest();
         u.setId(one.getId());
         u.setUserName("updateByAgeOverwrite");
-        Integer updateCount = FastUserTestFastDao.create().id(u.getId()).dao().updateOverwrite(u);
+        Integer updateCount = FastUserTestFastDAO.create().id(u.getId()).dao().updateOverwrite(u);
 
 
     }
 
 
     public static void test_f_updateByAge() {
-        FastUserTest one = FastUserTestFastDao.create().age(2).dao().findOne();
+        FastUserTest one = FastUserTestFastDAO.create().age(2).dao().findOne();
         FastUserTest u = new FastUserTest();
         u.setId(one.getId());
         u.setUserName("updateByAge");
-        Integer updateCount = FastUserTestFastDao.create().id(u.getId()).dao().update(u);
+        Integer updateCount = FastUserTestFastDAO.create().id(u.getId()).dao().update(u);
     }
 
 
     public static void test_g_updateOverwrite() {
-        FastUserTest one = FastUserTestFastDao.create().age(3).dao().findOne();
+        FastUserTest one = FastUserTestFastDAO.create().age(3).dao().findOne();
         FastUserTest u = new FastUserTest();
         u.setUserName("updateOverwrite");
         u.setId(one.getId());
-        Integer update = FastUserTestFastDao.create().id(one.getId()).dao().updateOverwrite(u);
+        Integer update = FastUserTestFastDAO.create().id(one.getId()).dao().updateOverwrite(u);
     }
 
 
     public static void test_h_update() {
-        FastUserTest one = FastUserTestFastDao.create().age(4).dao().findOne();
+        FastUserTest one = FastUserTestFastDAO.create().age(4).dao().findOne();
 
         FastUserTest u = new FastUserTest();
         u.setUserName("update");
 
-        Integer update = FastUserTestFastDao.create().id(one.getId()).dao().update(u);
+        Integer update = FastUserTestFastDAO.create().id(one.getId()).dao().update(u);
     }
 
 
     public static void test_i_deleteByAge() {
-        Integer delCount = FastUserTestFastDao.create().age(5).dao().delete();
+        Integer delCount = FastUserTestFastDAO.create().age(5).dao().delete();
     }
 
 
     public static void test_g_deleteByAgeDisk() {
-        FastUserTestFastDao userFastDao = FastUserTestFastDao.create();
+        FastUserTestFastDAO userFastDao = FastUserTestFastDAO.create();
         userFastDao.closeLogicDeleteProtect();
         userFastDao.age(6).dao().delete();
     }
 
 
     public static void test_k_delete() {
-        Integer delete = FastUserTestFastDao.create().userName("FastDao7").dao().delete();
+        Integer delete = FastUserTestFastDAO.create().userName("FastDao7").dao().delete();
 
 
     }
 
 
     public static void test_l_deleteDisk() {
-        FastUserTestFastDao userFastDao = FastUserTestFastDao.create();
+        FastUserTestFastDAO userFastDao = FastUserTestFastDAO.create();
         userFastDao.closeLogicDeleteProtect();
         Integer delete = userFastDao.userName("FastDao8").dao().delete();
     }
 
 
     public static void test_m_findAll() {
-        List<FastUserTest> all = FastUserTestFastDao.create().dao().findAll();
+        List<FastUserTest> all = FastUserTestFastDAO.create().dao().findAll();
     }
 
 
     public static void test_n_findPage() {
-        FastUserTestFastDao fastDao = FastUserTestFastDao.create();
+        FastUserTestFastDAO fastDao = FastUserTestFastDAO.create();
         fastDao.userName().likeRight("Fast").distinctField();
         fastDao.age().lessOrEqual(100);
         fastDao.age().orderByDesc().distinctField();
@@ -202,30 +209,30 @@ public class FastDaoTest {
 
 
     public static void test_o_FieldOperating() {
-        FastUserTest up = FastUserTestFastDao.create().age(18).dao().findOne();
+        FastUserTest up = FastUserTestFastDAO.create().age(18).dao().findOne();
         up.setUserName("FieldUpDate");
         up.setId(null);
-        FastUserTestFastDao.create().age(up.getAge()).dao().update(up);
+        FastUserTestFastDAO.create().age(up.getAge()).dao().update(up);
 
-        FastUserTest del = FastUserTestFastDao.create().age(19).dao().findOne();
-        FastUserTestFastDao.create().age().valEqual(del.getAge()).dao().findAll();
-        FastUserTestFastDao.create().age().isNull().dao().findAll();
-        FastUserTestFastDao.create().age().notNull().dao().findAll();
-        FastUserTestFastDao.create().userName().like(del.getUserName()).hideField().dao().findAll();
-        FastUserTestFastDao.create().userName().like(del.getUserName()).showField().dao().findAll();
-        FastUserTestFastDao.create().userName().like(del.getUserName()).hideField().dao().findAll();
+        FastUserTest del = FastUserTestFastDAO.create().age(19).dao().findOne();
+        FastUserTestFastDAO.create().age().valEqual(del.getAge()).dao().findAll();
+        FastUserTestFastDAO.create().age().isNull().dao().findAll();
+        FastUserTestFastDAO.create().age().notNull().dao().findAll();
+        FastUserTestFastDAO.create().userName().like(del.getUserName()).hideField().dao().findAll();
+        FastUserTestFastDAO.create().userName().like(del.getUserName()).showField().dao().findAll();
+        FastUserTestFastDAO.create().userName().like(del.getUserName()).hideField().dao().findAll();
 
-        FastUserTestFastDao template = FastUserTestFastDao.create();
+        FastUserTestFastDAO template = FastUserTestFastDAO.create();
         template.closeLogicDeleteProtect();
         template.userName().like(del.getUserName()).hideField().dao().findAll();
 
-        FastUserTestFastDao.create().userName().likeRight("15").showField().dao().delete();
-        FastUserTestFastDao.create().age(20).dao().delete();
-        FastUserTestFastDao.create().age(20).dao().findAll();
-        FastUserTestFastDao.create().age().between(1, 10).dao().findPage(1, 10);
+        FastUserTestFastDAO.create().userName().likeRight("15").showField().dao().delete();
+        FastUserTestFastDAO.create().age(20).dao().delete();
+        FastUserTestFastDAO.create().age(20).dao().findAll();
+        FastUserTestFastDAO.create().age().between(1, 10).dao().findPage(1, 10);
 
-        List<FastUserTest> us = FastUserTestFastDao.create().userName().notLike("Fast").dao().findAll();
-        PageInfo<FastUserTest> Fast = FastUserTestFastDao.create().userName().notLike("Fast").dao().findPage(1, 10);
+        List<FastUserTest> us = FastUserTestFastDAO.create().userName().notLike("Fast").dao().findAll();
+        PageInfo<FastUserTest> Fast = FastUserTestFastDAO.create().userName().notLike("Fast").dao().findPage(1, 10);
 
     }
 
@@ -237,12 +244,6 @@ public class FastDaoTest {
         List<FastUserTest> all = FastCustomSqlDao.create(FastUserTest.class, sql, params).findAll();
     }
 
-    public static void test_q_CustomUpdateColumns() {
-        FastUserTestFastDao.create().age().customizeUpdateValue().thisAdd(5).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customizeUpdateValue().thisMinus(5).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customizeUpdateValue().thisCustomize("+", 1).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customizeUpdateValue().customize("age", "+", 1).greaterOrEqual(10).dao().update(null);
-        FastUserTestFastDao.create().age().customizeUpdateValue().customize("age - 2").greaterOrEqual(10).dao().update(null);
-    }
+
 
 }

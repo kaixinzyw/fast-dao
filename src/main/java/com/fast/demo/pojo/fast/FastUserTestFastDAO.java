@@ -1,18 +1,18 @@
 package com.fast.demo.pojo.fast;
 
 import com.fast.demo.pojo.FastUserTest;
-import com.fast.base.BaseFastDao;
+import com.fast.base.BaseFastDAO;
 import com.fast.condition.FastExample;
 import java.util.Date;
 
 /**
 * @author 2019-12-14 1:39:04
 */
-public class FastUserTestFastDao extends BaseFastDao<FastUserTest> {
+public class FastUserTestFastDAO extends BaseFastDAO<FastUserTest> {
 
-    public static FastUserTestFastDao create(){return new FastUserTestFastDao();}
-    public static FastUserTestFastDao create(Object object) {
-        FastUserTestFastDao fastDao = new FastUserTestFastDao();
+    public static FastUserTestFastDAO create(){return new FastUserTestFastDAO();}
+    public static FastUserTestFastDAO create(Object object) {
+        FastUserTestFastDAO fastDao = new FastUserTestFastDAO();
         fastDao.equalObject(object);
         return fastDao;
     }

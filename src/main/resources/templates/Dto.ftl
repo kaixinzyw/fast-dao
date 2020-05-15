@@ -10,17 +10,18 @@ package ${table.dtoPackPath};
 import java.io.Serializable;
 <#if conf.useLombok>
 import lombok.Data;
+import lombok.experimental.Accessors;
 </#if>
 <#list table.packages as package>
 ${package}
 </#list>
 
 /**
-* 实体bean ${table.tableDesc}
-* @author ${.now}
+* ${table.tableDesc}
 */
 <#if conf.useLombok>
 @Data
+@Accessors(chain=true)
 </#if>
 public class ${table.dtoName} implements Serializable {
 
@@ -32,21 +33,24 @@ public class ${table.dtoName} implements Serializable {
     *${bean.propertyDesc}
     */
     private ${bean.propertyType} ${bean.propertyName};
+
     <#else>
     /**
     *${bean.propertyDesc}
     */
     private ${bean.propertyType} ${bean.propertyName};
+
     </#if>
 </#list>
 
 <#if !conf.useLombok>
     <#list keys as key>
-    public  ${properties["${key}"]} get${key?cap_first}() {
+    public ${properties["${key}"]} get${key?cap_first}() {
         return this.${key};
     }
-    public  void set${key?cap_first}(${properties["${key}"]} ${key}) {
+    public ${table.dtoName} set${key?cap_first}(${properties["${key}"]} ${key}) {
         this.${key} = ${key};
+        return this;
     }
 
     </#list>
