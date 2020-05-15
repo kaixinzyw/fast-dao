@@ -22,25 +22,33 @@ public class FastDaoTest {
     }
 
     public static void main(String[] args) {
-        test_a_insert();
-        test_a_insertList();
-        test_b_findByAge();
-        test_c_findSQL();
-        test_c_findOne();
-        test_d_findByIn();
-        test_e_updateByAgeOverwrite();
-        test_f_updateByAge();
-        test_g_updateOverwrite();
-        test_h_update();
-        test_i_deleteByAge();
-        test_g_deleteByAgeDisk();
-        test_k_delete();
-        test_l_deleteDisk();
-        test_m_findAll();
-        test_n_findPage();
-        test_o_FieldOperating();
-        test_p_CustomSql();
-        test_q_CustomUpdateColumns();
+//        test_a_insert();
+//        test_a_insertList();
+//        test_b_findByAge();
+//        test_c_findSQL();
+//        test_c_findOne();
+//        test_d_findByIn();
+//        test_e_updateByAgeOverwrite();
+//        test_f_updateByAge();
+//        test_g_updateOverwrite();
+//        test_h_update();
+//        test_i_deleteByAge();
+//        test_g_deleteByAgeDisk();
+//        test_k_delete();
+//        test_l_deleteDisk();
+//        test_m_findAll();
+//        test_n_findPage();
+//        test_o_FieldOperating();
+//        test_p_CustomSql();
+//        test_q_CustomUpdateColumns();
+        selectObject();
+    }
+
+    public static void selectObject(){
+        FastUserTest userTest = new FastUserTest();
+        userTest.setAge(1);
+        userTest.setUserName("a");
+        FastUserTestFastDao.create(userTest).age().lessOrEqual(10).dao().findAll();
     }
 
     public static void test_a_insertList() {

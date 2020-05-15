@@ -211,8 +211,10 @@ public class FastSqlUtil {
                     if (showTable != null) {
                         sqlBuilder.append(showTable).append(condition.getExpression().expression);
                         packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
+                        sqlBuilder.append(AND);
                     }
                 }
+                sqlBuilder.del(sqlBuilder.length() - AND.length(), sqlBuilder.length());
                 sqlBuilder.append(CRLF);
                 break;
             default:
