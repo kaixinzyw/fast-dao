@@ -206,16 +206,20 @@ public class FastSqlUtil {
                     fieldMap = BeanUtil.beanToMap(condition.getObject(), false, true);
                 }
                 HashMap<String, String> showTableNames = tableMapper.getShowTableNames();
+                int queryNum = 0;
                 for (String fieldName : fieldMap.keySet()) {
                     String showTable = showTableNames.get(fieldName);
                     if (showTable != null) {
+                        queryNum++;
                         sqlBuilder.append(showTable).append(condition.getExpression().expression);
                         packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
                         sqlBuilder.append(AND);
                     }
                 }
                 sqlBuilder.del(sqlBuilder.length() - AND.length(), sqlBuilder.length());
-                sqlBuilder.append(CRLF);
+                if (queryNum != 0) {
+                    sqlBuilder.append(CRLF);
+                }
                 break;
             default:
                 sqlBuilder.append(tableMapper.getShowTableNames()

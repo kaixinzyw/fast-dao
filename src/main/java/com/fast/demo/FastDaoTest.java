@@ -45,10 +45,9 @@ public class FastDaoTest {
     }
 
     public static void selectObject(){
-        FastUserTest userTest = new FastUserTest();
-        userTest.setAge(1);
-        userTest.setUserName("a");
-        FastUserTestFastDao.create(userTest).age().lessOrEqual(10).dao().findAll();
+        Map<String, Object> data = new HashMap<>();
+        data.put("age",1);
+        FastUserTestFastDao.create(data).age().lessOrEqual(10).dao().findAll();
     }
 
     public static void test_a_insertList() {
