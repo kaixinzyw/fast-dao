@@ -1,6 +1,9 @@
 package com.fast.condition;
 
+import cn.hutool.core.util.EnumUtil;
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -208,6 +211,18 @@ public class FastCondition {
             this.name = name;
             this.expression = expression;
         }
+
+        private static final Map<String,Way> wayMap = new HashMap<>();
+
+        public static Way getWay(String name){
+            Way way = wayMap.get(name);
+            if (way != null) {
+                return way;
+            }
+            way = EnumUtil.likeValueOf(Way.class,name);
+            wayMap.put(name,way);
+            return way;
+        }
     }
 
     public enum Expression {
@@ -232,14 +247,24 @@ public class FastCondition {
         SQL("sql", "自定义SQL添加"),
         Obj("object", " = ");
 
-
-
         public String name;
         public String expression;
 
         Expression(String name, String expression) {
             this.name = name;
             this.expression = expression;
+        }
+
+        private static final Map<String,Expression> exMap = new HashMap<>();
+
+        public static Expression getExpression(String name){
+            Expression ex = exMap.get(name);
+            if (ex != null) {
+                return ex;
+            }
+            ex = EnumUtil.likeValueOf(Expression.class,name);
+            exMap.put(name,ex);
+            return ex;
         }
     }
 

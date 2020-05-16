@@ -37,14 +37,20 @@ public class FastDaoTest {
         test_n_findPage();
         test_o_FieldOperating();
         test_p_CustomSql();
-        selectObject();
         customUpdateColumns();
+        selectObject();
     }
 
     public static void selectObject(){
-        Map<String, Object> data = new HashMap<>();
-        data.put("age",1);
-        FastUserTestFastDAO.create(data).dao().findAll();
+        FastUserTestQuery userTest = new FastUserTestQuery();
+        userTest.setUserName("FastDao10");
+        userTest.setAgee(10);
+
+        Map<String,Object> data = new HashMap<>();
+        data.put("age", 10);
+        data.put("userName","FastDao10");
+        FastUserTestFastDAO fastUserTestFastDAO = FastUserTestFastDAO.create(userTest);
+        fastUserTestFastDAO.dao().findPage(1,10);
     }
 
     public static void customUpdateColumns() {
@@ -59,7 +65,7 @@ public class FastDaoTest {
 
     public static void test_a_insertList() {
         List<FastUserTest> userList = new ArrayList<>();
-        for (int i = 100; i <= 200; i++) {
+        for (int i = 100; i <= 102; i++) {
             FastUserTest user = new FastUserTest();
             user.setUserName("FastDao" + i);
             user.setAge(i);
@@ -84,7 +90,7 @@ public class FastDaoTest {
 
 
     public static void test_c_findSQL() {
-        for (int x = 0; x < 200; x++) {
+        for (int x = 0; x < 2; x++) {
             Map<String, Object> params = new HashMap<>();
             params.put("userName", "FastDao19");
             params.put("age", 20);
@@ -105,7 +111,7 @@ public class FastDaoTest {
         FastUserTestFastDAO testTemplate = FastUserTestFastDAO.create();
         testTemplate.equalObject(FastUserTest);
         testTemplate.age().orderByAsc();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
 //            new Thread(() -> {
             FastUserTest one = testTemplate.dao().findOne();
             if (!one.getUserName().equals("FastDao10")) {

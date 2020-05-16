@@ -5,10 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import com.fast.condition.ConditionPackages;
-import com.fast.condition.CustomizeUpdate;
-import com.fast.condition.FastCondition;
-import com.fast.condition.FastDaoParameterException;
+import com.fast.condition.*;
 import com.fast.config.FastDaoAttributes;
 import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
@@ -98,8 +95,9 @@ public class FastSqlUtil {
             return index;
         }
 
-        public void add() {
+        public int add() {
             this.index++;
+            return this.index;
         }
 
         public String getParamType() {
@@ -143,15 +141,19 @@ public class FastSqlUtil {
         ParamIndex paramIndex = new ParamIndex();
         paramIndex.setParamType(WHERE_PARAM_TYPE);
         List<FastCondition> conditions = select.getConditions();
-        for (FastCondition condition : conditions) {
-            if (!isFirst) {
-                sqlBuilder.append(condition.getWay().expression);
-            } else {
-                isFirst = Boolean.FALSE;
+        if (CollUtil.isNotEmpty(conditions)) {
+            for (int i = 0; i < conditions.size(); i++) {
+                FastCondition condition = conditions.get(i);
+                if (!isFirst && !condition.getExpression().equals(FastCondition.Expression.Obj)) {
+                    sqlBuilder.append(condition.getWay().expression);
+                } else {
+                    isFirst = Boolean.FALSE;
+                }
+                whereCondition(condition, sqlBuilder, paramMap, tableMapper, paramIndex);
             }
-            whereCondition(condition, sqlBuilder, paramMap, tableMapper, paramIndex);
         }
-        if (isWHERE && sqlBuilder.subSequence(sqlBuilder.length() - WHERE_CRLF_LENGTH,sqlBuilder.length()).equals(WHERE_CRLF)) {
+
+        if (isWHERE && sqlBuilder.subSequence(sqlBuilder.length() - WHERE_CRLF_LENGTH, sqlBuilder.length()).equals(WHERE_CRLF)) {
             sqlBuilder.del(sqlBuilder.toString().indexOf(WHERE), sqlBuilder.length());
         }
     }
@@ -200,24 +202,64 @@ public class FastSqlUtil {
                 sqlBuilder.append(CRLF);
                 break;
             case Obj:
+                HashMap<String, String> showTableNames = tableMapper.getShowTableNames();
                 Map<String, Object> fieldMap;
+                int queryNum = 0;
                 if (condition.getObject() instanceof Map) {
                     fieldMap = (Map<String, Object>) condition.getObject();
+                    sqlBuilder.append(AND);
+                    if (CollUtil.isNotEmpty(fieldMap)) {
+                        for (String fieldName : fieldMap.keySet()) {
+                            String showTable = showTableNames.get(fieldName);
+                            Object val = fieldMap.get(fieldName);
+                            if (showTable != null && val != null) {
+                                queryNum++;
+                                sqlBuilder.append(showTable).append(condition.getExpression().expression);
+                                packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
+                                sqlBuilder.append(AND);
+                            }
+                        }
+                    }
                 } else {
                     fieldMap = BeanUtil.beanToMap(condition.getObject(), false, true);
-                }
-                HashMap<String, String> showTableNames = tableMapper.getShowTableNames();
-                int queryNum = 0;
-                for (String fieldName : fieldMap.keySet()) {
-                    String showTable = showTableNames.get(fieldName);
-                    if (showTable != null) {
-                        queryNum++;
-                        sqlBuilder.append(showTable).append(condition.getExpression().expression);
-                        packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
-                        sqlBuilder.append(AND);
+                    if (CollUtil.isNotEmpty(fieldMap)) {
+                        Map<String, FastWhereData> objWhereMap = FastWhereData.getObjWhere(condition.getObject());
+                        for (String fieldName : fieldMap.keySet()) {
+                            FastWhereData whereData = objWhereMap.get(fieldName);
+                            if (whereData == null) {
+                                continue;
+                            }
+                            if (whereData.getCondition().name.equals(FastWhere.WhereCondition.SQL.name)) {
+                                if (StrUtil.isBlank(whereData.getSql())) {
+                                    continue;
+                                }
+                                queryNum++;
+                                sqlBuilder.append(whereData.getWay().expression);
+                                sqlBuilder.append(whereData.getSql());
+                                paramMap.put(fieldName, fieldMap.get(fieldName));
+                            } else if (whereData.getCondition().name.equals(FastWhere.WhereCondition.Like.name) || whereData.getCondition().name.equals(FastWhere.WhereCondition.NotLike.name)) {
+                                String showTable = showTableNames.get(whereData.getFieldName());
+                                if (showTable == null) {
+                                    continue;
+                                }
+                                queryNum++;
+                                sqlBuilder.append(whereData.getWay().expression).append(showTable).append(whereData.getCondition().expression);
+                                packParam(sqlBuilder, paramMap, "%" + fieldMap.get(fieldName).toString() + "%", paramIndex);
+                            } else {
+                                String showTable = showTableNames.get(whereData.getFieldName());
+                                if (showTable == null) {
+                                    continue;
+                                }
+                                queryNum++;
+                                sqlBuilder.append(whereData.getWay().expression).append(showTable).append(whereData.getCondition().expression);
+                                packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
+                            }
+                        }
                     }
                 }
-                sqlBuilder.del(sqlBuilder.length() - AND.length(), sqlBuilder.length());
+                if (sqlBuilder.subString(sqlBuilder.length() - AND.length(), sqlBuilder.length()).equals(AND)) {
+                    sqlBuilder.del(sqlBuilder.length() - AND.length(), sqlBuilder.length());
+                }
                 if (queryNum != 0) {
                     sqlBuilder.append(CRLF);
                 }
