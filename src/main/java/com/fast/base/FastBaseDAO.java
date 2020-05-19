@@ -125,7 +125,7 @@ public class FastBaseDAO<T> {
     }
 
     /**
-     * 通过主键逻辑删除标记
+     * 通过主键删除
      * 如果设置逻辑删除,对逻辑删除的数据不进行操作
      *
      * @param primaryKey 主键ID

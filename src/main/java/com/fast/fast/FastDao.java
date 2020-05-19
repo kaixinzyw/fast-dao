@@ -65,6 +65,17 @@ public class FastDao<Pojo> {
     }
 
     /**
+     * 通过主键查询数据
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
+     *
+     * @param primaryKeyValue 主键参数
+     * @return 查询到的数据结果
+     */
+    public Pojo findByPrimaryKey(Object primaryKeyValue) {
+        return DaoTemplate.init(fastExample).findByPrimaryKey(primaryKeyValue);
+    }
+
+    /**
      * 通过查询条件查询一条数据
      *
      * @return 数据结果
@@ -115,6 +126,28 @@ public class FastDao<Pojo> {
     }
 
     /**
+     * 通过对象中的主键更新数据,参数为空则不进行更新
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
+     *
+     * @param pojo 需要更新的数据,对象中必须有主键参数
+     * @return 是否更新成功
+     */
+    public Boolean updateByPrimaryKey(Pojo pojo) {
+        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo,Boolean.TRUE);
+    }
+
+    /**
+     * 通过对象中的主键更新数据,参数为空则也进行更新
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
+     *
+     * @param pojo 需要更新的数据,对象中必须有主键参数
+     * @return 是否更新成功
+     */
+    public Boolean updateByPrimaryKeyOverwrite(Pojo pojo) {
+        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo,Boolean.FALSE);
+    }
+
+    /**
      * 通过条件更新数据, 参数为空则的字段不会进行更新
      *
      * @param pojo 需要更新的数据 (本操作会对更新时间自动赋值)
@@ -135,6 +168,17 @@ public class FastDao<Pojo> {
     }
 
     /**
+     * 通过主键删除
+     * 如果设置逻辑删除,对逻辑删除的数据不进行操作
+     *
+     * @param primaryKey 主键ID
+     * @return 是否删除成功
+     */
+    public Boolean deleteByPrimaryKey(Object primaryKey) {
+        return DaoTemplate.init(fastExample).deleteByPrimaryKey(primaryKey);
+    }
+
+    /**
      * 通过条件物理删除,如果启动了逻辑删除功能,本操作会自动将数据删除标记修改,不会进行物理删除,除非关闭逻辑删除保护
      *
      * @return 删除影响到的数据条数
@@ -142,5 +186,7 @@ public class FastDao<Pojo> {
     public Integer delete() {
         return DaoTemplate.init(fastExample).delete();
     }
+
+
 
 }
