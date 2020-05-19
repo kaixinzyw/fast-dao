@@ -274,10 +274,31 @@ public class DaoTemplate<T> {
      * @return 更新条数
      */
     public Integer update(T pojo, boolean isSelective) {
+        FastDaoParam<T> fastDaoParam = FastDaoParam.get();
+        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions())) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "更新操作必须设置条件!!!");
+        }
         if (pojo != null) {
             FastValueUtil.setUpdateTime(pojo, tableMapper);
+//            Object primaryKeyVal = FastValueUtil.getPrimaryKeyVal(pojo, tableMapper);
+//            if (primaryKeyVal != null) {
+//                List<FastCondition> conditions = fastDaoParam.getFastExample().conditionPackages().getConditions();
+//                if (CollUtil.isNotEmpty(conditions)) {
+//                    boolean isSetPrimaryKeyVal = false;
+//                    for (FastCondition condition : conditions) {
+//                        if (condition.getField().equals(tableMapper.getPrimaryKeyField()) && condition.getExpression().equals(FastCondition.Expression.Equal)) {
+//                            isSetPrimaryKeyVal = true;
+//                            break;
+//                        }
+//                    }
+//                    if (!isSetPrimaryKeyVal) {
+//                        fastDaoParam.getFastExample().conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
+//                    }
+//                } else {
+//                    fastDaoParam.getFastExample().conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
+//                }
+//            }
         }
-        FastDaoParam<T> fastDaoParam = FastDaoParam.get();
         fastDaoParam.setUpdate(pojo);
         fastDaoParam.setUpdateSelective(isSelective);
         return DataCache.upCache(daoActuator.update(), tableMapper);
@@ -309,6 +330,9 @@ public class DaoTemplate<T> {
      * @return 删除条数
      */
     public Integer delete() {
+        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions())) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + "删除操作必须设置条件!!!");
+        }
         if (!FastDaoAttributes.isOpenLogicDelete || !tableMapper.getLogicDelete() || !fastExample.conditionPackages().getLogicDeleteProtect() || fastExample.conditionPackages().getCustomSql() != null) {
             return DataCache.upCache(daoActuator.delete(), tableMapper);
         }

@@ -133,7 +133,7 @@ public class FastDao<Pojo> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKey(Pojo pojo) {
-        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo,Boolean.TRUE);
+        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo, Boolean.TRUE);
     }
 
     /**
@@ -144,7 +144,7 @@ public class FastDao<Pojo> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKeyOverwrite(Pojo pojo) {
-        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo,Boolean.FALSE);
+        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo, Boolean.FALSE);
     }
 
     /**
@@ -186,7 +186,6 @@ public class FastDao<Pojo> {
     public Integer delete() {
         return DaoTemplate.init(fastExample).delete();
     }
-
 
 
 }
