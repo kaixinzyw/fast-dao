@@ -63,7 +63,7 @@ public class DbUtils {
             for (String _tableName : tableNames) {
 
                 // 字段处理,表的所有字段
-                List<ColumnInfo> columns = getAllColumns(metaData, tableName);
+                List<ColumnInfo> columns = getAllColumns(metaData, _tableName);
                 Set<String> packages = new HashSet<String>();
                 //字段转属性
                 Map<String, Object> pros = columns2Properties(columns, packages, underline2Camel);
