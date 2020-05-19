@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>8.0</version>
+    <version>8.1</version>
 
     <name>fast-dao</name>
     <url>https://github.com/kaixinzyw/fast-dao</url>
