@@ -25,10 +25,10 @@ public class FastValueUtil {
     }
 
     public static Object getPrimaryKeyVal(Object o, TableMapper tableMapper) {
-        if (tableMapper.getPrimaryKeyField() == null) {
+        if (tableMapper.getPrimaryKeyField() == null || o == null) {
             return null;
         }
-        return BeanUtil.getFieldValue(o,tableMapper.getPrimaryKeyField());
+        return BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
     }
 
     public static void setPrimaryKey(Object o, Object val, TableMapper tableMapper) {

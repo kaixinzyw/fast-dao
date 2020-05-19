@@ -2,7 +2,6 @@ package com.fast.aspect;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Singleton;
-import cn.hutool.core.util.StrUtil;
 import com.fast.fast.FastDaoParam;
 
 import java.util.ArrayList;
@@ -84,7 +83,6 @@ public class FastDaoExpanderRunner {
 
     private static List<Class<FastDaoExpander>> getExpanders(FastDaoParam param, String methodName) {
         List<Class<FastDaoExpander>> expanders = null;
-        String sql = StrUtil.trimStart(param.getSql());
         if (methodName.equals(INSERT)) {
             expanders = insertOccasion;
         } else if (methodName.equals(DELETE)) {

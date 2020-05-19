@@ -16,9 +16,7 @@ import com.fast.utils.FastValueUtil;
 import com.fast.utils.page.PageInfo;
 import io.netty.util.concurrent.FastThreadLocal;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * ORM执行器
@@ -146,11 +144,11 @@ public class DaoTemplate<T> {
      */
     public T findByPrimaryKey(Object primaryKeyValue) {
         if (primaryKeyValue == null) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "主键查询参数不能为空!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 主键参数不能为空!!!");
         }
         String primaryKeyField = tableMapper.getPrimaryKeyField();
         if (StrUtil.isBlank(primaryKeyField)) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 未设置主键!!!");
         }
         this.fastExample.conditionPackages().init();
         this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
@@ -249,22 +247,23 @@ public class DaoTemplate<T> {
      */
     public Boolean updateByPrimaryKey(T t, boolean isSelective) {
         if (t == null) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "更新数据不能为空!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 更新数据不能为空!!!");
         }
 
         String primaryKeyField = tableMapper.getPrimaryKeyField();
         if (StrUtil.isBlank(primaryKeyField)) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 未设置主键!!!");
         }
 
         Object fieldValue = BeanUtil.getFieldValue(t, primaryKeyField);
         if (fieldValue == null) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "主键参数不能为空!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 主键参数不能为空!!!");
         }
         this.fastExample.conditionPackages().init();
         this.fastExample.conditionPackages().addEqualFieldQuery(primaryKeyField, fieldValue);
         return update(t, isSelective) > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
+
 
     /**
      * 数据更新
@@ -275,29 +274,16 @@ public class DaoTemplate<T> {
      */
     public Integer update(T pojo, boolean isSelective) {
         FastDaoParam<T> fastDaoParam = FastDaoParam.get();
-        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions())) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "更新操作必须设置条件!!!");
+        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions()) && StrUtil.isBlank(this.fastExample.conditionPackages().getCustomSql())) {
+            Object primaryKeyVal = FastValueUtil.getPrimaryKeyVal(pojo, tableMapper);
+            if (primaryKeyVal != null) {
+                fastDaoParam.getFastExample().conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
+            } else {
+                throw new FastDaoParameterException(tableMapper.getTableName() + ": 更新操作必须设置条件!!!");
+            }
         }
         if (pojo != null) {
             FastValueUtil.setUpdateTime(pojo, tableMapper);
-//            Object primaryKeyVal = FastValueUtil.getPrimaryKeyVal(pojo, tableMapper);
-//            if (primaryKeyVal != null) {
-//                List<FastCondition> conditions = fastDaoParam.getFastExample().conditionPackages().getConditions();
-//                if (CollUtil.isNotEmpty(conditions)) {
-//                    boolean isSetPrimaryKeyVal = false;
-//                    for (FastCondition condition : conditions) {
-//                        if (condition.getField().equals(tableMapper.getPrimaryKeyField()) && condition.getExpression().equals(FastCondition.Expression.Equal)) {
-//                            isSetPrimaryKeyVal = true;
-//                            break;
-//                        }
-//                    }
-//                    if (!isSetPrimaryKeyVal) {
-//                        fastDaoParam.getFastExample().conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
-//                    }
-//                } else {
-//                    fastDaoParam.getFastExample().conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
-//                }
-//            }
         }
         fastDaoParam.setUpdate(pojo);
         fastDaoParam.setUpdateSelective(isSelective);
@@ -313,11 +299,11 @@ public class DaoTemplate<T> {
      */
     public Boolean deleteByPrimaryKey(Object primaryKeyValue) {
         if (primaryKeyValue == null) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "主键查询参数不能为空!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 主键参数不能为空!!!");
         }
         String primaryKeyField = tableMapper.getPrimaryKeyField();
         if (StrUtil.isBlank(primaryKeyField)) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "未设置主键!!!");
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 未设置主键!!!");
         }
         this.fastExample.conditionPackages().init();
         this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
@@ -330,8 +316,8 @@ public class DaoTemplate<T> {
      * @return 删除条数
      */
     public Integer delete() {
-        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions())) {
-            throw new FastDaoParameterException(tableMapper.getTableName() + "删除操作必须设置条件!!!");
+        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions()) && StrUtil.isBlank(this.fastExample.conditionPackages().getCustomSql())) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 删除操作必须设置条件!!!");
         }
         if (!FastDaoAttributes.isOpenLogicDelete || !tableMapper.getLogicDelete() || !fastExample.conditionPackages().getLogicDeleteProtect() || fastExample.conditionPackages().getCustomSql() != null) {
             return DataCache.upCache(daoActuator.delete(), tableMapper);
