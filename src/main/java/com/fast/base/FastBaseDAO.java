@@ -7,7 +7,6 @@ package com.fast.base;
  */
 
 import com.fast.condition.FastExample;
-import com.fast.fast.DaoTemplate;
 import com.fast.utils.page.PageInfo;
 
 import java.lang.reflect.ParameterizedType;
@@ -45,7 +44,7 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据结果
      */
     public T findByPrimaryKey(Object primaryKeyValue) {
-        return DaoTemplate.init(new FastExample<>(fastDaoPojoClass)).findByPrimaryKey(primaryKeyValue);
+        return new FastExample<>(fastDaoPojoClass).dao().findByPrimaryKey(primaryKeyValue);
     }
 
     /**
@@ -110,7 +109,7 @@ public class FastBaseDAO<T> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKey(T pojo) {
-        return DaoTemplate.init(new FastExample<>(fastDaoPojoClass)).updateByPrimaryKey(pojo,Boolean.TRUE);
+        return new FastExample<>(fastDaoPojoClass).dao().updateByPrimaryKey(pojo);
     }
 
     /**
@@ -121,7 +120,7 @@ public class FastBaseDAO<T> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKeyOverwrite(T pojo) {
-        return DaoTemplate.init(new FastExample<>(fastDaoPojoClass)).updateByPrimaryKey(pojo,Boolean.FALSE);
+        return new FastExample<>(fastDaoPojoClass).dao().updateByPrimaryKeyOverwrite(pojo);
     }
 
     /**
@@ -132,7 +131,7 @@ public class FastBaseDAO<T> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKey(Object primaryKey) {
-        return DaoTemplate.init(new FastExample<>(fastDaoPojoClass)).deleteByPrimaryKey(primaryKey);
+        return new FastExample<>(fastDaoPojoClass).dao().deleteByPrimaryKey(primaryKey);
     }
 
 }
