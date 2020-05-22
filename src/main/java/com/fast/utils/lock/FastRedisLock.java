@@ -1,5 +1,6 @@
 package com.fast.utils.lock;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.fast.config.FastDaoAttributes;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,10 +22,7 @@ public class FastRedisLock {
      * 前缀
      */
     private static final String KEY_PRE = "fast_redis_lock.";
-    /**
-     * REDIS 默认值
-     */
-    private static final String KEY_DEF_VALUE = "lock";
+
 
     private FastRedisLock() {
     }
@@ -47,7 +45,8 @@ public class FastRedisLock {
         long lockDurationTime = timeUnit.toMillis(time);
         long lockExpiredTime = System.currentTimeMillis() + lockDurationTime;
         long redisKeyExpiredTime = lockDurationTime + 1000L;
-        while (!valueOperations.setIfAbsent(key, KEY_DEF_VALUE, redisKeyExpiredTime, TimeUnit.MILLISECONDS)) {
+
+        while (!BooleanUtil.isTrue(valueOperations.setIfAbsent(key, String.valueOf(Thread.currentThread().getId()), redisKeyExpiredTime, TimeUnit.MILLISECONDS))) {
             if (System.currentTimeMillis() > lockExpiredTime) {
                 lockRelease(key);
                 throw new BlockingLockTimeOutException("Redis Lock Time Out Key: " + lockKey);
@@ -100,7 +99,7 @@ public class FastRedisLock {
      * @return key存在期间有相同的key进行访问, 返回false
      */
     public static StatusLock statusLock(String lockKey, long time, TimeUnit timeUnit) {
-        return new StatusLock(lockKey, !init().opsForValue().setIfAbsent(KEY_PRE + lockKey, KEY_DEF_VALUE, time, timeUnit));
+        return new StatusLock(lockKey, !BooleanUtil.isTrue(init().opsForValue().setIfAbsent(KEY_PRE + lockKey, String.valueOf(Thread.currentThread().getId()), time, timeUnit)));
     }
 
 
