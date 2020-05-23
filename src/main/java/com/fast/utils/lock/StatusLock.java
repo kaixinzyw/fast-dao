@@ -24,4 +24,11 @@ public class StatusLock extends BaseLock {
         return isLock;
     }
 
+    @Override
+    public void release() {
+        if (!isLock) {
+            FastRedisLock.lockRelease(super.lockKey);
+        }
+    }
+
 }

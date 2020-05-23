@@ -11,4 +11,9 @@ public class BlockingLock extends BaseLock {
         super(lockKey);
     }
 
+    @Override
+    public void release() {
+        FastRedisLock.lockRelease(super.lockKey);
+    }
+
 }

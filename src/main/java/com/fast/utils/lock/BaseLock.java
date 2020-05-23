@@ -5,12 +5,12 @@ package com.fast.utils.lock;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class BaseLock {
+public abstract class BaseLock {
 
     /**
      * 锁key
      */
-    private final String lockKey;
+    protected final String lockKey;
 
     public BaseLock(String lockKey) {
         this.lockKey = lockKey;
@@ -23,9 +23,7 @@ public class BaseLock {
     /**
      * 释放锁
      */
-    public void release() {
-        FastRedisLock.lockRelease(lockKey);
-    }
+    public abstract  void release();
 
     /**
      * @return 检测锁是否存在,此查询为实时查询
