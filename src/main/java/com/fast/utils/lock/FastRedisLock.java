@@ -44,11 +44,11 @@ public class FastRedisLock {
     public static BlockingLock blockingLock(String lockKey, long time, TimeUnit timeUnit) throws BlockingLockTimeOutException {
         ValueOperations<String, String> valueOperations = init().opsForValue();
         String key = KEY_PRE + lockKey;
-        long lockDurationTime = timeUnit.toMillis(time);
-        long lockExpiredTime = System.currentTimeMillis() + lockDurationTime;
-        long redisKeyExpiredTime = lockDurationTime + 1000L;
         Interner<String> pool = Interners.newWeakInterner();
         synchronized (pool.intern(key)){
+            long lockDurationTime = timeUnit.toMillis(time);
+            long lockExpiredTime = System.currentTimeMillis() + lockDurationTime;
+            long redisKeyExpiredTime = lockDurationTime + 1000L;
             while (!BooleanUtil.isTrue(valueOperations.setIfAbsent(key, String.valueOf(Thread.currentThread().getId()), redisKeyExpiredTime, TimeUnit.MILLISECONDS))) {
                 if (System.currentTimeMillis() > lockExpiredTime) {
                     lockRelease(key);
