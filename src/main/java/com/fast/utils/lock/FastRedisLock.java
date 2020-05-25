@@ -2,6 +2,8 @@ package com.fast.utils.lock;
 
 import cn.hutool.core.util.BooleanUtil;
 import com.fast.config.FastDaoAttributes;
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -45,18 +47,20 @@ public class FastRedisLock {
         long lockDurationTime = timeUnit.toMillis(time);
         long lockExpiredTime = System.currentTimeMillis() + lockDurationTime;
         long redisKeyExpiredTime = lockDurationTime + 1000L;
-
-        while (!BooleanUtil.isTrue(valueOperations.setIfAbsent(key, String.valueOf(Thread.currentThread().getId()), redisKeyExpiredTime, TimeUnit.MILLISECONDS))) {
-            if (System.currentTimeMillis() > lockExpiredTime) {
-                lockRelease(key);
-                throw new BlockingLockTimeOutException("Redis Lock Time Out Key: " + lockKey);
-            }
-            try {
-                TimeUnit.MILLISECONDS.sleep(50);
-            } catch (InterruptedException ignore) {
-                lockRelease(key);
-                ignore.printStackTrace();
-                throw new BlockingLockTimeOutException("Redis Lock Time Error Key: " + lockKey);
+        Interner<String> pool = Interners.newWeakInterner();
+        synchronized (pool.intern(key)){
+            while (!BooleanUtil.isTrue(valueOperations.setIfAbsent(key, String.valueOf(Thread.currentThread().getId()), redisKeyExpiredTime, TimeUnit.MILLISECONDS))) {
+                if (System.currentTimeMillis() > lockExpiredTime) {
+                    lockRelease(key);
+                    throw new BlockingLockTimeOutException("Redis Lock Time Out Key: " + lockKey);
+                }
+                try {
+                    TimeUnit.MILLISECONDS.sleep(50);
+                } catch (InterruptedException ignore) {
+                    lockRelease(key);
+                    ignore.printStackTrace();
+                    throw new BlockingLockTimeOutException("Redis Lock Time Error Key: " + lockKey);
+                }
             }
         }
         return new BlockingLock(lockKey);
