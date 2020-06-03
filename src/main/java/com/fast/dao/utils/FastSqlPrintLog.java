@@ -71,8 +71,8 @@ public class FastSqlPrintLog {
     }
 
     private static void printSql(String sql, Map<String, Object> sqlParams, FastDaoParam param) {
-        Log log = LogFactory.get(param.getTableMapper().getObjClass());
-        StrBuilder printLog = StrUtil.strBuilder(param.getTableMapper().getTableName(), SQL_REPORT, sql, TIME, param.getSqlTime().toString(), TIME_TYPE);
+        Log log = LogFactory.get(param.getTableMapper().getTableName());
+        StrBuilder printLog = StrUtil.strBuilder(SQL_REPORT, sql, TIME, param.getSqlTime().toString(), TIME_TYPE);
         if (sqlParams != null) {
             printLog.append(PARAM);
             printLog.append(JSONObject.toJSONString(sqlParams));
