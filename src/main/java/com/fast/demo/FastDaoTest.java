@@ -10,6 +10,7 @@ import com.fast.utils.lock.FastRedisLock;
 import com.fast.utils.page.PageInfo;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * FastDao测试
@@ -42,20 +43,22 @@ public class FastDaoTest {
 //        test_p_CustomSql();
 //        customUpdateColumns();
 //        selectObject();
-//        lockTest();
+        lockTest();
     }
 
     public static void lockTest(){
-        for (int i = 0; i < 10; i++) {
+        long l = System.currentTimeMillis();
+        AtomicInteger x = new AtomicInteger();
+        for (int i = 0; i < 100; i++) {
             ThreadUtil.execute(()->{
                 BlockingLock lock = FastRedisLock.createBlockingLock("BlockingLock");
-                System.out.println(lock.lock(2));
+                System.out.println(lock.lock());
                 lock.unlock();
+                if (x.incrementAndGet() == 100){
+                    System.out.println("100线程并发所用毫秒数: " + (System.currentTimeMillis() - l));
+                }
             });
-
         }
-        ThreadUtil.sleep(1000);
-
     }
 
     public static void selectObject(){
