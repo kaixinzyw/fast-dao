@@ -3,6 +3,9 @@ package com.fast.demo;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.fast.config.FastDaoConfig;
 import com.fast.config.SqlLogLevel;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 import javax.sql.DataSource;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +67,7 @@ public class FastSetConfigTest {
         /**
          * redis缓存配置
          */
-//        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
+        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
 
     }
 
@@ -77,13 +80,13 @@ public class FastSetConfigTest {
         return dataSource;
     }
 
-//    private static RedisConnectionFactory getRedisConnectionFactory() {
-//        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
-//        redisConfig.setHostName("127.0.0.1");
-//        redisConfig.setPort(6379);
-//        redisConfig.setDatabase(1);
-//        return new JedisConnectionFactory(redisConfig);
-//    }
+    private static RedisConnectionFactory getRedisConnectionFactory() {
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+        redisConfig.setHostName("127.0.0.1");
+        redisConfig.setPort(6379);
+        redisConfig.setDatabase(1);
+        return new JedisConnectionFactory(redisConfig);
+    }
 
 
 

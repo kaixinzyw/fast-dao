@@ -1,9 +1,12 @@
 package com.fast.demo;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.demo.pojo.FastUserTest;
 import com.fast.demo.pojo.fast.FastUserTestFastDAO;
 import com.fast.fast.FastCustomSqlDao;
+import com.fast.utils.lock.BlockingLock;
+import com.fast.utils.lock.FastRedisLock;
 import com.fast.utils.page.PageInfo;
 
 import java.util.*;
@@ -19,26 +22,40 @@ public class FastDaoTest {
     }
 
     public static void main(String[] args) {
-        test_a_insert();
-        test_a_insertList();
-        test_b_findByAge();
-        test_c_findSQL();
-        test_c_findOne();
-        test_d_findByIn();
-        test_e_updateByAgeOverwrite();
-        test_f_updateByAge();
-        test_g_updateOverwrite();
-        test_h_update();
-        test_i_deleteByAge();
-        test_g_deleteByAgeDisk();
-        test_k_delete();
-        test_l_deleteDisk();
-        test_m_findAll();
-        test_n_findPage();
-        test_o_FieldOperating();
-        test_p_CustomSql();
-        customUpdateColumns();
-        selectObject();
+//        test_a_insert();
+//        test_a_insertList();
+//        test_b_findByAge();
+//        test_c_findSQL();
+//        test_c_findOne();
+//        test_d_findByIn();
+//        test_e_updateByAgeOverwrite();
+//        test_f_updateByAge();
+//        test_g_updateOverwrite();
+//        test_h_update();
+//        test_i_deleteByAge();
+//        test_g_deleteByAgeDisk();
+//        test_k_delete();
+//        test_l_deleteDisk();
+//        test_m_findAll();
+//        test_n_findPage();
+//        test_o_FieldOperating();
+//        test_p_CustomSql();
+//        customUpdateColumns();
+//        selectObject();
+//        lockTest();
+    }
+
+    public static void lockTest(){
+        for (int i = 0; i < 10; i++) {
+            ThreadUtil.execute(()->{
+                BlockingLock lock = FastRedisLock.createBlockingLock("BlockingLock");
+                System.out.println(lock.lock(2));
+                lock.unlock();
+            });
+
+        }
+        ThreadUtil.sleep(1000);
+
     }
 
     public static void selectObject(){

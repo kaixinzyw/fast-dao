@@ -1,5 +1,9 @@
 package com.fast.utils.lock;
 
+import cn.hutool.core.util.BooleanUtil;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * 状态锁封装
  *
@@ -7,28 +11,30 @@ package com.fast.utils.lock;
  */
 public class StatusLock extends BaseLock {
 
-    /**
-     * 锁是否被占用
-     */
-    private final Boolean isLock;
-
-    public StatusLock(String lockKey, Boolean isLock) {
+    public StatusLock(String lockKey) {
         super(lockKey);
-        this.isLock = isLock;
     }
 
     /**
-     * @return 锁是否被占用,此状态为调用状态锁时的结果,后续修改不会改变,请注意使用
+     * 状态锁
+     * 对指定key进行存储,unlock() 进行解锁
+     * @param keyLockTime     Key锁定时间(毫秒)
+     * @return key存在期间有相同的key进行访问, 返回false
      */
-    public Boolean isLock() {
+    public Boolean lock(long keyLockTime) {
+        isLock = BooleanUtil.isTrue(redisTemplate.opsForValue()
+                .setIfAbsent(lockKey, threadId, keyLockTime, TimeUnit.MILLISECONDS));
         return isLock;
     }
 
-    @Override
-    public void release() {
-        if (!isLock) {
-            FastRedisLock.lockRelease(super.lockKey);
-        }
+
+    /**
+     * 状态锁
+     * 对指定key进行存储10秒,unlock() 进行解锁
+     * @return key存在期间有相同的key进行访问, 返回false
+     */
+    public Boolean lock() {
+        return lock(10000);
     }
 
 }
