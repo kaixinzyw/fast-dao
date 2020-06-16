@@ -1,16 +1,12 @@
 package com.fast.demo;
 
-import cn.hutool.core.thread.ThreadUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.demo.pojo.FastUserTest;
 import com.fast.demo.pojo.fast.FastUserTestFastDAO;
 import com.fast.fast.FastCustomSqlDao;
-import com.fast.utils.lock.BlockingLock;
-import com.fast.utils.lock.FastRedisLock;
 import com.fast.utils.page.PageInfo;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * FastDao测试
@@ -23,43 +19,28 @@ public class FastDaoTest {
     }
 
     public static void main(String[] args) {
-//        test_a_insert();
-//        test_a_insertList();
-//        test_b_findByAge();
-//        test_c_findSQL();
-//        test_c_findOne();
-//        test_d_findByIn();
-//        test_e_updateByAgeOverwrite();
-//        test_f_updateByAge();
-//        test_g_updateOverwrite();
-//        test_h_update();
-//        test_i_deleteByAge();
-//        test_g_deleteByAgeDisk();
-//        test_k_delete();
-//        test_l_deleteDisk();
-//        test_m_findAll();
-//        test_n_findPage();
-//        test_o_FieldOperating();
-//        test_p_CustomSql();
-//        customUpdateColumns();
-//        selectObject();
-        lockTest();
+        test_a_insert();
+        test_a_insertList();
+        test_b_findByAge();
+        test_c_findSQL();
+        test_c_findOne();
+        test_d_findByIn();
+        test_e_updateByAgeOverwrite();
+        test_f_updateByAge();
+        test_g_updateOverwrite();
+        test_h_update();
+        test_i_deleteByAge();
+        test_g_deleteByAgeDisk();
+        test_k_delete();
+        test_l_deleteDisk();
+        test_m_findAll();
+        test_n_findPage();
+        test_o_FieldOperating();
+        test_p_CustomSql();
+        customUpdateColumns();
+        selectObject();
     }
 
-    public static void lockTest(){
-        long l = System.currentTimeMillis();
-        AtomicInteger x = new AtomicInteger();
-        for (int i = 0; i < 100; i++) {
-            ThreadUtil.execute(()->{
-                BlockingLock lock = FastRedisLock.createBlockingLock("BlockingLock");
-                System.out.println(lock.lock());
-                lock.unlock();
-                if (x.incrementAndGet() == 100){
-                    System.out.println("100线程并发所用毫秒数: " + (System.currentTimeMillis() - l));
-                }
-            });
-        }
-    }
 
     public static void selectObject(){
         FastUserTestQuery userTest = new FastUserTestQuery();
@@ -80,7 +61,7 @@ public class FastDaoTest {
 //        FastUserTestFastDao.create().age().customizeUpdateValue().thisDiv("#{age}", Collections.singletonMap("age",10)).greaterOrEqual(10).dao().update(null);
 //        FastUserTestFastDao.create().age().customizeUpdateValue().thisModulo("#{age}", Collections.singletonMap("age",2)).greaterOrEqual(10).dao().update(null);
 //        FastUserTestFastDao.create().age().customizeUpdateValue().customize("age + 1", null).dao().update(null);
-        FastUserTestFastDAO.create().age().customizeUpdateValue().customize("age - #{age}",Collections.singletonMap("age",0)).dao().update(null);
+        FastUserTestFastDAO.create().age().customizeUpdateValue().customize("age - #{age}",Collections.singletonMap("age",0)).notNull().dao().update(null);
     }
 
     public static void test_a_insertList() {

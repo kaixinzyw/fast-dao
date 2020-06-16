@@ -61,9 +61,11 @@ public class DbUtils {
             String tableDesc = tableRet.getString("REMARKS");
             ////StaticLog.info("===tableName:" + tableName + "-tableDesc:" + tableDesc);
             for (String _tableName : tableNames) {
-
+                if (!("all".equals(_tableName) || tableName.trim().equals(_tableName))) {
+                    continue;
+                }
                 // 字段处理,表的所有字段
-                List<ColumnInfo> columns = getAllColumns(metaData, _tableName);
+                List<ColumnInfo> columns = getAllColumns(metaData, tableName);
                 Set<String> packages = new HashSet<String>();
                 //字段转属性
                 Map<String, Object> pros = columns2Properties(columns, packages, underline2Camel);
@@ -97,9 +99,9 @@ public class DbUtils {
                 setPrefix(conf, tableInfo);
                 setPackPath(conf, tableInfo);
                 beanTableInfoAll.put(beanName, tableInfo);
-                if ("all".equals(_tableName) || tableName.trim().equals(_tableName)) {
-                    tables.add(tableInfo);
-                }
+                tables.add(tableInfo);
+
+
             }
 
         }
