@@ -9,7 +9,7 @@ public class CreateFileTest {
     public static void main(String[] args) {
         FileCreateConfig config = new FileCreateConfig();
         //数据库连接
-        config.setDBInfo("jdbc:mysql://127.0.0.1:3306/fast-test?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC","root","kaixin001","com.mysql.cj.jdbc.Driver");
+        config.setDBInfo("jdbc:mysql://127.0.0.1:3306/fast-test?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useInformationSchema=true","root","kaixin001","com.mysql.cj.jdbc.Driver");
         //文件生成的包路径
         config.setBasePackage("com.fast.demo");
         //选择生成的文件
