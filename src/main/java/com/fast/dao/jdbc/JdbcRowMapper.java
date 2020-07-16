@@ -52,7 +52,11 @@ public class JdbcRowMapper<T> implements RowMapper<T> {
                 String fieldName = tableFieldNames.get(columnName);
                 Object val = rs.getObject(columnName);
                 if (val != null) {
-                    jsonObject.put(fieldName, val);
+                    if (fieldName != null) {
+                        jsonObject.put(fieldName, val);
+                    }else {
+                        jsonObject.put(columnName, val);
+                    }
                 }
             }
             return jsonObject.toJavaObject(mapper.getObjClass());

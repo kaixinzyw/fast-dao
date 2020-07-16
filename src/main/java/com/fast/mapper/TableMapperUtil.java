@@ -152,7 +152,9 @@ public class TableMapperUtil {
         tableMapper.setFieldTypes(fieldTypes);
         tableMapper.setFieldTableNames(fieldTableNames);
         tableMapper.setTableFieldNames(tableFieldNames);
-        tableMapper.setShowAllTableNames(selectAllShowField.substring(0, selectAllShowField.length() - 2));
+        if (StrUtil.isNotBlank(selectAllShowField) && selectAllShowField.length() > 2) {
+            tableMapper.setShowAllTableNames(selectAllShowField.substring(0, selectAllShowField.length() - 2));
+        }
         tableMappers.put(clazz.getSimpleName(), tableMapper);
         return tableMapper;
     }
