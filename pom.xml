@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>8.5</version>
+    <version>8.6</version>
 
     <name>fast-dao</name>
     <url>https://github.com/kaixinzyw/fast-dao</url>
@@ -102,6 +102,25 @@
             <artifactId>jedis</artifactId>
             <version>3.1.0</version>
         </dependency>
+
+        <!--        lombok插件-->
+<!--        <dependency>-->
+<!--            <groupId>org.projectlombok</groupId>-->
+<!--            <artifactId>lombok</artifactId>-->
+<!--            <version>1.18.12</version>-->
+<!--        </dependency>-->
+
+        <!--        API文档服务-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.xiaoymin</groupId>-->
+<!--            <artifactId>knife4j-spring-boot-starter</artifactId>-->
+<!--            <version>2.0.4</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>io.springfox</groupId>-->
+<!--            <artifactId>springfox-swagger2</artifactId>-->
+<!--            <version>2.9.2</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 

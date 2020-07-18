@@ -23,9 +23,9 @@ public class FileCreateConfig {
      * Pojo文件路径
      */
     private String fastPojoPackage = CodeCreateModule.FastPojo.codeModule;
-    /**
-     * Pojo字段文件路径
-     */
+//    /**
+//     * Pojo字段文件路径
+//     */
 //    private String beanFieldsPackage = CodeCreateModule.PojoFields.codeModule;
     /**
      * DB模板文件路径
@@ -80,6 +80,18 @@ public class FileCreateConfig {
      * 配置后需要IDE需要安装lombok插件
      */
     private Boolean useLombok = Boolean.FALSE;
+
+    /**
+     * 是否使用Swagger2文档
+     * 需配置,本框架已经引用
+     * <dependency>
+     *  <groupId>io.springfox</groupId>
+     *  <artifactId>springfox-swagger2</artifactId>
+     *  <version>2.9.2</version>
+     * </dependency>
+     */
+    private Boolean useDTOSwagger2 = Boolean.FALSE;
+
     /**
      * 指定在哪个模块下创建模板文件,如果项目中使用了多模块,需要指定模块名称
      */
@@ -139,6 +151,14 @@ public class FileCreateConfig {
     }
 
     /**
+     * 是否在DTO上生成Swagger2注解
+     * @param useDTOSwagger2 不进行设置的话默认false
+     */
+    public void setUseDTOSwagger2(Boolean useDTOSwagger2) {
+        this.useDTOSwagger2 = useDTOSwagger2;
+    }
+
+    /**
      * 是否覆盖旧文件
      * @param replaceFile 不设置的话默认为false
      */
@@ -170,7 +190,7 @@ public class FileCreateConfig {
      * @param driverClass 数据库驱动
      */
     public void setDBInfo(String url, String user, String password, String driverClass) {
-        this.url = url;
+        this.url = url + "&useInformationSchema=true";
         this.user = user;
         this.password = password;
         this.driverClass = driverClass;
@@ -266,6 +286,10 @@ public class FileCreateConfig {
 
     public Boolean getUseLombok() {
         return useLombok;
+    }
+
+    public Boolean getUseDTOSwagger2() {
+        return useDTOSwagger2;
     }
 
     public String getChildModuleName() {

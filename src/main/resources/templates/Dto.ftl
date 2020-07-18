@@ -12,6 +12,10 @@ import java.io.Serializable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 </#if>
+<#if conf.useDTOSwagger2>
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+</#if>
 <#list table.packages as package>
 ${package}
 </#list>
@@ -23,24 +27,23 @@ ${package}
 @Data
 @Accessors(chain=true)
 </#if>
+<#if conf.useDTOSwagger2>
+@ApiModel("${beanName} ${table.tableDesc}")
+</#if>
 public class ${table.dtoName} implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 <#list properties2 as bean>
-    <#if (ids[bean.propertyName])??>
+
     /**
     *${bean.propertyDesc}
     */
-    private ${bean.propertyType} ${bean.propertyName};
-
-    <#else>
-    /**
-    *${bean.propertyDesc}
-    */
-    private ${bean.propertyType} ${bean.propertyName};
-
+    <#if conf.useDTOSwagger2>
+    @ApiModelProperty(value = "${bean.propertyDesc}")
     </#if>
+    private ${bean.propertyType} ${bean.propertyName};
+
 </#list>
 
 <#if !conf.useLombok>
