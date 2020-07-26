@@ -55,7 +55,7 @@ public class FastDaoTest {
     }
 
     public static void customUpdateColumns() {
-//        FastUserTestFastDao.create().age().customizeUpdateValue().thisAdd(5,null).greaterOrEqual(10).dao().update(null);
+//        FastUserTestFastDao.create().age().customizeUpdateValue().thisAdd("#{age}",Collections.singletonMap("age",5)).greaterOrEqual(10).dao().update(null);
 //        FastUserTestFastDao.create().age().customizeUpdateValue().thisSbu("#{age}", Collections.singletonMap("age",5)).greaterOrEqual(10).dao().update(null);
 //        FastUserTestFastDao.create().age().customizeUpdateValue().thisMul("#{age}", Collections.singletonMap("age",10)).greaterOrEqual(10).dao().update(null);
 //        FastUserTestFastDao.create().age().customizeUpdateValue().thisDiv("#{age}", Collections.singletonMap("age",10)).greaterOrEqual(10).dao().update(null);
@@ -204,12 +204,12 @@ public class FastDaoTest {
 
 
     public static void test_n_findPage() {
-        FastUserTestFastDAO fastDao = FastUserTestFastDAO.create();
-        fastDao.userName().likeRight("Fast").distinctField();
-        fastDao.age().lessOrEqual(100);
-        fastDao.age().orderByDesc().distinctField();
-        PageInfo<FastUserTest> page = fastDao.dao().findPage(1, 2);
-//        PageInfo<FastUserTest> page = fastDao.UnconditionalOperating.findPage(1, 2);
+        FastUserTestFastDAO query = new FastUserTestFastDAO();
+        query.userName().likeRight("张");
+        query.age().less(30);
+        query.createTime().orderByDesc();
+        PageInfo<FastUserTest> page = query.dao().findPage(1, 10);
+//        List<FastUserTest> userList = query.dao().findAll();
         System.out.println("findPage执行成功,查询到的数据为" + JSONObject.toJSONString(page, true));
 
     }

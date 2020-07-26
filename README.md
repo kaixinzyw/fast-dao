@@ -37,41 +37,131 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>8.7</version>
+    <version>LATEST</version>
 </dependency>
 ```
 
-#### 1.2.2 框架配置
+#### 1.2 框架配置
 
 ```java
-//配置数据源
-FastDaoConfig.dataSource(getDataSource());
+/**
+ * 字段驼峰转换 例 user_name = userName 默认开启
+ */
+FastDaoConfig.openToCamelCase();
+/**
+ * 设置SQL日志打印,默认关闭
+ * 参数1: 日志打印级别 DEBUG,INFO,OFF
+ * 参数2: 是否打印详细SQL日志
+ * 参数3: 是否打印SQL执行结果
+ */
+FastDaoConfig.openSqlPrint(SqlLogLevel.INFO,true, true);
+/**
+ * 开启自动对数据 新增操作 进行创建时间设置
+ * 参数1: 需要设置创建时间的字段名
+ */
+FastDaoConfig.openAutoSetCreateTime("create_time");
+/**
+ * 开启自动对数据 更新操作/逻辑删除操作 进行更新时间设置
+ * 参数1: 需要设置更新时间的字段名
+ */
+FastDaoConfig.openAutoSetUpdateTime("update_time");
+/**
+ * 开启逻辑删除功能,开启后会对逻辑删除标记的数据在 更新|删除|查询 时进行保护,可通过模板进行单次操作逻辑删除保护的关闭
+ * 参数1:  逻辑删除字段名
+ * 参数2:  逻辑删除标记默认值
+ */
+FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
+/**
+ * 设置全局默认缓存时间,两种缓存模式(本地缓存，Redis缓存),支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
+ * Reids缓存需要进行配置
+ * 参数1:  默认缓存时间
+ * 参数2:  默认缓存时间类型
+ */
+FastDaoConfig.openCache(10L, TimeUnit.SECONDS);
+/**
+ * 数据源配置,Spring环境可无需设置可自动识别
+ */
+FastDaoConfig.dataSource(dataSource);
 
-private static DataSource getDataSource() {
-    DruidDataSource dataSource = new DruidDataSource();
-    dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC");
-    dataSource.setUsername("root");
-    dataSource.setPassword("123456");
-    dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-    return dataSource;
-}
+/**
+ * redis缓存配置,Spring环境可无需设置可自动识别
+ */
+FastDaoConfig.redisConnectionFactory(redisConnectionFactory);
 ```
 
 
 ### 1.3 文件生成
 ```java
-public static void main(String[] args) {
-    FileCreateConfig config = new FileCreateConfig();
-    //数据库连接
-    config.setDBInfo("jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC","root","123456","com.mysql.cj.jdbc.Driver");
-    //文件生成的包路径
-    config.setBasePackage("com.fast.dao.test");
-    //生成代码
-    TableFileCreateUtils.create(config);
-}
+FileCreateConfig config = new FileCreateConfig();
+/**
+ * 设置数据库连接信息
+ * @param url 数据库连接
+ * @param user 用户名
+ * @param password 密码
+ * @param driverClass 数据库驱动
+ */
+config.setDBInfo("jdbc:mysql://IP:端口/数据库?useUnicode=true&characterEncoding=utf-8&useInformationSchema=true","账号","密码","驱动(例:com.mysql.cj.jdbc.Driver)");
+/**
+ * 生成模板的包路径
+ * @param basePackage 包路径地址 xxx.xxx.xxx
+ */
+config.setBasePackage("xxx.xxx.xxx");
+/**
+ * 需要生成的模板文件类型,使用FileCreateConfig.CodeCreateModule枚举,多个用逗号隔开
+ * @param modules 模板文件类型
+ */
+config.setNeedModules(FileCreateConfig.CodeCreateModule.Base);
+/**
+ * 是否过滤表前缀信息
+ * @param prefix 生成文件时候是否过滤表前缀信息，ord_orders = orders
+ * @param prefixFileDir 是否通过前缀信息生成不同的文件目录,ord_orders 会为将orders生成的模板存储在ord目录下
+ * @param prefixName 过滤指定前缀,如果不指定传 null
+ */
+config.setPrefix(false,false,null);
+/**
+ * 是否使用Lombok插件注解
+ * @param useLombok 默认false
+ */
+config.setUseLombok(false);
+/**
+ * 是否在DTO上生成Swagger2注解
+ * @param useDTOSwagger2 默认false
+ */
+config.setUseDTOSwagger2(false);
+/**
+ * 是否对字段和生成的对象进行下划线转换,如 product_sku = ProductSku
+ * @param underline2CamelStr 默认true
+ */
+config.setUnderline2CamelStr(true);
+/**
+ * 是否覆盖旧文件
+ * @param replaceFile 默认true
+ */
+config.setReplaceFile(true);
+/**
+ * 需要生成的表名称
+ * @param tables 多个表用逗号隔开,如果需要生成数据库中所有的表,参数为all
+ */
+config.setCreateTables("all");
+/**
+ * 如果是多模块项目,需要使用此项
+ * @param childModuleName 指定在哪个模块下创建模板文件
+ */
+//config.setChildModuleName("模块名称");
+//生成代码
+TableFileCreateUtils.create(config);
 ```
 ----
 ## 2. 使用说明
+
+```java
+//使用示例
+FastUserTestFastDAO query = new FastUserTestFastDAO();
+query.userName().likeRight("张");
+query.age().less(30);
+query.createTime().orderByDesc();
+List<FastUserTest> userList = query.dao().findAll();
+```
 
 ### 2.1 条件设置
 
@@ -103,7 +193,8 @@ UserFastDao fastDao = new UserFastDao();
 |字段去求平均值设置|fastDao.fieldName().avgField()|`fastDao.age().avgField()`|
 |字段去求最小值设置|fastDao.fieldName().minField()|`fastDao.age().minField()`|
 |字段去求最大值设置|fastDao.fieldName().maxField()|`fastDao.age().maxField()`|
-|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有占位参数需要使用 #{参数名} 声明<br>传递参数MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
+|字段自定义更新设置|fastDao.fieldName().customizeUpdateValue()|等同 age=age+5<br>同时可设置其他更新条件或更新参数<br>`fastDao.age().customizeUpdateValue().thisAdd("#{age}",Collections.singletonMap("age",5)).dao().update(null)`|
+|自定义SQL条件设置|fastDao.andSql(SQL语句,参数)<br>fastDao.orSql(SQL语句,参数)<br>fastDao.sql(SQL语句,参数)|会在WHERE后拼接自定义SQL语句<br>如果有占位参数需要使用 #{参数名} 声明<br>传递参数MAP集合put(参数名,参数值)<br>`Map<String, Object> params = new HashMap<>();`<br>`params.put("userName", "张三");`<br>`fastDao.andSql("userName = #{userName}",params)`|
 |关闭逻辑删除保护|fastDao.closeLogicDeleteProtect()|会对本次执行进行逻辑删除保护关闭<br>关闭后所有操作会影响到被逻辑删除标记的数据|
 |OR条件设置|fastDao.fieldName().or()|指定字段OR条件设置 <br>例: 条件为姓名等于张三或为null <br>`fastDao.userName().valEqual("张三").or().isNull()`
 
