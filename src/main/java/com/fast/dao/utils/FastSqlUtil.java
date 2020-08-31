@@ -62,6 +62,11 @@ public class FastSqlUtil {
     private static final String JDBC_SQL_CONVERSION_RE_RULE = "[#][{](\\w*)[}]";
     private static final String JDBC_SQL_CONVERSION_RE_RESULT = ":$1";
     private static final String JDBC_SQL_NEW_TIME_FUNCTION = "NOW()";
+    private static String[] SPECIAL_COUNT_QUERY = {
+            SUM + StrUtil.SPACE, SUM + LEFT_BRACKETS,
+            AVG + StrUtil.SPACE, AVG + LEFT_BRACKETS,
+            MIN + StrUtil.SPACE, MIN + LEFT_BRACKETS,
+            MAX + StrUtil.SPACE, MAX + LEFT_BRACKETS};
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -400,18 +405,16 @@ public class FastSqlUtil {
     }
 
     public static String countQueryInfoReplace(String sql) {
-        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, SELECT) + 7, StrUtil.indexOfIgnoreCase(sql, FROM)).replace(CRLF, "");
-
+        String queryInfo = StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, "SELECT") + 6, StrUtil.indexOfIgnoreCase(sql, "FROM")).replace(CRLF, "");
         StrBuilder replaceQueryInfo = StrUtil.strBuilder(COUNT, LEFT_BRACKETS);
         if (StrUtil.containsIgnoreCase(queryInfo, DISTINCT)) {
             replaceQueryInfo.append(queryInfo).append(RIGHT_BRACKETS);
-        } else if (StrUtil.containsIgnoreCase(queryInfo, SUM) || StrUtil.containsIgnoreCase(queryInfo, AVG)
-                || StrUtil.containsIgnoreCase(queryInfo, MIN) || StrUtil.containsIgnoreCase(queryInfo, MAX)) {
+        } else if (StrUtil.containsAnyIgnoreCase(queryInfo,SPECIAL_COUNT_QUERY)) {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS).append(ONE_COUNT);
         } else {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
         }
-        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, FROM)), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
+        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, "FROM")), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
     }
 
     /**

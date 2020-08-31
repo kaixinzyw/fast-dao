@@ -27,6 +27,9 @@ public class FastDao<Pojo> {
         }
         fastDao.clazz = clazz;
         fastDao.fastExample = fastExample;
+        fastDao.fastExample.conditionPackages().setSize(null);
+        fastDao.fastExample.conditionPackages().setPage(null);
+        fastDao.fastExample.conditionPackages().setLimit(null);
         return fastDao;
     }
 
@@ -122,7 +125,7 @@ public class FastDao<Pojo> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize) {
-        return DaoTemplate.init(fastExample).findPage(pageNum, pageSize, 9);
+        return findPage(pageNum, pageSize, 9);
     }
 
     /**
