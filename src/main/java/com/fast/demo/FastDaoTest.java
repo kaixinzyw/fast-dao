@@ -34,9 +34,9 @@ public class FastDaoTest {
 //        test_k_delete();
 //        test_l_deleteDisk();
 //        test_m_findAll();
-        test_n_findPage();
+//        test_n_findPage();
 //        test_o_FieldOperating();
-//        test_p_CustomSql();
+        test_p_CustomSql();
 //        customUpdateColumns();
 //        selectObject();
     }
@@ -248,7 +248,7 @@ public class FastDaoTest {
 
 
     public static void test_p_CustomSql() {
-        String sql = "SELECT * FROM fast_user_test WHERE `user_name` LIKE #{userName}";
+        String sql = "SELECT * FROM fast_user_test WHERE `user_name` LIKE ${userName}";
         HashMap<String, Object> params = new HashMap<>();
         params.put("userName", "%FastDao%");
         List<FastUserTest> all = FastCustomSqlDao.create(FastUserTest.class, sql, params).findAll();

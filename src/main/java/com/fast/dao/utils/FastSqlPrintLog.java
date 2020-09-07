@@ -23,6 +23,7 @@ public class FastSqlPrintLog {
     private static final String TRUE_STR = "true";
     private static final String FALSE_STR = "false";
     private static final String PARAM_PREFIX = "#{";
+    private static final String PARAM_PREFIX_2 = "${";
     private static final String PARAM_SUFFIX = "}";
     private static final String SQL_REPORT = ": SQL 执行 ↓ " + System.lineSeparator();
     private static final String PARAM = "参数: ";
@@ -65,7 +66,11 @@ public class FastSqlPrintLog {
                 } else {
                     sqlValue = value.toString();
                 }
-                sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX, key, PARAM_SUFFIX), sqlValue);
+                if (sql.contains(PARAM_PREFIX)) {
+                    sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX, key, PARAM_SUFFIX), sqlValue);
+                }else if(sql.contains(PARAM_PREFIX_2)){
+                    sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX_2, key, PARAM_SUFFIX), sqlValue);
+                }
             }
         }
         printSql(sql, null, param);

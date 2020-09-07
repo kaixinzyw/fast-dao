@@ -57,9 +57,12 @@ public class FastSqlUtil {
     private static final String VALUES = " VALUES ";
     private static final String WILDCARD = "*";
     private static final String PARAM_PREFIX = "#{";
+    private static final String PARAM_PREFIX_2 = "${";
     private static final String MYBATIS_PARAM_PREFIX = "#{paramMap.";
+    private static final String MYBATIS_PARAM_PREFIX_2 = "${paramMap.";
     private static final String PARAM_SUFFIX = "} ";
     private static final String JDBC_SQL_CONVERSION_RE_RULE = "[#][{](\\w*)[}]";
+    private static final String JDBC_SQL_CONVERSION_RE_RULE_2 = "[$][{](\\w*)[}]";
     private static final String JDBC_SQL_CONVERSION_RE_RESULT = ":$1";
     private static final String JDBC_SQL_NEW_TIME_FUNCTION = "NOW()";
     private static String[] SPECIAL_COUNT_QUERY = {
@@ -84,7 +87,7 @@ public class FastSqlUtil {
     }
 
     private static StrBuilder packJdbcParam(StrBuilder sqlBuilder, String paramKey) {
-        sqlBuilder.append(PARAM_PREFIX).append(paramKey).append(PARAM_SUFFIX);
+        sqlBuilder.append(PARAM_PREFIX_2).append(paramKey).append(PARAM_SUFFIX);
         return sqlBuilder;
     }
 
@@ -538,7 +541,12 @@ public class FastSqlUtil {
     }
 
     public static String sqlConversion(String sql) {
-        return ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE, JDBC_SQL_CONVERSION_RE_RESULT);
+        if (sql.contains(PARAM_PREFIX)) {
+            return ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE, JDBC_SQL_CONVERSION_RE_RESULT);
+        }else if(sql.contains(PARAM_PREFIX_2)){
+            return ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE_2, JDBC_SQL_CONVERSION_RE_RESULT);
+        }
+        return sql;
     }
 
 
