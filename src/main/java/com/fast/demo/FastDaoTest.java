@@ -210,9 +210,9 @@ public class FastDaoTest {
         query.createTime().orderByDesc();
         query.age().sumField();
         PageInfo<FastUserTest> page = query.dao().findPage(1, 10);
-        Integer count = query.dao().findCount();
-        FastUserTest one = query.dao().findOne();
-        List<FastUserTest> userList = query.dao().findAll();
+//        Integer count = query.dao().findCount();
+//        FastUserTest one = query.dao().findOne();
+//        List<FastUserTest> userList = query.dao().findAll();
 //        System.out.println("findPage执行成功,查询到的数据为" + JSONObject.toJSONString(page, true));
 
     }
@@ -248,10 +248,10 @@ public class FastDaoTest {
 
 
     public static void test_p_CustomSql() {
-        String sql = "SELECT * FROM fast_user_test WHERE `user_name` LIKE ${userName}";
+        String sql = "SELECT * FROM fast_user_test WHERE `user_name` LIKE #{userName}";
         HashMap<String, Object> params = new HashMap<>();
         params.put("userName", "%FastDao%");
-        List<FastUserTest> all = FastCustomSqlDao.create(FastUserTest.class, sql, params).findAll();
+        PageInfo<FastUserTest> page = FastCustomSqlDao.create(FastUserTest.class, sql, params).findPage(1, 10);
     }
 
 

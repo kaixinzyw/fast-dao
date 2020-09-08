@@ -68,7 +68,8 @@ public class FastSqlPrintLog {
                 }
                 if (sql.contains(PARAM_PREFIX)) {
                     sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX, key, PARAM_SUFFIX), sqlValue);
-                }else if(sql.contains(PARAM_PREFIX_2)){
+                }
+                if (sql.contains(PARAM_PREFIX_2)) {
                     sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX_2, key, PARAM_SUFFIX), sqlValue);
                 }
             }

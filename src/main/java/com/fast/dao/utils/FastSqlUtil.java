@@ -412,7 +412,7 @@ public class FastSqlUtil {
         StrBuilder replaceQueryInfo = StrUtil.strBuilder(COUNT, LEFT_BRACKETS);
         if (StrUtil.containsIgnoreCase(queryInfo, DISTINCT)) {
             replaceQueryInfo.append(queryInfo).append(RIGHT_BRACKETS);
-        } else if (StrUtil.containsAnyIgnoreCase(queryInfo,SPECIAL_COUNT_QUERY)) {
+        } else if (StrUtil.containsAnyIgnoreCase(queryInfo, SPECIAL_COUNT_QUERY)) {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS).append(ONE_COUNT);
         } else {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
@@ -542,9 +542,10 @@ public class FastSqlUtil {
 
     public static String sqlConversion(String sql) {
         if (sql.contains(PARAM_PREFIX)) {
-            return ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE, JDBC_SQL_CONVERSION_RE_RESULT);
-        }else if(sql.contains(PARAM_PREFIX_2)){
-            return ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE_2, JDBC_SQL_CONVERSION_RE_RESULT);
+            sql = ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE, JDBC_SQL_CONVERSION_RE_RESULT);
+        }
+        if (sql.contains(PARAM_PREFIX_2)) {
+            sql = ReUtil.replaceAll(sql, JDBC_SQL_CONVERSION_RE_RULE_2, JDBC_SQL_CONVERSION_RE_RESULT);
         }
         return sql;
     }
