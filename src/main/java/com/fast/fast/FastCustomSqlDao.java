@@ -1,8 +1,12 @@
 package com.fast.fast;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.resource.ClassPathResource;
 import com.fast.condition.FastExample;
 import com.fast.utils.page.PageInfo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +17,9 @@ import java.util.Map;
  * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class FastCustomSqlDao<T> {
+
+    private static final Map<String,String> sqlMap=new HashMap<>();
+
     private FastExample<T> fastExample;
 
     private FastCustomSqlDao() {
@@ -32,6 +39,43 @@ public class FastCustomSqlDao<T> {
         customSqlDao.fastExample = new FastExample<>(clazz);
         customSqlDao.fastExample.conditionPackages().customSQL(sql, params);
         return customSqlDao;
+    }
+
+    /**
+     * 自定义SQL执行器初始化,如需使用,必须调用此方法进行初始化创建
+     *
+     * @param clazz  自定义SQL操作的类
+     * @param path   resource 目录下的文件,文件编码必须为UTF-8
+     * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     * @param <T>    自定义SQL操作的对象泛型
+     * @return 自定义SQL执行器
+     */
+    public static <T> FastCustomSqlDao<T> createResource(Class<T> clazz, String path, Map<String, Object> params) {
+        String sql = sqlMap.get(path);
+        if(sql == null){
+            ClassPathResource resource = new ClassPathResource(path);
+            sql = IoUtil.read(resource.getStream()).toString();
+            sqlMap.put(path,sql);
+        }
+        return create(clazz, sql, params);
+    }
+
+    /**
+     * 自定义SQL执行器初始化,如需使用,必须调用此方法进行初始化创建
+     *
+     * @param clazz  自定义SQL操作的类
+     * @param path   文件的绝对路径,文件编码必须为UTF-8
+     * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     * @param <T>    自定义SQL操作的对象泛型
+     * @return 自定义SQL执行器
+     */
+    public static <T> FastCustomSqlDao<T> createPath(Class<T> clazz, String path, Map<String, Object> params) {
+        String sql = sqlMap.get(path);
+        if(sql == null){
+            sql = FileUtil.readUtf8String(path);
+            sqlMap.put(path,sql);
+        }
+        return create(clazz, sql, params);
     }
 
     /**
