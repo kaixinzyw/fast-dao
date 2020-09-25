@@ -2,7 +2,7 @@ package com.fast.utils;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
@@ -36,10 +36,10 @@ public class FastValueUtil {
     }
 
     public static void setPrimaryKey(Object o, TableMapper tableMapper) {
-        if (tableMapper.getPrimaryKeyField() != null && tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.UUID)) {
+        if (tableMapper.getPrimaryKeyField() != null && tableMapper.getPrimaryKeyType().equals(PrimaryKeyType.OBJECTID)) {
             Object primaryKey = BeanUtil.getFieldValue(o, tableMapper.getPrimaryKeyField());
             if (primaryKey == null) {
-                BeanUtil.setFieldValue(o, tableMapper.getPrimaryKeyField(), UUID.randomUUID().toString(true));
+                BeanUtil.setFieldValue(o, tableMapper.getPrimaryKeyField(), IdUtil.objectId());
             }
         }
     }

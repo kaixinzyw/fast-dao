@@ -122,7 +122,7 @@ public class TableMapperUtil {
                 tableMapper.setPrimaryKeyTableField(tabFieldName);
                 tableMapper.setPrimaryKeyClass(field.getType());
                 if (field.getType() == String.class) {
-                    tableMapper.setPrimaryKeyType(PrimaryKeyType.UUID);
+                    tableMapper.setPrimaryKeyType(PrimaryKeyType.OBJECTID);
                 } else {
                     tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
                 }
