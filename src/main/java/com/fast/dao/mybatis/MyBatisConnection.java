@@ -25,19 +25,17 @@ public class MyBatisConnection {
     public static MyBatisMapper getMapper() {
         MyBatisMapper myBatisMapper = mapperThreadLocal.get();
         if (myBatisMapper == null) {
-            myBatisMapper = dataSource(null);
+            myBatisMapper = dataSource();
         }
         return myBatisMapper;
     }
 
-    public static MyBatisMapper dataSource(DataSource dataSource) {
-        if (dataSource == null) {
-            dataSource = FastDaoAttributes.getDataSource();
-        }
+    public static MyBatisMapper dataSource() {
+        DataSource dataSource = FastDaoAttributes.getDataSource();
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
 
-        SqlSessionTemplate template = null;
+        SqlSessionTemplate template;
         try {
             template = new SqlSessionTemplate(sqlSessionFactoryBean.getObject());
         } catch (Exception e) {

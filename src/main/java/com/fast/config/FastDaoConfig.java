@@ -3,7 +3,6 @@ package com.fast.config;
 import com.fast.aspect.FastDaoExpander;
 import com.fast.aspect.FastDaoExpanderRunner;
 import com.fast.dao.DaoActuator;
-import com.fast.dao.jdbc.JdbcConnection;
 import com.fast.utils.FastValueUtil;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -28,7 +27,6 @@ public class FastDaoConfig {
      */
     public static void dataSource(DataSource dataSource) {
         FastDaoAttributes.setDataSource(dataSource);
-        dataSourceThreadLocal(dataSource);
     }
 
 
@@ -38,7 +36,7 @@ public class FastDaoConfig {
      * @param dataSource 数据源
      */
     public static void dataSourceThreadLocal(DataSource dataSource) {
-            JdbcConnection.dataSource(dataSource);
+        FastDaoAttributes.setThreadLocalDataSource(dataSource);
     }
 
 

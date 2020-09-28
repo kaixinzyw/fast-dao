@@ -1,8 +1,14 @@
 package com.fast.config;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.fast.dao.DaoActuator;
+import com.fast.dao.mybatis.MyBatisImpl;
+import com.fast.dao.transaction.FastTransaction;
+import com.fast.dao.jdbc.JdbcConnection;
 import com.fast.dao.jdbc.JdbcImpl;
+import com.fast.dao.mybatis.MyBatisConnection;
 import com.fast.utils.SpringUtil;
+import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import javax.sql.DataSource;
@@ -98,7 +104,7 @@ public class FastDaoAttributes {
      * 使用的OMR实现,目前框架自身对SpringJDBC和MyBatis 进行了Mysql实现
      * 参数
      * JdbcImpl.class:使用JDBC实现
-     * FastMyBatisImpl.class: 使用MyBatis实现
+     * MyBatisImpl.class: 使用MyBatis实现
      * <p>
      * 如果需要自定义扩展,可以实现DaoActuator接口进行自定义扩展
      */
@@ -124,20 +130,39 @@ public class FastDaoAttributes {
      * 数据源
      */
     private static DataSource dataSource;
-
+    private static final FastThreadLocal<DataSource> dataSourceFastThreadLocal = new FastThreadLocal<>();
     public static DataSource getDataSource() {
-        DataSource ds = FastDaoAttributes.dataSource;
-        if (ds == null) {
-            ds = SpringUtil.getBean(DataSource.class);
-            if (ds == null) {
+        DataSource dataSource = dataSourceFastThreadLocal.get();
+        if (dataSource != null) {
+            return dataSource;
+        }
+        dataSource = FastDaoAttributes.dataSource;
+        if (dataSource == null) {
+            dataSource = SpringUtil.getBean(DataSource.class);
+            if (dataSource == null) {
                 throw new RuntimeException("未获取到DataSource,请使用<FastDaoConfig.dataSource(dataSource)>进行配置");
             }
         }
-        return ds;
+        return dataSource;
     }
 
     public static void setDataSource(DataSource dataSource) {
         FastDaoAttributes.dataSource = dataSource;
+        switchDataSource();
+    }
+
+    public static void setThreadLocalDataSource(DataSource dataSource) {
+        dataSourceFastThreadLocal.set(dataSource);
+        switchDataSource();
+    }
+
+    private static void switchDataSource(){
+        if (ObjectUtil.equal(FastDaoAttributes.daoActuator, JdbcImpl.class)) {
+            JdbcConnection.dataSource();
+        }else if (ObjectUtil.equal(FastDaoAttributes.daoActuator, MyBatisImpl.class)) {
+            MyBatisConnection.dataSource();
+        }
+        FastTransaction.switchTransaction();
     }
 
     /**

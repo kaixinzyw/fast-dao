@@ -29,7 +29,7 @@ public class JdbcImpl<T> implements DaoActuator<T> {
         if (CollUtil.isNotEmpty(param.getInsertList()) && param.getTableMapper().getPrimaryKeyType() != null && param.getTableMapper().getPrimaryKeyType().equals(PrimaryKeyType.AUTO)) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             JdbcConnection.getJdbcTemplate().update(FastSqlUtil.sqlConversion(param.getSql()), new MapSqlParameterSource(param.getParamMap()), keyHolder);
-            if (param.getInsertList().size() == 1) {
+            if (param.getInsertList().size() == 1&& keyHolder.getKey()!=null) {
                 BeanUtil.setFieldValue(param.getInsertList().get(0), param.getTableMapper().getPrimaryKeyField(), Objects.requireNonNull(keyHolder.getKey()).longValue());
             } else {
                 List<Map<String, Object>> keyList = keyHolder.getKeyList();

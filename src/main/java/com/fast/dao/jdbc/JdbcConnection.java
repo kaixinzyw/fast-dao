@@ -22,16 +22,14 @@ public class JdbcConnection {
      */
     public static NamedParameterJdbcTemplate getJdbcTemplate() {
         NamedParameterJdbcTemplate jdbcTemplate = jdbcTemplateThreadLocal.get();
-        if (jdbcTemplate == null){
-            jdbcTemplate = dataSource(null);
+        if (jdbcTemplate == null) {
+            jdbcTemplate = dataSource();
         }
         return jdbcTemplate;
     }
 
-    public static NamedParameterJdbcTemplate dataSource(DataSource dataSource){
-        if (dataSource == null) {
-            dataSource = FastDaoAttributes.getDataSource();
-        }
+    public static NamedParameterJdbcTemplate dataSource() {
+        DataSource dataSource = FastDaoAttributes.getDataSource();
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         jdbcTemplateThreadLocal.set(jdbcTemplate);
         return jdbcTemplate;

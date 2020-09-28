@@ -1,1 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.fast.utils.SpringUtil
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.fast.utils.SpringUtil,\
+  com.fast.dao.transaction.FastTransactionAspect
