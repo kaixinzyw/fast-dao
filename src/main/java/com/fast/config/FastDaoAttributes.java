@@ -2,11 +2,11 @@ package com.fast.config;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.fast.dao.DaoActuator;
-import com.fast.dao.mybatis.MyBatisImpl;
-import com.fast.dao.transaction.FastTransaction;
 import com.fast.dao.jdbc.JdbcConnection;
 import com.fast.dao.jdbc.JdbcImpl;
 import com.fast.dao.mybatis.MyBatisConnection;
+import com.fast.dao.mybatis.MyBatisImpl;
+import com.fast.dao.transaction.FastTransaction;
 import com.fast.utils.SpringUtil;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
