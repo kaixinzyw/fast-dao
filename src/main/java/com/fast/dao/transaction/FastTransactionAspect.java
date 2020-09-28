@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
  * 事务拦截器
  *
  * @author zyw
- * @date 2020/09/28
  */
 @Aspect
 @Component
