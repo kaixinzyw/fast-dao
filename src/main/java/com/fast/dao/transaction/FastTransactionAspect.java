@@ -22,7 +22,7 @@ public class FastTransactionAspect {
     private static final FastThreadLocal<String> transactionMethodNameThreadLocal = new FastThreadLocal<>();
 
 
-    @Pointcut("@annotation(com.fast.dao.transaction.FastTransactionAuto)")
+    @Pointcut("@annotation(com.fast.dao.transaction.FastAutoTransaction)")
     public void pointCut() {
     }
 
