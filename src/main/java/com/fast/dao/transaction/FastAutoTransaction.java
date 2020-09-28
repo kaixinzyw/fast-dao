@@ -1,4 +1,4 @@
-package com.fast.dao;
+package com.fast.dao.transaction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +11,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
-public @interface FastTransaction {
+public @interface FastAutoTransaction {
 }
