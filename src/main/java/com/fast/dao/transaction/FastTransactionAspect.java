@@ -1,14 +1,12 @@
 package com.fast.dao.transaction;
 
 
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.StrUtil;
-import com.fast.dao.jdbc.TransactionInfo;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * 事务拦截器
@@ -19,7 +17,7 @@ import java.util.Map;
 @Component
 public class FastTransactionAspect {
 
-    private static final FastThreadLocal<String> transactionMethodNameThreadLocal = new FastThreadLocal<>();
+    private static final FastThreadLocal<StrBuilder> transactionMethodNameThreadLocal = new FastThreadLocal<>();
 
 
     @Pointcut("@annotation(com.fast.dao.transaction.FastAutoTransaction)")
@@ -32,12 +30,12 @@ public class FastTransactionAspect {
      */
     @Before("pointCut()")
     public void autoOpenTransactionBefore(JoinPoint point) {
-        String threadLocalMethodName = transactionMethodNameThreadLocal.get();
-        if (threadLocalMethodName != null) {
+        StrBuilder path = transactionMethodNameThreadLocal.get();
+        if (path != null) {
             return;
         }
-        threadLocalMethodName = point.getSignature().getName();
-        transactionMethodNameThreadLocal.set(threadLocalMethodName);
+        path = StrUtil.strBuilder(point.getSignature().getDeclaringTypeName(), StrUtil.DOT, point.getSignature().getName());
+        transactionMethodNameThreadLocal.set(path);
         FastTransaction.open();
     }
 
@@ -46,9 +44,14 @@ public class FastTransactionAspect {
      */
     @After("pointCut()")
     public void autoCommitTransactionAfter(JoinPoint point) {
-        String threadLocalMethodName = transactionMethodNameThreadLocal.get();
-        if (StrUtil.equals(point.getSignature().getName(), threadLocalMethodName)) {
+        StrBuilder threadLocalMethodName = transactionMethodNameThreadLocal.get();
+        if (threadLocalMethodName == null) {
+            return;
+        }
+        StrBuilder path = StrUtil.strBuilder(point.getSignature().getDeclaringTypeName(), StrUtil.DOT, point.getSignature().getName());
+        if (StrUtil.equals(threadLocalMethodName.toString(), path.toString())) {
             FastTransaction.commit();
+            transactionMethodNameThreadLocal.remove();
         }
     }
 
@@ -57,9 +60,14 @@ public class FastTransactionAspect {
      */
     @AfterThrowing("pointCut()")
     public void autoRollbackTransactionAfterThrowing(JoinPoint point) {
-        String threadLocalMethodName = transactionMethodNameThreadLocal.get();
-        if (StrUtil.equals(point.getSignature().getName(), threadLocalMethodName)) {
+        StrBuilder threadLocalMethodName = transactionMethodNameThreadLocal.get();
+        if (threadLocalMethodName == null) {
+            return;
+        }
+        StrBuilder path = StrUtil.strBuilder(point.getSignature().getDeclaringTypeName(), StrUtil.DOT, point.getSignature().getName());
+        if (StrUtil.equals(path.toString(), threadLocalMethodName.toString())) {
             FastTransaction.rollback();
+            transactionMethodNameThreadLocal.remove();
         }
     }
 
