@@ -2,7 +2,6 @@ package com.fast.dao.mybatis;
 
 import com.fast.config.FastDaoAttributes;
 import io.netty.util.concurrent.FastThreadLocal;
-import org.apache.ibatis.binding.BindingException;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 
@@ -34,28 +33,15 @@ public class MyBatisConnection {
         DataSource dataSource = FastDaoAttributes.getDataSource();
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
-
         SqlSessionTemplate template;
         try {
             template = new SqlSessionTemplate(sqlSessionFactoryBean.getObject());
+            template.getConfiguration().addMapper(MyBatisMapper.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        MyBatisMapper mapper;
-        try {
-            mapper = template.getMapper(MyBatisMapper.class);
-        } catch (BindingException e1) {
-            synchronized (MyBatisConnection.class) {
-                try {
-                    mapper = template.getMapper(MyBatisMapper.class);
-                } catch (BindingException e2) {
-                    template.getConfiguration().addMapper(MyBatisMapper.class);
-                    mapper = template.getMapper(MyBatisMapper.class);
-                }
-
-            }
-        }
+        MyBatisMapper mapper = template.getMapper(MyBatisMapper.class);
+        ;
         mapperThreadLocal.set(mapper);
         return mapper;
     }
