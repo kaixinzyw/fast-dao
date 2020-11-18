@@ -68,6 +68,26 @@ public class FastDao<Pojo> {
     }
 
     /**
+     * 新增或更新操作
+     * @param pojo 如果主键有值则进行更新操作,主键为空则进行新增操作,参数为空不进行更新
+     * @return 新增结果
+     */
+    public Pojo insertOrUpdateByPrimaryKey(Pojo pojo) {
+        return DaoTemplate.init(fastExample).insertOrUpdateByPrimaryKey(pojo, Boolean.TRUE);
+    }
+
+    /**
+     * 新增或更新操作
+     * @param pojo 如果主键有值则进行更新操作,主键为空则进行新增操作,参数为空则也进行更新
+     * @return 新增结果
+     */
+    public Pojo insertOrUpdateByPrimaryKeyOverwrite(Pojo pojo) {
+        return DaoTemplate.init(fastExample).insertOrUpdateByPrimaryKey(pojo, Boolean.FALSE);
+    }
+
+
+
+    /**
      * 通过主键查询数据
      * 如果设置逻辑删除,对逻辑删除的数据不进行操作
      *
@@ -153,6 +173,7 @@ public class FastDao<Pojo> {
     /**
      * 通过条件更新数据, 参数为空则的字段不会进行更新
      * 如果条件参数为空,则获取主键作为条件参数,条件参数至少存在1个,否则抛出异常
+     *
      * @param pojo 需要更新的数据 (本操作会对更新时间自动赋值)
      * @return 更新影响到的数据
      */
@@ -163,6 +184,7 @@ public class FastDao<Pojo> {
     /**
      * 通过条件更新数据,参数为空则的字段也会进行更新
      * 如果条件参数为空,则获取主键作为条件参数,条件参数至少存在1个,否则抛出异常
+     *
      * @param pojo 需要更新的数据 (本操作会对更新时间自动赋值)
      * @return 更新影响到的数据
      */
@@ -184,6 +206,7 @@ public class FastDao<Pojo> {
     /**
      * 通过条件物理删除,如果启动了逻辑删除功能,本操作会自动将数据删除标记修改,不会进行物理删除,除非关闭逻辑删除保护
      * 条件参数至少存在1个,否则抛出异常
+     *
      * @return 删除影响到的数据条数
      */
     public Integer delete() {

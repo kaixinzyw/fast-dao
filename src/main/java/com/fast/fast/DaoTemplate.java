@@ -88,6 +88,7 @@ public class DaoTemplate<T> {
         return ts.get(0);
     }
 
+
     /**
      * 新增操作
      *
@@ -133,6 +134,26 @@ public class DaoTemplate<T> {
         }
         DataCache.upCache(tableMapper);
         return ins;
+    }
+
+    /**
+     * 新增或更新操作
+     *
+     * @param pojo 如果主键有值则进行更新操作,主键为空则进行新增操作
+     * @return 新增结果
+     */
+    public T insertOrUpdateByPrimaryKey(T pojo, boolean isSelective) {
+        String primaryKeyField = tableMapper.getPrimaryKeyField();
+        if (StrUtil.isBlank(primaryKeyField)) {
+            throw new FastDaoParameterException(tableMapper.getTableName() + ": 未设置主键!!!");
+        }
+        Object fieldValue = BeanUtil.getFieldValue(pojo, primaryKeyField);
+        if (fieldValue == null) {
+            return insert(pojo);
+        } else {
+            updateByPrimaryKey(pojo, isSelective);
+            return pojo;
+        }
     }
 
     /**

@@ -65,7 +65,14 @@ public class BaseFastDAO<T> {
         fastExample.sql(sql, params);
     }
 
-
+    /**
+     * 自定义字段的操作
+     * @param fieldName 字段名称
+     * @return {@link FastExample.Criteria<T>}
+     */
+    public FastExample.Criteria<T> customFieldOperation(String fieldName){
+        return fastExample.field("companyType").valEqual(fieldName);
+    }
 
     /**
      * 自定义sql条件,会将传入的参数进行OR条件进行拼接
