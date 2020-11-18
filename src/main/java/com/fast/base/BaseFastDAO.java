@@ -68,7 +68,7 @@ public class BaseFastDAO<T> {
     /**
      * 自定义字段的操作
      * @param fieldName 字段名称
-     * @return {@link FastExample.Criteria<T>}
+     * @return 操作对象
      */
     public FastExample.Criteria<T> customFieldOperation(String fieldName){
         return fastExample.field("companyType").valEqual(fieldName);

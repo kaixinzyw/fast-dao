@@ -27,6 +27,7 @@ public class FastTransactionAspect {
 
     /**
      * 方法执行前,开启事务
+     * @param point 点
      */
     @Before("pointCut()")
     public void autoOpenTransactionBefore(JoinPoint point) {
@@ -41,6 +42,7 @@ public class FastTransactionAspect {
 
     /**
      * 方法执行后,提交事务
+     * @param point 点
      */
     @After("pointCut()")
     public void autoCommitTransactionAfter(JoinPoint point) {
@@ -57,6 +59,7 @@ public class FastTransactionAspect {
 
     /**
      * 方法异常后,回滚事务
+     * @param point 点
      */
     @AfterThrowing("pointCut()")
     public void autoRollbackTransactionAfterThrowing(JoinPoint point) {

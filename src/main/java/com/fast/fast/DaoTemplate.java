@@ -138,8 +138,8 @@ public class DaoTemplate<T> {
 
     /**
      * 新增或更新操作
-     *
-     * @param pojo 如果主键有值则进行更新操作,主键为空则进行新增操作
+     * @param pojo        如果主键有值则进行更新操作,主键为空则进行新增操作
+     * @param isSelective 是否进行更新覆盖操作
      * @return 新增结果
      */
     public T insertOrUpdateByPrimaryKey(T pojo, boolean isSelective) {
