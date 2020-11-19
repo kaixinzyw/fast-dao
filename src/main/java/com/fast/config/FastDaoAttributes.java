@@ -12,6 +12,8 @@ import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,6 +72,11 @@ public class FastDaoAttributes {
      * 逻辑删除的字段名称
      */
     public static String deleteFieldName;
+
+    /**
+     * 排除字段,排除的字段不会进行表映射
+     */
+    public static List<String> ruleOutFieldList = new ArrayList<>();
     /**
      * 逻辑删除的表名称
      */

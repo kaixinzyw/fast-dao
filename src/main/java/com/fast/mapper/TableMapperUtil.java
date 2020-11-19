@@ -1,5 +1,6 @@
 package com.fast.mapper;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.cache.DataCacheType;
 import com.fast.cache.FastRedisCache;
@@ -101,7 +102,7 @@ public class TableMapperUtil {
         HashMap<String, String> tableFieldNames = new HashMap<>();
         StringBuilder selectAllShowField = new StringBuilder();
         for (Field field : fields) {
-            if (field.getName().equals("serialVersionUID")) {
+            if (field.getName().equals("serialVersionUID") || CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName())) {
                 continue;
             }
             String tabFieldName;

@@ -7,6 +7,7 @@ import com.fast.utils.FastValueUtil;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FastDaoConfig {
@@ -115,6 +116,15 @@ public class FastDaoConfig {
      */
     public static void openToCamelCase() {
         FastDaoAttributes.isToCamelCase = Boolean.TRUE;
+    }
+
+    /**
+     * 排除字段,排除的字段不会进行表映射
+     *
+     * @param fieldNameList 字段名集合
+     */
+    public static void ruleOutField(List<String> fieldNameList){
+        FastDaoAttributes.ruleOutFieldList = fieldNameList;
     }
 
     /**
