@@ -46,7 +46,7 @@ public class BeanConvertUtil {
                 K v2 = k2.apply(t2);
                 if (v1.equals(v2)) {
                     s1.accept(t1, t2);
-                    continue;
+                    break;
                 }
             }
         }

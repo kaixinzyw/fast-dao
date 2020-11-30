@@ -2,6 +2,7 @@ package com.fast.condition;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class FastWhereData {
             if (fastWhereDataMap != null) {
                 return fastWhereDataMap;
             }
-            Field[] fields = obj.getClass().getDeclaredFields();
+            Field[] fields = FieldUtils.getAllFields(obj.getClass());
             if (ArrayUtil.isEmpty(fields)) {
                 FastWhereData.fastWhereDataMap.put(obj.getClass().getName(), null);
                 return null;

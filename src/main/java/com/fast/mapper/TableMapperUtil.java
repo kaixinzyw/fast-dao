@@ -7,6 +7,7 @@ import com.fast.cache.FastRedisCache;
 import com.fast.cache.FastStatisCache;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -94,7 +95,7 @@ public class TableMapperUtil {
             }
         }
 
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = FieldUtils.getAllFields(clazz);
         List<String> fieldNames = new ArrayList<>();
         HashMap<String, Class> fieldTypes = new HashMap<>();
         HashMap<String, String> fieldTableNames = new HashMap<>();
