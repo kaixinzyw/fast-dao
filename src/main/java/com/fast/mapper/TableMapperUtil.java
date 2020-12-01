@@ -119,7 +119,7 @@ public class TableMapperUtil {
                     tabFieldName = field.getName();
                 }
             }
-            if (isId && tableMapper.getPrimaryKeyTableField() == null) {
+            if (isId || field.getName().equals("id") && tableMapper.getPrimaryKeyTableField() == null) {
                 tableMapper.setPrimaryKeyField(field.getName());
                 tableMapper.setPrimaryKeyTableField(tabFieldName);
                 tableMapper.setPrimaryKeyClass(field.getType());
