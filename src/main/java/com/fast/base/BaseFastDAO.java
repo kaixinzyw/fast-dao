@@ -71,7 +71,7 @@ public class BaseFastDAO<T> {
      * @return 操作对象
      */
     public FastExample.Criteria<T> customFieldOperation(String fieldName){
-        return fastExample.field("companyType").valEqual(fieldName);
+        return fastExample.field(fieldName);
     }
 
     /**
