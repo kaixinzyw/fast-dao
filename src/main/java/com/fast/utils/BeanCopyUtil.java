@@ -54,13 +54,13 @@ public class BeanCopyUtil {
         return page;
     }
 
-    public static <T> T copy(Class<T> clazz, Object... obj) {
+    public static <T> T copy(Class<T> clazz, Object... objs) {
         try {
             JSONObject json = new JSONObject();
-            if (ArrayUtil.isEmpty(obj)) {
+            if (ArrayUtil.isEmpty(objs)) {
                 return null;
             }
-            for (Object o : obj) {
+            for (Object o : objs) {
                 json.putAll(BeanUtil.beanToMap(o));
             }
             return json.toJavaObject(clazz);
