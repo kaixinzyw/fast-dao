@@ -2,6 +2,8 @@ package com.fast.utils;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fast.utils.page.PageInfo;
 
 import java.util.*;
@@ -50,6 +52,21 @@ public class BeanCopyUtil {
         }
         page.setList(copy(page.getList(), clazz));
         return page;
+    }
+
+    public static <T> T copy(Class<T> clazz, Object... obj) {
+        try {
+            JSONObject json = new JSONObject();
+            if (ArrayUtil.isEmpty(obj)) {
+                return null;
+            }
+            for (Object o : obj) {
+                json.putAll(BeanUtil.beanToMap(o));
+            }
+            return json.toJavaObject(clazz);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static <T> T copy(Object obj, Class<T> clazz) {
