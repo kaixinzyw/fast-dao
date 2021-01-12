@@ -11,6 +11,23 @@ import java.util.function.Function;
 
 public class BeanConvertUtil {
 
+    public static <T, K> List<Map<String, Object>> toDict(List<T> list, Function<T, K> nameMapper, Function<T, K> valueMapper) {
+        return toDict("name", "value", list, nameMapper, valueMapper);
+    }
+
+    public static <T, K> List<Map<String, Object>> toDict(String keyName, String valueName, List<T> list, Function<T, K> nameMapper, Function<T, K> valueMapper) {
+        List<Map<String, Object>> dicts = new ArrayList<>();
+        if (CollUtil.isNotEmpty(list)) {
+            for (T t : list) {
+                Map<String, Object> dict = new HashMap<>();
+                dict.put(keyName, nameMapper.apply(t));
+                dict.put(valueName, valueMapper.apply(t));
+                dicts.add(dict);
+            }
+        }
+        return dicts;
+    }
+
     public static <T, U> Map<U, T> toMap(List<T> list, Function<? super T, ? extends U> valueMapper) {
         if (CollUtil.isEmpty(list)) {
             return null;
@@ -58,16 +75,13 @@ public class BeanConvertUtil {
             List<T2> ts2 = new ArrayList<>();
             for (T2 t2 : l2) {
                 K v2 = k2.apply(t2);
-                if (v1.equals(v2)){
+                if (v1.equals(v2)) {
                     ts2.add(t2);
                 }
             }
             s1.accept(t1, ts2);
         }
     }
-
-
-
 
 
 }

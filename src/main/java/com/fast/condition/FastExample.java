@@ -311,6 +311,35 @@ public class FastExample<T> {
         }
 
         /**
+         * 全文检索条件
+         *
+         * @param inValues 所包含的值(a,b,c)
+         * @return 条件操作工具
+         */
+        public Criteria<P> match(Object... inValues) {
+            if (ArrayUtil.isEmpty(inValues)) {
+                return this;
+            }
+            conditionPackages.addMatchQuery(fieldName, inValues);
+            return this;
+        }
+
+        /**
+         * 全文检索条件 Not
+         *
+         * @param inValues 所包含的值(a,b,c)
+         * @return 条件操作工具
+         */
+        public Criteria<P> notMatch(Object... inValues) {
+            if (ArrayUtil.isEmpty(inValues)) {
+                return this;
+            }
+            conditionPackages.addNotMatchQuery(fieldName, inValues);
+            return this;
+        }
+
+
+        /**
          * 包含条件
          *
          * @param inValues 所包含的值(a,b,c)

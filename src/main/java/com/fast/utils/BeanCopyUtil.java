@@ -56,10 +56,10 @@ public class BeanCopyUtil {
 
     public static <T> T copy(Class<T> clazz, Object... objs) {
         try {
-            JSONObject json = new JSONObject();
             if (ArrayUtil.isEmpty(objs)) {
                 return null;
             }
+            JSONObject json = new JSONObject();
             for (Object o : objs) {
                 json.putAll(BeanUtil.beanToMap(o));
             }

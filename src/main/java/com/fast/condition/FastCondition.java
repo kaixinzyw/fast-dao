@@ -91,6 +91,24 @@ public class FastCondition {
         return conditions;
     }
 
+    public static FastCondition match(String matchName, Collection againstValues, Way way) {
+        FastCondition conditions = new FastCondition();
+        conditions.setExpression(Expression.Match);
+        conditions.setWay(way);
+        conditions.setField(matchName);
+        conditions.setValueList(againstValues);
+        return conditions;
+    }
+
+    public static FastCondition notMatch(String matchName, Collection againstValues, Way way) {
+        FastCondition conditions = new FastCondition();
+        conditions.setExpression(Expression.NotMatch);
+        conditions.setWay(way);
+        conditions.setField(matchName);
+        conditions.setValueList(againstValues);
+        return conditions;
+    }
+
     public static FastCondition in(String inName, Collection inValues, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.In);
@@ -233,6 +251,8 @@ public class FastCondition {
         NotEqual("notEqual", " != "),
         Like("like", " LIKE "),
         NotLike("notLike", " NOT LIKE "),
+        Match(" MATCH", " AGAINST"),
+        NotMatch(" NOT MATCH", " AGAINST"),
         In("in", " IN "),
         NotIn("notIn", " NOT IN "),
         Between("between", " BETWEEN "),
