@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.fast.cache.DataCacheType;
 import com.fast.cache.FastRedisCache;
 import com.fast.cache.FastStatisCache;
+import com.fast.condition.many.FastManyToMany;
+import com.fast.condition.many.ManyToManyInfo;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -44,6 +46,7 @@ public class TableMapperUtil {
         }
         return tableMapper;
     }
+
 
     /**
      * 创建类映射关系
@@ -102,33 +105,46 @@ public class TableMapperUtil {
         HashMap<String, String> selectShowField = new HashMap<>();
         HashMap<String, String> tableFieldNames = new HashMap<>();
         StringBuilder selectAllShowField = new StringBuilder();
+        //获取主键
+        for (Field field : fields) {
+            boolean isId = field.isAnnotationPresent(Id.class);
+            if (isId || field.getName().equals("id")) {
+                if (tableMapper.getPrimaryKeyTableField() == null) {
+                    tableMapper.setPrimaryKeyField(field.getName());
+                    tableMapper.setPrimaryKeyTableField(getTabFieldName(field));
+                    tableMapper.setPrimaryKeyClass(field.getType());
+                    if (field.getType() == String.class) {
+                        tableMapper.setPrimaryKeyType(PrimaryKeyType.OBJECTID);
+                    } else {
+                        tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
+                    }
+                }
+                break;
+            }
+        }
+        List<ManyToManyInfo> manyToManyInfoList = new ArrayList<>();
         for (Field field : fields) {
             if (field.getName().equals("serialVersionUID") || CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName())) {
                 continue;
             }
-            String tabFieldName;
-            boolean isId = field.isAnnotationPresent(Id.class);
-            boolean isColumn = field.isAnnotationPresent(Column.class);
-            if (isColumn) {
-                Column name = field.getAnnotation(Column.class);
-                tabFieldName = name.name();
-            } else {
-                if (FastDaoAttributes.isToCamelCase) {
-                    tabFieldName = StrUtil.toUnderlineCase(field.getName());
-                } else {
-                    tabFieldName = field.getName();
-                }
+
+            boolean isManyToMany = field.isAnnotationPresent(FastManyToMany.class);
+            if (isManyToMany) {
+                FastManyToMany manyToMany = field.getAnnotation(FastManyToMany.class);
+                ManyToManyInfo info = new ManyToManyInfo();
+                info.setDataFieldName(field.getName());
+                info.setJoinMapper(getTableMappers(manyToMany.joinEntity()));
+                info.setJoinMapperColumnName(StrUtil.isNotBlank(manyToMany.joinMappedBy()) ? manyToMany.joinMappedBy() :
+                        StrUtil.toCamelCase(tableMapper.getTableName() + StrUtil.UNDERLINE + tableMapper.getPrimaryKeyTableField()));
+                info.setRelationMapper(getTableMappers(manyToMany.relationalEntity()));
+                info.setRelationMapperColumnName(StrUtil.isNotBlank(manyToMany.relationalMappedBy()) ? manyToMany.relationalMappedBy() :
+                        StrUtil.toCamelCase(info.getRelationMapper().getTableName() + StrUtil.UNDERLINE + info.getRelationMapper().getPrimaryKeyTableField()));
+                manyToManyInfoList.add(info);
+                continue;
             }
-            if (isId || field.getName().equals("id") && tableMapper.getPrimaryKeyTableField() == null) {
-                tableMapper.setPrimaryKeyField(field.getName());
-                tableMapper.setPrimaryKeyTableField(tabFieldName);
-                tableMapper.setPrimaryKeyClass(field.getType());
-                if (field.getType() == String.class) {
-                    tableMapper.setPrimaryKeyType(PrimaryKeyType.OBJECTID);
-                } else {
-                    tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
-                }
-            }
+
+            String tabFieldName = getTabFieldName(field);
+
             if (FastDaoAttributes.isOpenLogicDelete && field.getName().equals(FastDaoAttributes.deleteFieldName)) {
                 tableMapper.setLogicDelete(Boolean.TRUE);
             }
@@ -149,6 +165,7 @@ public class TableMapperUtil {
             selectShowField.put(field.getName(), tableFieldName);
             selectAllShowField.append(tableFieldName + ", ");
         }
+        tableMapper.setManyToManyInfoList(manyToManyInfoList);
         tableMapper.setShowTableNames(selectShowField);
         tableMapper.setFieldNames(fieldNames);
         tableMapper.setFieldTypes(fieldTypes);
@@ -159,6 +176,22 @@ public class TableMapperUtil {
         }
         tableMappers.put(clazz.getSimpleName(), tableMapper);
         return tableMapper;
+    }
+
+    private static String getTabFieldName(Field field) {
+        String tabFieldName;
+        boolean isColumn = field.isAnnotationPresent(Column.class);
+        if (isColumn) {
+            Column name = field.getAnnotation(Column.class);
+            tabFieldName = name.name();
+        } else {
+            if (FastDaoAttributes.isToCamelCase) {
+                tabFieldName = StrUtil.toUnderlineCase(field.getName());
+            } else {
+                tabFieldName = field.getName();
+            }
+        }
+        return tabFieldName;
     }
 
 }

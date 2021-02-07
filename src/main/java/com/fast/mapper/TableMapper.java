@@ -1,6 +1,7 @@
 package com.fast.mapper;
 
 import com.fast.cache.DataCacheType;
+import com.fast.condition.many.ManyToManyInfo;
 import com.fast.config.PrimaryKeyType;
 
 import java.util.HashMap;
@@ -82,6 +83,12 @@ public class TableMapper<T> {
      * 操作主键类型
      */
     private Class primaryKeyClass;
+
+    /**
+     * 多对多关联
+     */
+    private List<ManyToManyInfo>  manyToManyInfoList;
+
     /**
      * 主键类型 32位UUID和自增
      */
@@ -243,5 +250,13 @@ public class TableMapper<T> {
 
     public void setAutoSetUpdateTime(Boolean autoSetUpdateTime) {
         this.autoSetUpdateTime = autoSetUpdateTime;
+    }
+
+    public List<ManyToManyInfo> getManyToManyInfoList() {
+        return manyToManyInfoList;
+    }
+
+    public void setManyToManyInfoList(List<ManyToManyInfo> manyToManyInfoList) {
+        this.manyToManyInfoList = manyToManyInfoList;
     }
 }
