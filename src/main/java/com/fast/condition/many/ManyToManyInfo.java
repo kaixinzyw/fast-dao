@@ -10,6 +10,9 @@ import com.fast.mapper.TableMapper;
  */
 public class ManyToManyInfo {
 
+    /**
+     * 数据存放字段
+     */
     private String dataFieldName;
     
     /**
@@ -20,7 +23,7 @@ public class ManyToManyInfo {
     /**
      * 目标表映射列名
      */
-    private String joinMapperColumnName;
+    private String joinMapperFieldName;
 
     /**
      * 关系表映射
@@ -30,7 +33,7 @@ public class ManyToManyInfo {
     /**
      * 关系表映射列名
      */
-    private String relationMapperColumnName;
+    private String relationMapperFieldName;
 
     public TableMapper getJoinMapper() {
         return joinMapper;
@@ -40,12 +43,12 @@ public class ManyToManyInfo {
         this.joinMapper = joinMapper;
     }
 
-    public String getJoinMapperColumnName() {
-        return joinMapperColumnName;
+    public String getJoinMapperFieldName() {
+        return joinMapperFieldName;
     }
 
-    public void setJoinMapperColumnName(String joinMapperColumnName) {
-        this.joinMapperColumnName = joinMapperColumnName;
+    public void setJoinMapperFieldName(String joinMapperFieldName) {
+        this.joinMapperFieldName = joinMapperFieldName;
     }
 
     public TableMapper getRelationMapper() {
@@ -56,12 +59,12 @@ public class ManyToManyInfo {
         this.relationMapper = relationMapper;
     }
 
-    public String getRelationMapperColumnName() {
-        return relationMapperColumnName;
+    public String getRelationMapperFieldName() {
+        return relationMapperFieldName;
     }
 
-    public void setRelationMapperColumnName(String relationMapperColumnName) {
-        this.relationMapperColumnName = relationMapperColumnName;
+    public void setRelationMapperFieldName(String relationMapperFieldName) {
+        this.relationMapperFieldName = relationMapperFieldName;
     }
 
     public String getDataFieldName() {

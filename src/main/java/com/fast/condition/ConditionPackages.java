@@ -63,6 +63,11 @@ public class ConditionPackages {
     private Boolean logicDeleteProtect = Boolean.TRUE;
 
     /**
+     * 关联查询
+     */
+    private Boolean relatedQuery = Boolean.TRUE;
+
+    /**
      * 排序
      */
     private List<OrderByQuery> orderByQuery;
@@ -340,6 +345,9 @@ public class ConditionPackages {
     public void closeLogicDeleteProtect() {
         this.logicDeleteProtect = Boolean.FALSE;
     }
+    public void closeRelatedQuery() {
+        this.relatedQuery = Boolean.FALSE;
+    }
 
     public Integer getPage() {
         return page;
@@ -375,6 +383,10 @@ public class ConditionPackages {
 
     public Boolean getLogicDeleteProtect() {
         return logicDeleteProtect;
+    }
+
+    public Boolean getRelatedQuery() {
+        return relatedQuery;
     }
 
     public String getCustomSql() {

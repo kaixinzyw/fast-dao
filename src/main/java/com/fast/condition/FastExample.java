@@ -143,6 +143,9 @@ public class FastExample<T> {
     public void closeLogicDeleteProtect() {
         criteria.conditionPackages.closeLogicDeleteProtect();
     }
+    public void closeRelatedQuery() {
+        criteria.conditionPackages.closeRelatedQuery();
+    }
 
 
     public static class Criteria<P> {

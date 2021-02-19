@@ -6,6 +6,7 @@ import com.fast.config.PrimaryKeyType;
 import com.fast.dao.DaoActuator;
 import com.fast.dao.utils.*;
 import com.fast.fast.FastDaoParam;
+import com.fast.utils.ManyQueryUtil;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -48,7 +49,8 @@ public class JdbcImpl<T> implements DaoActuator<T> {
     public List<T> select() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
-        return JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
+        List<T> list = JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
+        return list;
     }
 
     @Override
