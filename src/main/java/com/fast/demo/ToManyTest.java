@@ -26,7 +26,9 @@ public class ToManyTest {
     }
     public static void main(String[] args) {
         FastDaoConfig.dataSourceThreadLocal(getDataSource1());
-        List<Brand> list = BrandFastDAO.create().dao().findPage(1,4).getList();
+        BrandFastDAO brandFastDAO = BrandFastDAO.create();
+        brandFastDAO.openRelatedQuery();
+        List<Brand> list = brandFastDAO.dao().findAll();
         System.out.println(JSONObject.toJSONString(list,true));
     }
 

@@ -30,6 +30,16 @@ public class Product implements Serializable {
     @Column(name = "no")
     private String no;
 
+
+
+    /**
+     *主键
+     */
+    @Id
+    @Column(name = "brand_id")
+    private Long brandId;
+
+
     /**
     *名称
     */
@@ -116,7 +126,6 @@ public class Product implements Serializable {
     
     @FastManyToMany(joinEntity = ProductBrand.class,relationalEntity = Brand.class)
     private List<Brand> brandList;
-
 
     public String getNo() {
         return this.no;
@@ -252,5 +261,13 @@ public class Product implements Serializable {
 
     public void setBrandList(List<Brand> brandList) {
         this.brandList = brandList;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 }

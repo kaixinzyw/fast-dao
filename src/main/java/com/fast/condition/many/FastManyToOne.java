@@ -14,25 +14,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target(FIELD)
 @Retention(RUNTIME)
-public @interface FastManyToMany {
+public @interface FastManyToOne {
 
     /**
-     * 中间表实体
+     * 关联表实体
      */
     Class joinEntity();
 
     /**
-     * 中间表关联字段名
+     * 关联字段名
      */
     String joinMappedBy() default "";
-
-    /**
-     * 关系表实体
-     */
-    Class relationalEntity();
-
-    /**
-     * 关系表字段名
-     */
-    String relationalMappedBy() default "";
 }

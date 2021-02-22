@@ -65,7 +65,7 @@ public class ConditionPackages {
     /**
      * 关联查询
      */
-    private Boolean relatedQuery = Boolean.TRUE;
+    private Boolean relatedQuery = Boolean.FALSE;
 
     /**
      * 排序
@@ -345,8 +345,8 @@ public class ConditionPackages {
     public void closeLogicDeleteProtect() {
         this.logicDeleteProtect = Boolean.FALSE;
     }
-    public void closeRelatedQuery() {
-        this.relatedQuery = Boolean.FALSE;
+    public void openRelatedQuery() {
+        this.relatedQuery = Boolean.TRUE;
     }
 
     public Integer getPage() {

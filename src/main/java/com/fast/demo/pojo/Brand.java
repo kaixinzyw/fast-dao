@@ -1,6 +1,8 @@
 package com.fast.demo.pojo;
 
 import com.fast.condition.many.FastManyToMany;
+import com.fast.condition.many.FastManyToOne;
+import com.fast.condition.many.FastOneToMany;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -24,11 +26,16 @@ public class Brand implements Serializable {
     @Column(name = "id")
     private Long id;
 
+
+
     /**
     *品牌编号
     */
     @Column(name = "no")
     private String no;
+
+    @Column(name = "product_id")
+    private Long productId;
 
     /**
     *品牌名称
@@ -99,6 +106,11 @@ public class Brand implements Serializable {
     @FastManyToMany(joinEntity=ProductBrand.class,relationalEntity = Product.class)
     private List<Product> productList;
 
+    @FastOneToMany(joinEntity=Product.class,joinMappedBy = "brandId")
+    private List<Product> brandProductList;
+
+    @FastManyToOne(joinEntity=Product.class,joinMappedBy = "productId")
+    private Product product;
 
     public String getNo() {
         return this.no;
@@ -210,5 +222,29 @@ public class Brand implements Serializable {
 
     public void setProductList(List<Product> productList) {
         this.productList = productList;
+    }
+
+    public List<Product> getBrandProductList() {
+        return brandProductList;
+    }
+
+    public void setBrandProductList(List<Product> brandProductList) {
+        this.brandProductList = brandProductList;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

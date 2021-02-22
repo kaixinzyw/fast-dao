@@ -90,5 +90,8 @@ public class BaseFastDAO<T> {
     public void closeLogicDeleteProtect() {
         fastExample.closeLogicDeleteProtect();
     }
+    public void openRelatedQuery() {
+        fastExample.openRelatedQuery();
+    }
 
 }

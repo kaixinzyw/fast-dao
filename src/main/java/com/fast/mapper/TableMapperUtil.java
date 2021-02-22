@@ -5,8 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fast.cache.DataCacheType;
 import com.fast.cache.FastRedisCache;
 import com.fast.cache.FastStatisCache;
-import com.fast.condition.many.FastManyToMany;
-import com.fast.condition.many.ManyToManyInfo;
+import com.fast.condition.many.*;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -123,7 +122,13 @@ public class TableMapperUtil {
             }
         }
         List<ManyToManyInfo> manyToManyInfoList = new ArrayList<>();
-        List<Field> manyFieldList = new ArrayList<>();
+        List<Field> manyToManyFieldList = new ArrayList<>();
+
+        List<OneToManyInfo> oneToManyInfoList = new ArrayList<>();
+        List<Field> oneToManyFieldList = new ArrayList<>();
+
+        List<ManyToOneInfo> manyToOneInfoList = new ArrayList<>();
+        List<Field> manyToOneFieldList = new ArrayList<>();
         for (Field field : fields) {
             if (field.getName().equals("serialVersionUID") || CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName())) {
                 continue;
@@ -131,9 +136,22 @@ public class TableMapperUtil {
 
             boolean isManyToMany = field.isAnnotationPresent(FastManyToMany.class);
             if (isManyToMany) {
-                manyFieldList.add(field);
+                manyToManyFieldList.add(field);
                 continue;
             }
+
+            boolean isOneToMany = field.isAnnotationPresent(FastOneToMany.class);
+            if (isOneToMany) {
+                oneToManyFieldList.add(field);
+                continue;
+            }
+
+            boolean isManyToOne = field.isAnnotationPresent(FastManyToOne.class);
+            if (isManyToOne) {
+                manyToOneFieldList.add(field);
+                continue;
+            }
+
 
             String tabFieldName = getTabFieldName(field);
 
@@ -158,6 +176,8 @@ public class TableMapperUtil {
             selectAllShowField.append(tableFieldName + ", ");
         }
         tableMapper.setManyToManyInfoList(manyToManyInfoList);
+        tableMapper.setOneToManyInfoList(oneToManyInfoList);
+        tableMapper.setManyToOneInfoList(manyToOneInfoList);
         tableMapper.setShowTableNames(selectShowField);
         tableMapper.setFieldNames(fieldNames);
         tableMapper.setFieldTypes(fieldTypes);
@@ -167,8 +187,8 @@ public class TableMapperUtil {
             tableMapper.setShowAllTableNames(selectAllShowField.substring(0, selectAllShowField.length() - 2));
         }
         tableMappers.put(clazz.getSimpleName(), tableMapper);
-        if (CollUtil.isNotEmpty(manyFieldList)) {
-            for (Field field : manyFieldList) {
+        if (CollUtil.isNotEmpty(manyToManyFieldList)) {
+            for (Field field : manyToManyFieldList) {
                 FastManyToMany manyToMany = field.getAnnotation(FastManyToMany.class);
                 ManyToManyInfo info = new ManyToManyInfo();
                 info.setDataFieldName(field.getName());
@@ -181,6 +201,31 @@ public class TableMapperUtil {
                 manyToManyInfoList.add(info);
             }
         }
+
+        if (CollUtil.isNotEmpty(oneToManyFieldList)) {
+            for (Field field : oneToManyFieldList) {
+                FastOneToMany oneToMany = field.getAnnotation(FastOneToMany.class);
+                OneToManyInfo info = new OneToManyInfo();
+                info.setDataFieldName(field.getName());
+                info.setJoinMapper(getTableMappers(oneToMany.joinEntity()));
+                info.setJoinMapperFieldName(StrUtil.isNotBlank(oneToMany.joinMappedBy()) ? oneToMany.joinMappedBy() :
+                        StrUtil.toCamelCase(info.getJoinMapper().getTableName() + StrUtil.UNDERLINE + info.getJoinMapper().getPrimaryKeyTableField()));
+                oneToManyInfoList.add(info);
+            }
+        }
+
+        if (CollUtil.isNotEmpty(manyToOneFieldList)) {
+            for (Field field : manyToOneFieldList) {
+                FastManyToOne manyToOne = field.getAnnotation(FastManyToOne.class);
+                ManyToOneInfo info = new ManyToOneInfo();
+                info.setDataFieldName(field.getName());
+                info.setJoinMapper(getTableMappers(manyToOne.joinEntity()));
+                info.setJoinMapperFieldName(StrUtil.isNotBlank(manyToOne.joinMappedBy()) ? manyToOne.joinMappedBy() :
+                        StrUtil.toCamelCase(info.getJoinMapper().getTableName() + StrUtil.UNDERLINE + info.getJoinMapper().getPrimaryKeyTableField()));
+                manyToOneInfoList.add(info);
+            }
+        }
+
         return tableMapper;
     }
 

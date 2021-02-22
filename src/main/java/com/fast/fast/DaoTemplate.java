@@ -13,7 +13,7 @@ import com.fast.dao.DaoActuator;
 import com.fast.mapper.TableMapper;
 import com.fast.mapper.TableMapperUtil;
 import com.fast.utils.FastValueUtil;
-import com.fast.utils.ManyQueryUtil;
+import com.fast.condition.many.ManyQuery;
 import com.fast.utils.page.PageInfo;
 import io.netty.util.concurrent.FastThreadLocal;
 
@@ -206,7 +206,7 @@ public class DaoTemplate<T> {
             }
         }
         List<T> query = daoActuator.select();
-        ManyQueryUtil.manyToMany(query, FastDaoParam.get());
+        ManyQuery.relatedQuery(query, FastDaoParam.get());
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null && query != null) {
             DataCache.<T>init(tableMapper, fastExample).setList(query);
         }
