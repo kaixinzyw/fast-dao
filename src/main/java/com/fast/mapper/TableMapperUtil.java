@@ -209,7 +209,7 @@ public class TableMapperUtil {
                 info.setDataFieldName(field.getName());
                 info.setJoinMapper(getTableMappers(oneToMany.joinEntity()));
                 info.setJoinMapperFieldName(StrUtil.isNotBlank(oneToMany.joinMappedBy()) ? oneToMany.joinMappedBy() :
-                        StrUtil.toCamelCase(info.getJoinMapper().getTableName() + StrUtil.UNDERLINE + info.getJoinMapper().getPrimaryKeyTableField()));
+                        StrUtil.toCamelCase(tableMapper.getTableName() + StrUtil.UNDERLINE + tableMapper.getPrimaryKeyTableField()));
                 oneToManyInfoList.add(info);
             }
         }
