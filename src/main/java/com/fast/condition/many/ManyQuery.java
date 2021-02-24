@@ -13,7 +13,6 @@ import java.util.*;
  * 多表查询工具类
  *
  * @author zyw
- * @date 2021/02/19
  */
 public class ManyQuery {
     

@@ -10,7 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 多对多
  *
  * @author zyw
- * @date 2021/01/14
  */
 @Target(FIELD)
 @Retention(RUNTIME)
@@ -18,21 +17,25 @@ public @interface FastManyToMany {
 
     /**
      * 中间表实体
+     * @return 中间表实体
      */
     Class joinEntity();
 
     /**
      * 中间表关联字段名
+     * @return 中间表关联字段名
      */
     String joinMappedBy() default "";
 
     /**
      * 关系表实体
+     * @return 关系表实体
      */
     Class relationalEntity();
 
     /**
      * 关系表字段名
+     * @return 关系表字段名
      */
     String relationalMappedBy() default "";
 }

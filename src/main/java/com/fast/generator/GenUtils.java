@@ -40,10 +40,9 @@ public class GenUtils {
         return dataSource;
     }
 
-    /**
-     * 初始化表信息
-     */
+
     public static GenTable initTable(String tableName) {
+        //初始化表信息
         String queryTableSql = "select table_name, table_comment from information_schema.tables " +
                 "where table_name NOT LIKE 'qrtz_%' and table_name NOT LIKE 'gen_%' and table_schema = (select database()) and table_name = ${tableName}";
         Map<String, Object> queryTableData = new HashMap<>();
@@ -54,10 +53,9 @@ public class GenUtils {
         return genTable;
     }
 
-    /**
-     * 初始化列属性字段
-     */
+
     public static void initColumnField(GenTable table) {
+        //初始化列属性字段
         String queryColumnSql = "select column_name, " +
                 "(case when (is_nullable = 'no' && column_key != 'PRI') then '1' else null end) as is_required, " +
                 "(case when column_key = 'PRI' then '1' else '0' end) as is_pk, " +
@@ -119,7 +117,7 @@ public class GenUtils {
      *
      * @param replacementm 替换值
      * @param searchList   替换列表
-     * @return
+     * @return 批量替换前缀
      */
     public static String replaceFirst(String replacementm, String[] searchList) {
         String text = replacementm;

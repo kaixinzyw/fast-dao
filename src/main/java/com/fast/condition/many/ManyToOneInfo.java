@@ -6,7 +6,6 @@ import com.fast.mapper.TableMapper;
  * 多对多操作信息表
  *
  * @author zyw
- * @date 2021/01/13
  */
 public class ManyToOneInfo {
 
