@@ -11,11 +11,11 @@ import java.util.function.Function;
 
 public class BeanConvertUtil {
 
-    public static <T, K> List<Map<String, Object>> toDict(List<T> list, Function<T, K> nameMapper, Function<T, K> valueMapper) {
+    public static <T> List<Map<String, Object>> toDict(List<T> list, Function<T, Object> nameMapper, Function<T, Object> valueMapper) {
         return toDict("name", "value", list, nameMapper, valueMapper);
     }
 
-    public static <T, K> List<Map<String, Object>> toDict(String keyName, String valueName, List<T> list, Function<T, K> nameMapper, Function<T, K> valueMapper) {
+    public static <T> List<Map<String, Object>> toDict(String keyName, String valueName, List<T> list, Function<T, Object> nameMapper, Function<T, Object> valueMapper) {
         List<Map<String, Object>> dicts = new ArrayList<>();
         if (CollUtil.isNotEmpty(list)) {
             for (T t : list) {
