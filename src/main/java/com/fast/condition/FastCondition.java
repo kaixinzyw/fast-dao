@@ -91,21 +91,21 @@ public class FastCondition {
         return conditions;
     }
 
-    public static FastCondition match(String matchName, Collection againstValues, Way way) {
+    public static FastCondition match(String matchName, Object againstValue, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.Match);
         conditions.setWay(way);
         conditions.setField(matchName);
-        conditions.setValueList(againstValues);
+        conditions.setValue(againstValue);
         return conditions;
     }
 
-    public static FastCondition notMatch(String matchName, Collection againstValues, Way way) {
+    public static FastCondition notMatch(String matchName, Object againstValue, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.NotMatch);
         conditions.setWay(way);
         conditions.setField(matchName);
-        conditions.setValueList(againstValues);
+        conditions.setValue(againstValue);
         return conditions;
     }
 

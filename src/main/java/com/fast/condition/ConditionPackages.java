@@ -125,12 +125,12 @@ public class ConditionPackages {
         conditions.add(FastCondition.notLike(fieldName, value, way));
     }
 
-    public void addMatchQuery(String matchName, Object... againstValues) {
-        conditions.add(FastCondition.match(matchName, new ArrayList<>(Arrays.asList(againstValues)), way));
+    public void addMatchQuery(String matchName, Object againstValue) {
+        conditions.add(FastCondition.match(matchName, againstValue, way));
     }
 
-    public void addNotMatchQuery(String matchName, Object... againstValues) {
-        conditions.add(FastCondition.notMatch(matchName, new ArrayList<>(Arrays.asList(againstValues)), way));
+    public void addNotMatchQuery(String matchName, Object againstValue) {
+        conditions.add(FastCondition.notMatch(matchName, againstValue, way));
     }
 
     public void addInQuery(String inName, Object... inValues) {

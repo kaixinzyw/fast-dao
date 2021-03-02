@@ -316,28 +316,28 @@ public class FastExample<T> {
         /**
          * 全文检索条件
          *
-         * @param inValues 所包含的值(a,b,c)
+         * @param againstValue 全文检索条件
          * @return 条件操作工具
          */
-        public Criteria<P> match(Object... inValues) {
-            if (ArrayUtil.isEmpty(inValues)) {
+        public Criteria<P> match(Object againstValue) {
+            if (againstValue == null) {
                 return this;
             }
-            conditionPackages.addMatchQuery(fieldName, inValues);
+            conditionPackages.addMatchQuery(fieldName, againstValue);
             return this;
         }
 
         /**
          * 全文检索条件 Not
          *
-         * @param inValues 所包含的值(a,b,c)
+         * @param againstValue 全文检索条件
          * @return 条件操作工具
          */
-        public Criteria<P> notMatch(Object... inValues) {
-            if (ArrayUtil.isEmpty(inValues)) {
+        public Criteria<P> notMatch(Object againstValue) {
+            if (againstValue == null) {
                 return this;
             }
-            conditionPackages.addNotMatchQuery(fieldName, inValues);
+            conditionPackages.addNotMatchQuery(fieldName, againstValue);
             return this;
         }
 

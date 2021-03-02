@@ -191,11 +191,8 @@ public class FastSqlUtil {
             case Match:
             case NotMatch:
                 sqlBuilder.append(condition.getExpression().name).append(LEFT_BRACKETS).append(tableMapper.getShowTableNames().get(condition.getField()))
-                .append(RIGHT_BRACKETS).append(condition.getExpression().expression).append(LEFT_BRACKETS);
-                for (Object value : condition.getValueList()) {
-                    packParam(sqlBuilder, paramMap, value, paramIndex).append(StrUtil.COMMA);
-                }
-                sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(RIGHT_BRACKETS);
+                        .append(RIGHT_BRACKETS).append(condition.getExpression().expression).append(LEFT_BRACKETS);
+                packParam(sqlBuilder, paramMap, condition.getValue(), paramIndex).append(RIGHT_BRACKETS);
                 sqlBuilder.append(CRLF);
                 break;
             case Between:
