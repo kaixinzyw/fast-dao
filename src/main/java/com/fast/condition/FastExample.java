@@ -5,6 +5,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.fast.FastDao;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -14,8 +15,10 @@ import java.util.Map;
  * @param <T> 操作的类泛型
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class FastExample<T> {
+public class FastExample<T> implements Serializable {
 
+
+    private static final long serialVersionUID = 756400131596569134L;
 
     private FastExample() {
     }
@@ -148,8 +151,9 @@ public class FastExample<T> {
     }
 
 
-    public static class Criteria<P> {
+    public static class Criteria<P> implements Serializable{
 
+        private static final long serialVersionUID = 2676504598415330839L;
         /**
          * 操作的类信息
          */

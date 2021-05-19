@@ -424,7 +424,8 @@ public class FastSqlUtil {
         } else {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
         }
-        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, "FROM")), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
+        return StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF) + StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, "FROM"),sql.length());
+//        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, "FROM")), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
     }
 
     /**

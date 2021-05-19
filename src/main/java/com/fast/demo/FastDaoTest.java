@@ -37,8 +37,8 @@ public class FastDaoTest {
 //        test_n_findPage();
 //        test_o_FieldOperating();
         test_p_CustomSql();
-//        customUpdateColumns();
-//        selectObject();
+        customUpdateColumns();
+        selectObject();
     }
 
 

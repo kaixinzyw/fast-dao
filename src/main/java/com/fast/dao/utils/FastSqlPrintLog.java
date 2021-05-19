@@ -4,19 +4,28 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSONObject;
+import com.fast.base.FastBaseDAO;
+import com.fast.base.FastBaseServiceImpl;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.SqlLogLevel;
+import com.fast.fast.FastCustomSqlDao;
+import com.fast.fast.FastDao;
 import com.fast.fast.FastDaoParam;
 
 import java.util.Map;
 
 public class FastSqlPrintLog {
 
+    private static final String FIND_PAGE = "findPage";
+    private static final String LEFT_PARENTHESIS = "(";
+    private static final String RIGHT_PARENTHESIS = ")";
     private static final String APOSTROPHE = "\'";
     private static final String DATA_STR = "Date";
     private static final String NULL_STR = "null";
@@ -25,7 +34,7 @@ public class FastSqlPrintLog {
     private static final String PARAM_PREFIX = "#{";
     private static final String PARAM_PREFIX_2 = "${";
     private static final String PARAM_SUFFIX = "}";
-    private static final String SQL_REPORT = ": SQL 执行 ↓ " + System.lineSeparator();
+    private static final String SQL_REPORT = " SQL 执行 ↓ " + System.lineSeparator();
     private static final String PARAM = "参数: ";
     private static final String RESULT = "执行结果: ";
     private static final String TIME = "用时: ";
@@ -78,8 +87,30 @@ public class FastSqlPrintLog {
     }
 
     private static void printSql(String sql, Map<String, Object> sqlParams, FastDaoParam param) {
+        StackTraceElement stackTraceElement = null;
+        try {
+            StackTraceElement[] traceElements = ThreadUtil.getStackTrace();
+            for (int i = 0; i < traceElements.length; i++) {
+                if (StrUtil.equalsAny(traceElements[i].getClassName(), FastDao.class.getName(), FastCustomSqlDao.class.getName())
+                        &&!StrUtil.equalsAny(traceElements[i+1].getClassName(), FastBaseDAO.class.getName(), FastBaseServiceImpl.class.getName())) {
+                    if (StrUtil.equals(FIND_PAGE, traceElements[i].getMethodName())) {
+                        stackTraceElement = traceElements[i + 2];
+                        break;
+                    } else {
+                        stackTraceElement = traceElements[i + 1];
+                        break;
+                    }
+                }
+            }
+        }catch (Exception e) {}
+        StrBuilder strBuilder;
+        if (ObjectUtil.isNotNull(stackTraceElement)) {
+            strBuilder = new StrBuilder(stackTraceElement.getClassName(), StrUtil.DOT, stackTraceElement.getMethodName(), LEFT_PARENTHESIS, StrUtil.toString(stackTraceElement.getLineNumber()), RIGHT_PARENTHESIS);
+        } else {
+            strBuilder = new StrBuilder();
+        }
         Log log = LogFactory.get(param.getTableMapper().getTableName());
-        StrBuilder printLog = StrUtil.strBuilder(SQL_REPORT, sql, StrUtil.endWith(sql, CRLF) ? "" : CRLF, TIME, param.getSqlTime().toString(), TIME_TYPE);
+        StrBuilder printLog = StrUtil.strBuilder(strBuilder.toString(),SQL_REPORT, sql, StrUtil.endWith(sql, CRLF) ? "" : CRLF, TIME, param.getSqlTime().toString(), TIME_TYPE);
         if (sqlParams != null) {
             printLog.append(PARAM);
             printLog.append(JSONObject.toJSONString(sqlParams));

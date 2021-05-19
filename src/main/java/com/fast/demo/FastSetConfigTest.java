@@ -59,13 +59,13 @@ public class FastSetConfigTest {
         /**
          * redis缓存配置,Spring环境可自动识别
          */
-        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
+//        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
 
     }
 
     private static DataSource getDataSource() {
         DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/fast-test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
+        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/my_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC");
         dataSource.setUsername("root");
         dataSource.setPassword("kaixinzyw");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");

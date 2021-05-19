@@ -2,6 +2,7 @@ package com.fast.condition;
 
 import cn.hutool.core.util.StrUtil;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -9,8 +10,9 @@ import java.util.*;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class ConditionPackages {
+public class ConditionPackages implements Serializable {
 
+    private static final long serialVersionUID = -3640643704263216648L;
     /**
      * 条件封装
      */
@@ -345,6 +347,7 @@ public class ConditionPackages {
     public void closeLogicDeleteProtect() {
         this.logicDeleteProtect = Boolean.FALSE;
     }
+
     public void openRelatedQuery() {
         this.relatedQuery = Boolean.TRUE;
     }
