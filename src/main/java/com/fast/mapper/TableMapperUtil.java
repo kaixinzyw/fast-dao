@@ -130,7 +130,8 @@ public class TableMapperUtil {
         List<ManyToOneInfo> manyToOneInfoList = new ArrayList<>();
         List<Field> manyToOneFieldList = new ArrayList<>();
         for (Field field : fields) {
-            if (field.getName().equals("serialVersionUID") || CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName())) {
+            if ("serialVersionUID".equals(field.getName()) || StrUtil.equals(field.getName(), "fastExample") ||
+                    CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName()) || fieldTableNames.get(field.getName()) != null) {
                 continue;
             }
 

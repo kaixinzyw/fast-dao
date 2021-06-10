@@ -27,6 +27,7 @@ public class FastTransactionAspect {
 
     /**
      * 方法执行前,开启事务
+     *
      * @param point 点
      */
     @Before("pointCut()")
@@ -35,6 +36,13 @@ public class FastTransactionAspect {
         if (path != null) {
             return;
         }
+        try {
+            FastAutoTransaction annotation = point.getTarget().getClass().getMethod(point.getSignature().getName()).getAnnotation(FastAutoTransaction.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+
         path = StrUtil.strBuilder(point.getSignature().getDeclaringTypeName(), StrUtil.DOT, point.getSignature().getName());
         transactionMethodNameThreadLocal.set(path);
         FastTransaction.open();
@@ -42,6 +50,7 @@ public class FastTransactionAspect {
 
     /**
      * 方法执行后,提交事务
+     *
      * @param point 点
      */
     @After("pointCut()")
@@ -59,6 +68,7 @@ public class FastTransactionAspect {
 
     /**
      * 方法异常后,回滚事务
+     *
      * @param point 点
      */
     @AfterThrowing("pointCut()")

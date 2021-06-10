@@ -34,11 +34,11 @@ public class FastDaoTest {
 //        test_k_delete();
 //        test_l_deleteDisk();
 //        test_m_findAll();
-//        test_n_findPage();
+        test_n_findPage();
 //        test_o_FieldOperating();
-        test_p_CustomSql();
-        customUpdateColumns();
-        selectObject();
+//        test_p_CustomSql();
+//        customUpdateColumns();
+//        selectObject();
     }
 
 
@@ -209,6 +209,7 @@ public class FastDaoTest {
         query.age().less(30);
         query.createTime().orderByDesc();
         query.age().sumField();
+        query.createTime().sumField();
         PageInfo<FastUserTest> page = query.dao().findPage(1, 10);
 //        Integer count = query.dao().findCount();
 //        FastUserTest one = query.dao().findOne();
