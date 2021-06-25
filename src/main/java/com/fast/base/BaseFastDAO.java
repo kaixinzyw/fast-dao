@@ -88,6 +88,31 @@ public class BaseFastDAO<T> implements Serializable {
         fastExample.orSql(sql, params);
     }
 
+
+    /**
+     * 左括号
+     * @return 条件操作工具
+     */
+    public void OrLeftBracket() {
+        fastExample.OrLeftBracket();
+    }
+
+    /**
+     * 左括号
+     * @return 条件操作工具
+     */
+    public void AndLeftBracket() {
+        fastExample.AndLeftBracket();
+    }
+
+    /**
+     * 右括号
+     * @return 条件操作工具
+     */
+    public void rightBracket() {
+        fastExample.rightBracket();
+    }
+
     /**
      * 关闭逻辑删除条件保护,如果开启了逻辑删除功能,需要进行删除数据的操作,需要使用此方法进行关闭逻辑条件过滤
      */

@@ -119,6 +119,14 @@ public class ConditionPackages implements Serializable {
         conditions.add(FastCondition.notEqual(fieldName, value, way));
     }
 
+    public void leftBracket() {
+        conditions.add(FastCondition.leftBracket(way));
+    }
+
+    public void rightBracket() {
+        conditions.add(FastCondition.rightBracket());
+    }
+
     public void addLikeQuery(String fieldName, Object value) {
         conditions.add(FastCondition.like(fieldName, value, way));
     }

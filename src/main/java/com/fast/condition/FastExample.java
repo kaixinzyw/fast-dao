@@ -141,6 +141,32 @@ public class FastExample<T> implements Serializable {
     }
 
     /**
+     * 左括号
+     * @return 条件操作工具
+     */
+    public void OrLeftBracket() {
+        criteria.conditionPackages.setWay(FastCondition.Way.OR);
+        criteria.conditionPackages.leftBracket();
+    }
+
+    /**
+     * 左括号
+     * @return 条件操作工具
+     */
+    public void AndLeftBracket() {
+        criteria.conditionPackages.setWay(FastCondition.Way.AND);
+        criteria.conditionPackages.leftBracket();
+    }
+
+    /**
+     * 右括号
+     * @return 条件操作工具
+     */
+    public void rightBracket() {
+        criteria.conditionPackages.rightBracket();
+    }
+
+    /**
      * 关闭逻辑删除保护,关闭后所有操作会影响到被逻辑删除标记的数据
      */
     public void closeLogicDeleteProtect() {

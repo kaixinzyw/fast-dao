@@ -43,7 +43,7 @@ public class FastSetConfigTest {
          * 参数1:  逻辑删除字段名
          * 参数2:  逻辑删除标记默认值
          */
-        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
+//        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
         /**
          * 设置全局默认缓存时间,两种缓存模式(本地缓存，Redis缓存),支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
          * Reids缓存需要进行配置

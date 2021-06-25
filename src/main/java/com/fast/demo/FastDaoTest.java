@@ -34,24 +34,35 @@ public class FastDaoTest {
 //        test_k_delete();
 //        test_l_deleteDisk();
 //        test_m_findAll();
-        test_n_findPage();
+//        test_n_findPage();
 //        test_o_FieldOperating();
 //        test_p_CustomSql();
 //        customUpdateColumns();
-//        selectObject();
+        selectObject();
     }
 
 
     public static void selectObject(){
         FastUserTestQuery userTest = new FastUserTestQuery();
-        userTest.setUserName("FastDao10");
-        userTest.setAgee(10);
+        userTest.setId(10L);
+        userTest.setCreateTime(new Date());
 
         Map<String,Object> data = new HashMap<>();
-        data.put("age", 10);
-        data.put("userName","FastDao10");
+        data.put("id", 10);
+        data.put("createTime", new Date());
         FastUserTestFastDAO fastUserTestFastDAO = FastUserTestFastDAO.create(userTest);
-        fastUserTestFastDAO.dao().findPage(1,10);
+        fastUserTestFastDAO.OrLeftBracket();
+        fastUserTestFastDAO.age().or().less(10);
+        fastUserTestFastDAO.deleted().valEqual(true);
+        fastUserTestFastDAO.OrLeftBracket();
+        fastUserTestFastDAO.userName().like("F");
+        fastUserTestFastDAO.createTime().greater(new Date());
+        fastUserTestFastDAO.rightBracket();
+        fastUserTestFastDAO.rightBracket();
+        fastUserTestFastDAO.age().greater(10);
+        fastUserTestFastDAO.userName().or().valEqual("F");
+        fastUserTestFastDAO.dao().findAll();
+//        fastUserTestFastDAO.dao().findPage(1,10);
     }
 
     public static void customUpdateColumns() {

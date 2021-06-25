@@ -59,6 +59,19 @@ public class FastCondition implements Serializable {
      */
     private Map<String, Object> params;
 
+    public static FastCondition leftBracket(Way way) {
+        FastCondition conditions = new FastCondition();
+        conditions.setExpression(Expression.LeftBracket);
+        conditions.setWay(way);
+        return conditions;
+    }
+
+    public static FastCondition rightBracket() {
+        FastCondition conditions = new FastCondition();
+        conditions.setExpression(Expression.RightBracket);
+        return conditions;
+    }
+
     public static FastCondition equal(String field, Object value, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.Equal);
@@ -269,6 +282,8 @@ public class FastCondition implements Serializable {
         GreaterOrEqual("greaterOrEqual", " >= "),
         Less("less", " < "),
         LessOrEqual("lessOrEqual", " <= "),
+        LeftBracket("leftBracket", " ( "),
+        RightBracket("rightBracket", " ) "),
 
         SQL("sql", "自定义SQL添加"),
         Obj("object", " = ");
