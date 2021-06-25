@@ -53,14 +53,17 @@ public class FastDaoTest {
         FastUserTestFastDAO fastUserTestFastDAO = FastUserTestFastDAO.create(userTest);
         fastUserTestFastDAO.OrLeftBracket();
         fastUserTestFastDAO.age().or().less(10);
-        fastUserTestFastDAO.deleted().valEqual(true);
         fastUserTestFastDAO.OrLeftBracket();
-        fastUserTestFastDAO.userName().like("F");
+        fastUserTestFastDAO.userName().like("A");
+        fastUserTestFastDAO.createTime().greater(new Date());
+        fastUserTestFastDAO.rightBracket();
+        fastUserTestFastDAO.AndLeftBracket();
+        fastUserTestFastDAO.userName().like("B");
         fastUserTestFastDAO.createTime().greater(new Date());
         fastUserTestFastDAO.rightBracket();
         fastUserTestFastDAO.rightBracket();
         fastUserTestFastDAO.age().greater(10);
-        fastUserTestFastDAO.userName().or().valEqual("F");
+        fastUserTestFastDAO.userName().or().valEqual("C");
         fastUserTestFastDAO.dao().findAll();
 //        fastUserTestFastDAO.dao().findPage(1,10);
     }
