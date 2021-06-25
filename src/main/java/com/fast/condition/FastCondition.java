@@ -59,7 +59,6 @@ public class FastCondition implements Serializable {
      */
     private Map<String, Object> params;
 
-
     public static FastCondition equal(String field, Object value, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.Equal);
@@ -374,4 +373,5 @@ public class FastCondition implements Serializable {
     public void setParams(Map<String, Object> params) {
         this.params = params;
     }
+
 }
