@@ -2,15 +2,10 @@ package com.fast.generator;
 
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.fastjson.JSONObject;
-import com.fast.config.FastDaoAttributes;
-import com.fast.demo.pojo.Product;
 import com.fast.fast.FastCustomSqlDao;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.sql.DataSource;
 import java.util.*;
 
 /**
@@ -21,23 +16,6 @@ public class GenUtils {
     public static GenTable getGenTable(String tableName) {
         GenTable table = initTable(tableName);
         return table;
-    }
-
-
-    public static void main(String[] args) {
-        FastDaoAttributes.setDataSource(getDataSource());
-        String sql = "select product.id,brand.create_time from product left join product_brand on product_brand.product_id = product.id left join brand on brand.id = product_brand.brand_id where product.id = 1";
-        List<Product> productList = FastCustomSqlDao.create(Product.class, sql, null).findAll();
-        System.out.println(JSONObject.toJSONString(productList));
-    }
-
-    private static DataSource getDataSource() {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setUrl("jdbc:mysql://kaifa.mysql.guo-kai.com:3306/gk-ims?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai");
-        dataSource.setUsername("gkims-kaifa");
-        dataSource.setPassword("PGrsByizeD357ajR");
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        return dataSource;
     }
 
 

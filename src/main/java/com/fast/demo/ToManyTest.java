@@ -1,13 +1,8 @@
 package com.fast.demo;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.fastjson.JSONObject;
-import com.fast.config.FastDaoConfig;
-import com.fast.demo.pojo.Brand;
-import com.fast.demo.pojo.fast.BrandFastDAO;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 public class ToManyTest {
 
@@ -24,12 +19,12 @@ public class ToManyTest {
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         return dataSource;
     }
-    public static void main(String[] args) {
-        FastDaoConfig.dataSourceThreadLocal(getDataSource1());
-        BrandFastDAO brandFastDAO = BrandFastDAO.create();
-        brandFastDAO.openRelatedQuery();
-        List<Brand> list = brandFastDAO.dao().findAll();
-        System.out.println(JSONObject.toJSONString(list,true));
-    }
+//    public static void main(String[] args) {
+//        FastDaoConfig.dataSourceThreadLocal(getDataSource1());
+//        BrandFastDAO brandFastDAO = BrandFastDAO.create();
+//        brandFastDAO.openRelatedQuery();
+//        List<Brand> list = brandFastDAO.dao().findAll();
+//        System.out.println(JSONObject.toJSONString(list,true));
+//    }
 
 }

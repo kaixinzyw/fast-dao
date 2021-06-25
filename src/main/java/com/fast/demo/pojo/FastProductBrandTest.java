@@ -1,15 +1,14 @@
 package com.fast.demo.pojo;
 
-import javax.persistence.Table;
-import javax.persistence.Id;
 import javax.persistence.Column;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
 * 品种品牌关联
 */
 @Table(name = "product_brand")
-public class ProductBrand implements Serializable {
+public class FastProductBrandTest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,20 +25,19 @@ public class ProductBrand implements Serializable {
     private Long productId;
 
 
-    public Long getProductId() {
-        return this.productId;
-    }
-    public ProductBrand setProductId(Long productId) {
-        this.productId = productId;
-        return this;
-    }
-
     public Long getBrandId() {
-        return this.brandId;
-    }
-    public ProductBrand setBrandId(Long brandId) {
-        this.brandId = brandId;
-        return this;
+        return brandId;
     }
 
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
 }
