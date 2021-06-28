@@ -91,7 +91,6 @@ public class BaseFastDAO<T> implements Serializable {
 
     /**
      * 左括号
-     * @return 条件操作工具
      */
     public void OrLeftBracket() {
         fastExample.OrLeftBracket();
@@ -99,7 +98,6 @@ public class BaseFastDAO<T> implements Serializable {
 
     /**
      * 左括号
-     * @return 条件操作工具
      */
     public void AndLeftBracket() {
         fastExample.AndLeftBracket();
@@ -107,7 +105,6 @@ public class BaseFastDAO<T> implements Serializable {
 
     /**
      * 右括号
-     * @return 条件操作工具
      */
     public void rightBracket() {
         fastExample.rightBracket();

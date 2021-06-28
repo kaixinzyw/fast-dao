@@ -142,7 +142,6 @@ public class FastExample<T> implements Serializable {
 
     /**
      * 左括号
-     * @return 条件操作工具
      */
     public void OrLeftBracket() {
         criteria.conditionPackages.setWay(FastCondition.Way.OR);
@@ -151,7 +150,6 @@ public class FastExample<T> implements Serializable {
 
     /**
      * 左括号
-     * @return 条件操作工具
      */
     public void AndLeftBracket() {
         criteria.conditionPackages.setWay(FastCondition.Way.AND);
@@ -160,7 +158,6 @@ public class FastExample<T> implements Serializable {
 
     /**
      * 右括号
-     * @return 条件操作工具
      */
     public void rightBracket() {
         criteria.conditionPackages.rightBracket();

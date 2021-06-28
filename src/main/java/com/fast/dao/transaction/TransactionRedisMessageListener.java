@@ -23,7 +23,7 @@ public class TransactionRedisMessageListener {
 
     /**
      * 绑定消息监听者和接收监听的方法
-     * @return
+     * @return 监听
      */
     @Bean
     public MessageListenerAdapter listenerAdapter(){
