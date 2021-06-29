@@ -35,6 +35,9 @@ public class FastCustomSqlDao<T> {
      * @return 自定义SQL执行器
      */
     public static <T> FastCustomSqlDao<T> create(Class<T> clazz, String sql, Map<String, Object> params) {
+        if (params == null) {
+            params = new HashMap<>();
+        }
         FastCustomSqlDao<T> customSqlDao = new FastCustomSqlDao<>();
         customSqlDao.fastExample = new FastExample<>(clazz);
         customSqlDao.fastExample.conditionPackages().customSQL(sql, params);

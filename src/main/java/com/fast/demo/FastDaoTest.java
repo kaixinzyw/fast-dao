@@ -39,10 +39,19 @@ public class FastDaoTest {
         test_p_CustomSql();
         customUpdateColumns();
         selectObject();
+        fastCustomSqlDao();
+    }
+
+    public static void fastCustomSqlDao(){
+        String sql = "select age from fast_user_test where age = 0";
+        Map one = FastCustomSqlDao.create(Map.class, sql, null).findOne();
+
+        System.out.println(one);
     }
 
 
-    public static void selectObject(){
+
+        public static void selectObject(){
         FastUserTestQuery userTest = new FastUserTestQuery();
         userTest.setId(10L);
         userTest.setCreateTime(new Date());
