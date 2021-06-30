@@ -1,9 +1,9 @@
 package com.fast.condition;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.fast.FastDao;
+import com.fast.utils.FastValueUtil;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -77,6 +77,7 @@ public class FastExample<T> implements Serializable {
     /**
      * 自定义查询列,可使用SQL函数,只有在查询时候生效
      * 警告! 此方法有SQL注入风险,请严格检查所传参数
+     *
      * @param queryColumn SELECT查询时自定义查询列
      */
     public void customQueryColumn(String queryColumn) {
@@ -169,12 +170,13 @@ public class FastExample<T> implements Serializable {
     public void closeLogicDeleteProtect() {
         criteria.conditionPackages.closeLogicDeleteProtect();
     }
+
     public void openRelatedQuery() {
         criteria.conditionPackages.openRelatedQuery();
     }
 
 
-    public static class Criteria<P> implements Serializable{
+    public static class Criteria<P> implements Serializable {
 
         private static final long serialVersionUID = 2676504598415330839L;
         /**
@@ -202,16 +204,17 @@ public class FastExample<T> implements Serializable {
          */
         public final ConditionPackages conditionPackages = new ConditionPackages();
 
+
         /**
          * @param value 值等于条件,如果参数为数组并且长度大于1,使用in查询
          * @return 条件操作工具
          */
         public Criteria<P> valEqual(Object value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             if (ArrayUtil.isArray(value)) {
-                if (ArrayUtil.isEmpty(value)) {
+                if (FastValueUtil.arrayIsNullVerify(value)) {
                     return this;
                 }
                 Object[] vs = ArrayUtil.wrap(value);
@@ -234,11 +237,11 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notValEqual(Object value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             if (ArrayUtil.isArray(value)) {
-                if (ArrayUtil.isEmpty(value)) {
+                if (FastValueUtil.arrayIsNullVerify(value)) {
                     return this;
                 }
                 Object[] vs = ArrayUtil.wrap(value);
@@ -263,7 +266,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> like(String value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addLikeQuery(fieldName, "%" + value + "%");
@@ -277,7 +280,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notLike(String value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addNotLikeQuery(fieldName, "%" + value + "%");
@@ -291,7 +294,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> likeLeft(String value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addLikeQuery(fieldName, "%" + value);
@@ -305,7 +308,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notLikeLeft(String value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addNotLikeQuery(fieldName, "%" + value);
@@ -319,7 +322,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> likeRight(String value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addLikeQuery(fieldName, value + "%");
@@ -333,7 +336,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notLikeRight(String value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addNotLikeQuery(fieldName, value + "%");
@@ -347,7 +350,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> match(Object againstValue) {
-            if (againstValue == null) {
+            if (FastValueUtil.valueIsNullVerify(againstValue)) {
                 return this;
             }
             conditionPackages.addMatchQuery(fieldName, againstValue);
@@ -361,7 +364,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notMatch(Object againstValue) {
-            if (againstValue == null) {
+            if (FastValueUtil.valueIsNullVerify(againstValue)) {
                 return this;
             }
             conditionPackages.addNotMatchQuery(fieldName, againstValue);
@@ -376,7 +379,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> in(Object... inValues) {
-            if (ArrayUtil.isEmpty(inValues)) {
+            if (FastValueUtil.arrayIsNullVerify(inValues)) {
                 return this;
             }
             conditionPackages.addInQuery(fieldName, inValues);
@@ -390,7 +393,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notIn(Object... inValues) {
-            if (ArrayUtil.isEmpty(inValues)) {
+            if (FastValueUtil.arrayIsNullVerify(inValues)) {
                 return this;
             }
             conditionPackages.addNotInQuery(fieldName, inValues);
@@ -404,7 +407,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> in(Collection inValues) {
-            if (CollUtil.isEmpty(inValues)) {
+            if (FastValueUtil.collectionIsNullVerify(inValues)) {
                 return this;
             }
             conditionPackages.addInQuery(fieldName, inValues);
@@ -418,7 +421,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notIn(Collection inValues) {
-            if (CollUtil.isEmpty(inValues)) {
+            if (FastValueUtil.collectionIsNullVerify(inValues)) {
                 return this;
             }
             conditionPackages.addNotInQuery(fieldName, inValues);
@@ -433,7 +436,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> between(Object betweenMin, Object betweenMax) {
-            if (betweenMin == null || betweenMax == null) {
+            if (FastValueUtil.valueIsNullVerify(betweenMin) || FastValueUtil.valueIsNullVerify(betweenMax)) {
                 return this;
             }
             conditionPackages.addBetweenQuery(fieldName, betweenMin, betweenMax);
@@ -448,7 +451,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> notBetween(Object betweenMin, Object betweenMax) {
-            if (betweenMin == null || betweenMax == null) {
+            if (FastValueUtil.valueIsNullVerify(betweenMin) || FastValueUtil.valueIsNullVerify(betweenMax)) {
                 return this;
             }
             conditionPackages.addNotBetweenQuery(fieldName, betweenMin, betweenMax);
@@ -482,7 +485,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> greaterOrEqual(Object value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addGreaterOrEqualFieldsQuery(fieldName, value);
@@ -496,7 +499,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> lessOrEqual(Object value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addLessOrEqualFieldsQuery(fieldName, value);
@@ -510,7 +513,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> greater(Object value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addGreaterFieldsQuery(fieldName, value);
@@ -524,7 +527,7 @@ public class FastExample<T> implements Serializable {
          * @return 条件操作工具
          */
         public Criteria<P> less(Object value) {
-            if (value == null) {
+            if (FastValueUtil.valueIsNullVerify(value)) {
                 return this;
             }
             conditionPackages.addLessFieldsQuery(fieldName, value);
@@ -635,10 +638,11 @@ public class FastExample<T> implements Serializable {
 
         /**
          * 自定义更新,可使用SQL函数,只有在更新时候生效
+         *
          * @return 查询封装
          */
         public CustomizeUpdate<P> customizeUpdateValue() {
-            return new CustomizeUpdate<P>(pojoClass,fastExample,fieldName);
+            return new CustomizeUpdate<P>(pojoClass, fastExample, fieldName);
         }
 
         /**

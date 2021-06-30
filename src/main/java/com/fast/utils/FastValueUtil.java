@@ -2,15 +2,49 @@ package com.fast.utils;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
 import com.fast.mapper.TableMapper;
 
+import java.util.Collection;
 import java.util.Date;
 
 public class FastValueUtil {
+
+    /**
+     * 值为空验证
+     *
+     * @param value 价值
+     * @return {@link Boolean}
+     */
+    public static Boolean valueIsNullVerify(Object value) {
+        if (ObjectUtil.isNull(value)) {
+            return true;
+//            throw new FastDaoParameterException("条件参数不能为空!!!");
+        }
+        return false;
+    }
+
+    public static Boolean arrayIsNullVerify(Object value) {
+        if (ArrayUtil.isEmpty(value)) {
+            return true;
+//            throw new FastDaoParameterException("条件参数不能为空!!!");
+        }
+        return false;
+    }
+
+    public static Boolean collectionIsNullVerify(Collection value) {
+        if (CollUtil.isEmpty(value)) {
+            return true;
+//            throw new FastDaoParameterException("条件参数不能为空!!!");
+        }
+        return false;
+    }
 
     public static void setCreateTime(Object o, TableMapper tableMapper) {
         if (FastDaoAttributes.isAutoSetCreateTime && tableMapper.getAutoSetCreateTime()) {
