@@ -19,33 +19,35 @@ public class FastDaoTest {
     }
 
     public static void main(String[] args) {
-        test_a_insert();
-        test_a_insertList();
-        test_b_findByAge();
-        test_c_findSQL();
-        test_c_findOne();
-        test_d_findByIn();
-        test_e_updateByAgeOverwrite();
-        test_f_updateByAge();
-        test_g_updateOverwrite();
-        test_h_update();
-        test_i_deleteByAge();
-        test_g_deleteByAgeDisk();
-        test_k_delete();
-        test_l_deleteDisk();
-        test_m_findAll();
-        test_n_findPage();
-        test_o_FieldOperating();
-        test_p_CustomSql();
-        customUpdateColumns();
+//        test_a_insert();
+//        test_a_insertList();
+//        test_b_findByAge();
+//        test_c_findSQL();
+//        test_c_findOne();
+//        test_d_findByIn();
+//        test_e_updateByAgeOverwrite();
+//        test_f_updateByAge();
+//        test_g_updateOverwrite();
+//        test_h_update();
+//        test_i_deleteByAge();
+//        test_g_deleteByAgeDisk();
+//        test_k_delete();
+//        test_l_deleteDisk();
+//        test_m_findAll();
+//        test_n_findPage();
+//        test_o_FieldOperating();
+//        test_p_CustomSql();
+//        customUpdateColumns();
         selectObject();
-        fastCustomSqlDao();
+//        fastCustomSqlDao();
     }
 
     public static void fastCustomSqlDao(){
-        String sql = "select age from fast_user_test where age = 0";
-        Map one = FastCustomSqlDao.create(Map.class, sql, null).findOne();
-
+        String sql = "select age from fast_user_test where age = #{age} and user_name = #{name}";
+        Map<String,Object> data = new HashMap<>();
+        data.put("age","-1;truncate fast_user_test");
+        data.put("name","-1;truncate fast_user_test");
+        Map one = FastCustomSqlDao.create(Map.class, sql, data).findOne();
         System.out.println(one);
     }
 
@@ -72,7 +74,7 @@ public class FastDaoTest {
         fastUserTestFastDAO.rightBracket();
         fastUserTestFastDAO.rightBracket();
         fastUserTestFastDAO.age().greater(10);
-        fastUserTestFastDAO.userName().or().valEqual("C");
+        fastUserTestFastDAO.userName().or().valEqual("C;delete from fast_user_test;");
         fastUserTestFastDAO.dao().findAll();
 //        fastUserTestFastDAO.dao().findPage(1,10);
     }
