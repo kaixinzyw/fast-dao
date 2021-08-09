@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>9.0-SNAPSHOT</version>
+    <version>9.0</version>
 
     <name>fast-dao</name>
     <url>https://github.com/kaixinzyw/fast-dao</url>
@@ -208,6 +208,15 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                     <!-- Javadoc -->
                     <plugin>
@@ -219,6 +228,20 @@
                                 <phase>package</phase>
                                 <goals>
                                     <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- GPG -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -244,35 +267,21 @@
                         <version>2.5.3</version>
                     </plugin>
                 </plugins>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-source-plugin</artifactId>
-                            <version>3.0.1</version>
-                            <executions>
-                                <execution>
-                                    <phase>compile</phase>
-                                    <goals>
-                                        <goal>jar-no-fork</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
             <distributionManagement>
-                <repository>
-                    <id>releases</id>
-                    <url>http://kaifa.nexus.guo-kai.com/nexus/content/repositories/releases/</url>
-                </repository>
                 <snapshotRepository>
-                    <id>snapshots</id>
-                    <url>http://kaifa.nexus.guo-kai.com/nexus/content/repositories/snapshots/</url>
+                    <id>oss_user</id>
+                    <name>Sonatype Nexus Snapshots</name>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
+                <repository>
+                    <id>oss_user</id>
+                    <name>Nexus Release Repository</name>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
             </distributionManagement>
         </profile>
     </profiles>
+
 
 </project>
