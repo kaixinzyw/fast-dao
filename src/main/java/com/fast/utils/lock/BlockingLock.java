@@ -2,6 +2,8 @@ package com.fast.utils.lock;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.BooleanUtil;
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.concurrent.TimeUnit;
@@ -27,20 +29,22 @@ public class BlockingLock extends BaseLock {
      */
     public Boolean lock(long keyLockTime, long cycle) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        try {
-            long lockExpiredTime = System.currentTimeMillis() + keyLockTime;
-            long redisKeyExpiredTime = keyLockTime * 2 + cycle;
-            while (!BooleanUtil.isTrue(valueOperations.setIfAbsent(lockKey,
-                    threadId, redisKeyExpiredTime, TimeUnit.MILLISECONDS))) {
-                if (System.currentTimeMillis() >= lockExpiredTime) {
-                    return isLock;
+        Interner<String> pool = Interners.newWeakInterner();
+        synchronized (pool.intern(lockKey)) {
+            try {
+                long lockExpiredTime = System.currentTimeMillis() + keyLockTime;
+                long redisKeyExpiredTime = keyLockTime * 2 + cycle;
+                while (!BooleanUtil.isTrue(valueOperations.setIfAbsent(lockKey,
+                        threadId, redisKeyExpiredTime, TimeUnit.MILLISECONDS))) {
+                    if (System.currentTimeMillis() >= lockExpiredTime) {
+                        return isLock;
+                    }
+                    ThreadUtil.sleep(cycle);
                 }
-                ThreadUtil.sleep(cycle);
+            } catch (Exception e) {
+                return isLock;
             }
-        } catch (Exception e) {
-            return isLock;
         }
-
         return isLock = Boolean.TRUE;
 
     }

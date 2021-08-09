@@ -1,5 +1,6 @@
 package com.fast.dao.jdbc;
 
+import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
@@ -7,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
  * @author 张亚伟 https://github.com/kaixinzyw
  */
 public class TransactionInfo {
-
+    private static final FastThreadLocal<Boolean> globalTransaction = new FastThreadLocal<>();
     private DataSourceTransactionManager tran;
     private TransactionStatus status;
 

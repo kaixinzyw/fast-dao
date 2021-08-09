@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fast.cache.DataCacheType;
 import com.fast.cache.FastRedisCache;
 import com.fast.cache.FastStatisCache;
+import com.fast.condition.many.*;
 import com.fast.config.FastDaoAttributes;
 import com.fast.config.PrimaryKeyType;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -44,6 +45,7 @@ public class TableMapperUtil {
         }
         return tableMapper;
     }
+
 
     /**
      * 创建类映射关系
@@ -102,33 +104,58 @@ public class TableMapperUtil {
         HashMap<String, String> selectShowField = new HashMap<>();
         HashMap<String, String> tableFieldNames = new HashMap<>();
         StringBuilder selectAllShowField = new StringBuilder();
+        //获取主键
         for (Field field : fields) {
-            if (field.getName().equals("serialVersionUID") || CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName())) {
+            boolean isId = field.isAnnotationPresent(Id.class);
+            if (isId || field.getName().equals("id")) {
+                if (tableMapper.getPrimaryKeyTableField() == null) {
+                    tableMapper.setPrimaryKeyField(field.getName());
+                    tableMapper.setPrimaryKeyTableField(getTabFieldName(field));
+                    tableMapper.setPrimaryKeyClass(field.getType());
+                    if (field.getType() == String.class) {
+                        tableMapper.setPrimaryKeyType(PrimaryKeyType.OBJECTID);
+                    } else {
+                        tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
+                    }
+                }
+                break;
+            }
+        }
+        List<ManyToManyInfo> manyToManyInfoList = new ArrayList<>();
+        List<Field> manyToManyFieldList = new ArrayList<>();
+
+        List<OneToManyInfo> oneToManyInfoList = new ArrayList<>();
+        List<Field> oneToManyFieldList = new ArrayList<>();
+
+        List<ManyToOneInfo> manyToOneInfoList = new ArrayList<>();
+        List<Field> manyToOneFieldList = new ArrayList<>();
+        for (Field field : fields) {
+            if ("serialVersionUID".equals(field.getName()) || StrUtil.equals(field.getName(), "fastExample") ||
+                    CollUtil.contains(FastDaoAttributes.ruleOutFieldList, field.getName()) || fieldTableNames.get(field.getName()) != null) {
                 continue;
             }
-            String tabFieldName;
-            boolean isId = field.isAnnotationPresent(Id.class);
-            boolean isColumn = field.isAnnotationPresent(Column.class);
-            if (isColumn) {
-                Column name = field.getAnnotation(Column.class);
-                tabFieldName = name.name();
-            } else {
-                if (FastDaoAttributes.isToCamelCase) {
-                    tabFieldName = StrUtil.toUnderlineCase(field.getName());
-                } else {
-                    tabFieldName = field.getName();
-                }
+
+            boolean isManyToMany = field.isAnnotationPresent(FastManyToMany.class);
+            if (isManyToMany) {
+                manyToManyFieldList.add(field);
+                continue;
             }
-            if (isId || field.getName().equals("id") && tableMapper.getPrimaryKeyTableField() == null) {
-                tableMapper.setPrimaryKeyField(field.getName());
-                tableMapper.setPrimaryKeyTableField(tabFieldName);
-                tableMapper.setPrimaryKeyClass(field.getType());
-                if (field.getType() == String.class) {
-                    tableMapper.setPrimaryKeyType(PrimaryKeyType.OBJECTID);
-                } else {
-                    tableMapper.setPrimaryKeyType(PrimaryKeyType.AUTO);
-                }
+
+            boolean isOneToMany = field.isAnnotationPresent(FastOneToMany.class);
+            if (isOneToMany) {
+                oneToManyFieldList.add(field);
+                continue;
             }
+
+            boolean isManyToOne = field.isAnnotationPresent(FastManyToOne.class);
+            if (isManyToOne) {
+                manyToOneFieldList.add(field);
+                continue;
+            }
+
+
+            String tabFieldName = getTabFieldName(field);
+
             if (FastDaoAttributes.isOpenLogicDelete && field.getName().equals(FastDaoAttributes.deleteFieldName)) {
                 tableMapper.setLogicDelete(Boolean.TRUE);
             }
@@ -149,6 +176,9 @@ public class TableMapperUtil {
             selectShowField.put(field.getName(), tableFieldName);
             selectAllShowField.append(tableFieldName + ", ");
         }
+        tableMapper.setManyToManyInfoList(manyToManyInfoList);
+        tableMapper.setOneToManyInfoList(oneToManyInfoList);
+        tableMapper.setManyToOneInfoList(manyToOneInfoList);
         tableMapper.setShowTableNames(selectShowField);
         tableMapper.setFieldNames(fieldNames);
         tableMapper.setFieldTypes(fieldTypes);
@@ -158,7 +188,62 @@ public class TableMapperUtil {
             tableMapper.setShowAllTableNames(selectAllShowField.substring(0, selectAllShowField.length() - 2));
         }
         tableMappers.put(clazz.getSimpleName(), tableMapper);
+        if (CollUtil.isNotEmpty(manyToManyFieldList)) {
+            for (Field field : manyToManyFieldList) {
+                FastManyToMany manyToMany = field.getAnnotation(FastManyToMany.class);
+                ManyToManyInfo info = new ManyToManyInfo();
+                info.setDataFieldName(field.getName());
+                info.setJoinMapper(getTableMappers(manyToMany.joinEntity()));
+                info.setJoinMapperFieldName(StrUtil.isNotBlank(manyToMany.joinMappedBy()) ? manyToMany.joinMappedBy() :
+                        StrUtil.toCamelCase(tableMapper.getTableName() + StrUtil.UNDERLINE + tableMapper.getPrimaryKeyTableField()));
+                info.setRelationMapper(getTableMappers(manyToMany.relationalEntity()));
+                info.setRelationMapperFieldName(StrUtil.isNotBlank(manyToMany.relationalMappedBy()) ? manyToMany.relationalMappedBy() :
+                        StrUtil.toCamelCase(info.getRelationMapper().getTableName() + StrUtil.UNDERLINE + info.getRelationMapper().getPrimaryKeyTableField()));
+                manyToManyInfoList.add(info);
+            }
+        }
+
+        if (CollUtil.isNotEmpty(oneToManyFieldList)) {
+            for (Field field : oneToManyFieldList) {
+                FastOneToMany oneToMany = field.getAnnotation(FastOneToMany.class);
+                OneToManyInfo info = new OneToManyInfo();
+                info.setDataFieldName(field.getName());
+                info.setJoinMapper(getTableMappers(oneToMany.joinEntity()));
+                info.setJoinMapperFieldName(StrUtil.isNotBlank(oneToMany.joinMappedBy()) ? oneToMany.joinMappedBy() :
+                        StrUtil.toCamelCase(tableMapper.getTableName() + StrUtil.UNDERLINE + tableMapper.getPrimaryKeyTableField()));
+                oneToManyInfoList.add(info);
+            }
+        }
+
+        if (CollUtil.isNotEmpty(manyToOneFieldList)) {
+            for (Field field : manyToOneFieldList) {
+                FastManyToOne manyToOne = field.getAnnotation(FastManyToOne.class);
+                ManyToOneInfo info = new ManyToOneInfo();
+                info.setDataFieldName(field.getName());
+                info.setJoinMapper(getTableMappers(manyToOne.joinEntity()));
+                info.setJoinMapperFieldName(StrUtil.isNotBlank(manyToOne.joinMappedBy()) ? manyToOne.joinMappedBy() :
+                        StrUtil.toCamelCase(info.getJoinMapper().getTableName() + StrUtil.UNDERLINE + info.getJoinMapper().getPrimaryKeyTableField()));
+                manyToOneInfoList.add(info);
+            }
+        }
+
         return tableMapper;
+    }
+
+    private static String getTabFieldName(Field field) {
+        String tabFieldName;
+        boolean isColumn = field.isAnnotationPresent(Column.class);
+        if (isColumn) {
+            Column name = field.getAnnotation(Column.class);
+            tabFieldName = name.name();
+        } else {
+            if (FastDaoAttributes.isToCamelCase) {
+                tabFieldName = StrUtil.toUnderlineCase(field.getName());
+            } else {
+                tabFieldName = field.getName();
+            }
+        }
+        return tabFieldName;
     }
 
 }

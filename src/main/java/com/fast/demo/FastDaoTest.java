@@ -36,22 +36,47 @@ public class FastDaoTest {
 //        test_m_findAll();
 //        test_n_findPage();
 //        test_o_FieldOperating();
-        test_p_CustomSql();
+//        test_p_CustomSql();
 //        customUpdateColumns();
-//        selectObject();
+        selectObject();
+//        fastCustomSqlDao();
+    }
+
+    public static void fastCustomSqlDao(){
+        String sql = "select age from fast_user_test where age = #{age} and user_name = #{name}";
+        Map<String,Object> data = new HashMap<>();
+        data.put("age","-1;truncate fast_user_test");
+        data.put("name","-1;truncate fast_user_test");
+        Map one = FastCustomSqlDao.create(Map.class, sql, data).findOne();
+        System.out.println(one);
     }
 
 
-    public static void selectObject(){
+
+        public static void selectObject(){
         FastUserTestQuery userTest = new FastUserTestQuery();
-        userTest.setUserName("FastDao10");
-        userTest.setAgee(10);
+        userTest.setId(10L);
+        userTest.setCreateTime(new Date());
 
         Map<String,Object> data = new HashMap<>();
-        data.put("age", 10);
-        data.put("userName","FastDao10");
+        data.put("id", 10);
+        data.put("createTime", new Date());
         FastUserTestFastDAO fastUserTestFastDAO = FastUserTestFastDAO.create(userTest);
-        fastUserTestFastDAO.dao().findPage(1,10);
+        fastUserTestFastDAO.OrLeftBracket();
+        fastUserTestFastDAO.age().or().less(10);
+        fastUserTestFastDAO.OrLeftBracket();
+        fastUserTestFastDAO.userName().like("A");
+        fastUserTestFastDAO.createTime().greater(new Date());
+        fastUserTestFastDAO.rightBracket();
+        fastUserTestFastDAO.AndLeftBracket();
+        fastUserTestFastDAO.userName().like("B");
+        fastUserTestFastDAO.createTime().greater(new Date());
+        fastUserTestFastDAO.rightBracket();
+        fastUserTestFastDAO.rightBracket();
+        fastUserTestFastDAO.age().greater(10);
+        fastUserTestFastDAO.userName().or().valEqual("C;delete from fast_user_test;");
+        fastUserTestFastDAO.dao().findAll();
+//        fastUserTestFastDAO.dao().findPage(1,10);
     }
 
     public static void customUpdateColumns() {
@@ -209,6 +234,7 @@ public class FastDaoTest {
         query.age().less(30);
         query.createTime().orderByDesc();
         query.age().sumField();
+        query.createTime().sumField();
         PageInfo<FastUserTest> page = query.dao().findPage(1, 10);
 //        Integer count = query.dao().findCount();
 //        FastUserTest one = query.dao().findOne();

@@ -1,9 +1,10 @@
 package com.fast.dao.jdbc;
 
 
+import cn.hutool.core.util.ClassUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.fast.mapper.TableMapper;
 import com.fast.fast.FastDaoParam;
+import com.fast.mapper.TableMapper;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -58,6 +59,9 @@ public class JdbcRowMapper<T> implements RowMapper<T> {
                         jsonObject.put(columnName, val);
                     }
                 }
+            }
+            if (ClassUtil.isBasicType(mapper.getObjClass())) {
+                return rs.getObject(1,mapper.getObjClass());
             }
             return jsonObject.toJavaObject(mapper.getObjClass());
         } catch (Exception e) {

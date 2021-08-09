@@ -1,9 +1,10 @@
 package com.fast.base;
 
 import cn.hutool.core.util.ClassUtil;
-import com.fast.fast.FastDao;
 import com.fast.condition.FastExample;
+import com.fast.fast.FastDao;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -12,7 +13,9 @@ import java.util.Map;
  * @param <T> 需要操作的对象泛型
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class BaseFastDAO<T> {
+public class BaseFastDAO<T> implements Serializable {
+
+    private static final long serialVersionUID = 5126897802718795886L;
 
     /**
      * 条件封装器
@@ -67,10 +70,11 @@ public class BaseFastDAO<T> {
 
     /**
      * 自定义字段的操作
+     *
      * @param fieldName 字段名称
      * @return 操作对象
      */
-    public FastExample.Criteria<T> customFieldOperation(String fieldName){
+    public FastExample.Criteria<T> customFieldOperation(String fieldName) {
         return fastExample.field(fieldName);
     }
 
@@ -84,11 +88,37 @@ public class BaseFastDAO<T> {
         fastExample.orSql(sql, params);
     }
 
+
+    /**
+     * 左括号
+     */
+    public void OrLeftBracket() {
+        fastExample.OrLeftBracket();
+    }
+
+    /**
+     * 左括号
+     */
+    public void AndLeftBracket() {
+        fastExample.AndLeftBracket();
+    }
+
+    /**
+     * 右括号
+     */
+    public void rightBracket() {
+        fastExample.rightBracket();
+    }
+
     /**
      * 关闭逻辑删除条件保护,如果开启了逻辑删除功能,需要进行删除数据的操作,需要使用此方法进行关闭逻辑条件过滤
      */
     public void closeLogicDeleteProtect() {
         fastExample.closeLogicDeleteProtect();
+    }
+
+    public void openRelatedQuery() {
+        fastExample.openRelatedQuery();
     }
 
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * 扩展MyBatis FastDB执行器实现
- *
+ * <p>
  * MyBatis插件模组
  *
  * @author 张亚伟 https://github.com/kaixinzyw
@@ -46,8 +46,11 @@ public class MyBatisImpl<T> implements DaoActuator<T> {
         if (CollUtil.isEmpty(pojoMap)) {
             return new ArrayList<>();
         }
-        return JSONObject.parseArray(JSONObject.toJSONString(pojoMap), param.getTableMapper().getObjClass());
+        List<T> parseArray = JSONObject.parseArray(JSONObject.toJSONString(pojoMap), param.getTableMapper().getObjClass());
+        return parseArray;
     }
+
+
 
     @Override
     public Integer count() {

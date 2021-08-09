@@ -19,31 +19,21 @@ public class BeanCopyUtil {
         if (list == null) {
             return null;
         }
-        List<T> ts = new ArrayList<>();
-        for (Object obj : list) {
-            ts.add(copy(obj, clazz));
-        }
-        return ts;
-
+        return JSONObject.parseArray(JSONObject.toJSONString(list),clazz);
     }
 
     public static <T> Set<T> copy(Set set, Class<T> clazz) {
         if (set == null) {
             return null;
         }
-
-        Set<T> ts = new HashSet<>();
-        for (Object obj : set) {
-            ts.add(copy(obj, clazz));
-        }
-        return ts;
+        return CollUtil.newHashSet(JSONObject.parseArray(JSONObject.toJSONString(set), clazz));
     }
 
     public static <T> T copy(Map<String, Object> m, Class<T> clazz) {
         if (CollUtil.isEmpty(m)) {
             return null;
         }
-        return BeanUtil.mapToBeanIgnoreCase(m, clazz, true);
+        return JSONObject.parseObject(JSONObject.toJSONString(m),clazz);
     }
 
     public static <T> PageInfo<T> copy(PageInfo page, Class<T> clazz) {
@@ -74,9 +64,7 @@ public class BeanCopyUtil {
             if (obj == null) {
                 return null;
             }
-            T t = clazz.newInstance();
-            BeanUtil.copyProperties(obj, t, true);
-            return t;
+            return JSONObject.parseObject(JSONObject.toJSONString(obj),clazz);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

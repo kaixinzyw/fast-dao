@@ -3,6 +3,7 @@ package com.fast.dao.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.condition.*;
@@ -150,14 +151,31 @@ public class FastSqlUtil {
         paramIndex.setParamType(WHERE_PARAM_TYPE);
         List<FastCondition> conditions = select.getConditions();
         if (CollUtil.isNotEmpty(conditions)) {
+            int leftBracketNum = 0;
+            int leftBracket = 0;
             for (int i = 0; i < conditions.size(); i++) {
                 FastCondition condition = conditions.get(i);
-                if (!isFirst && !condition.getExpression().equals(FastCondition.Expression.Obj)) {
+                if (ObjectUtil.equal(condition.getExpression(), FastCondition.Expression.LeftBracket)) {
+                    leftBracket ++;
+                    leftBracketNum = 2;
                     sqlBuilder.append(condition.getWay().expression);
+                } else if (ObjectUtil.equal(condition.getExpression(), FastCondition.Expression.RightBracket)) {
+                    leftBracket--;
+                }
+                if (!isFirst && leftBracketNum == 0) {
+                    if (condition.getWay() != null) {
+                        sqlBuilder.append(condition.getWay().expression);
+                    }
                 } else {
                     isFirst = Boolean.FALSE;
                 }
                 whereCondition(condition, sqlBuilder, paramMap, tableMapper, paramIndex);
+                if (leftBracket==0) {
+                    sqlBuilder.append(CRLF);
+                }
+                if (leftBracketNum != 0) {
+                    leftBracketNum--;
+                }
             }
         }
 
@@ -186,17 +204,12 @@ public class FastSqlUtil {
                     packParam(sqlBuilder, paramMap, value, paramIndex).append(StrUtil.COMMA);
                 }
                 sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(RIGHT_BRACKETS);
-                sqlBuilder.append(CRLF);
                 break;
             case Match:
             case NotMatch:
                 sqlBuilder.append(condition.getExpression().name).append(LEFT_BRACKETS).append(tableMapper.getShowTableNames().get(condition.getField()))
-                .append(RIGHT_BRACKETS).append(condition.getExpression().expression).append(LEFT_BRACKETS);
-                for (Object value : condition.getValueList()) {
-                    packParam(sqlBuilder, paramMap, value, paramIndex).append(StrUtil.COMMA);
-                }
-                sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(RIGHT_BRACKETS);
-                sqlBuilder.append(CRLF);
+                        .append(RIGHT_BRACKETS).append(condition.getExpression().expression).append(LEFT_BRACKETS);
+                packParam(sqlBuilder, paramMap, condition.getValue(), paramIndex).append(RIGHT_BRACKETS);
                 break;
             case Between:
             case NotBetween:
@@ -204,20 +217,23 @@ public class FastSqlUtil {
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(AND);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMax(), paramIndex);
-                sqlBuilder.append(CRLF);
                 break;
             case Null:
             case NotNull:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
-                sqlBuilder.append(CRLF);
+                break;
+            case LeftBracket:
+                sqlBuilder.append(condition.getExpression().expression);
+                break;
+            case RightBracket:
+                sqlBuilder.append(condition.getExpression().expression);
                 break;
             case SQL:
                 if (CollUtil.isNotEmpty(condition.getParams())) {
                     paramMap.putAll(condition.getParams());
                 }
                 sqlBuilder.append(condition.getSql());
-                sqlBuilder.append(CRLF);
                 break;
             case Obj:
                 HashMap<String, String> showTableNames = tableMapper.getShowTableNames();
@@ -225,7 +241,6 @@ public class FastSqlUtil {
                 int queryNum = 0;
                 if (condition.getObject() instanceof Map) {
                     fieldMap = (Map<String, Object>) condition.getObject();
-                    sqlBuilder.append(AND);
                     if (CollUtil.isNotEmpty(fieldMap)) {
                         for (String fieldName : fieldMap.keySet()) {
                             String showTable = showTableNames.get(fieldName);
@@ -252,7 +267,6 @@ public class FastSqlUtil {
                                     continue;
                                 }
                                 queryNum++;
-                                sqlBuilder.append(whereData.getWay().expression);
                                 sqlBuilder.append(whereData.getSql());
                                 paramMap.put(fieldName, fieldMap.get(fieldName));
                             } else if (whereData.getCondition().name.equals(FastWhere.WhereCondition.Like.name) || whereData.getCondition().name.equals(FastWhere.WhereCondition.NotLike.name)) {
@@ -261,7 +275,7 @@ public class FastSqlUtil {
                                     continue;
                                 }
                                 queryNum++;
-                                sqlBuilder.append(whereData.getWay().expression).append(showTable).append(whereData.getCondition().expression);
+                                sqlBuilder.append(showTable).append(whereData.getCondition().expression);
                                 packParam(sqlBuilder, paramMap, "%" + fieldMap.get(fieldName).toString() + "%", paramIndex);
                             } else {
                                 String showTable = showTableNames.get(whereData.getFieldName());
@@ -269,24 +283,21 @@ public class FastSqlUtil {
                                     continue;
                                 }
                                 queryNum++;
-                                sqlBuilder.append(whereData.getWay().expression).append(showTable).append(whereData.getCondition().expression);
+                                sqlBuilder.append(showTable).append(whereData.getCondition().expression);
                                 packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
                             }
+                            sqlBuilder.append(whereData.getWay().expression);
                         }
                     }
                 }
                 if (sqlBuilder.subString(sqlBuilder.length() - AND.length(), sqlBuilder.length()).equals(AND)) {
                     sqlBuilder.del(sqlBuilder.length() - AND.length(), sqlBuilder.length());
                 }
-                if (queryNum != 0) {
-                    sqlBuilder.append(CRLF);
-                }
                 break;
             default:
                 sqlBuilder.append(tableMapper.getShowTableNames()
                         .get(condition.getField()).toString()).append(condition.getExpression().expression);
                 packParam(sqlBuilder, paramMap, condition.getValue(), paramIndex);
-                sqlBuilder.append(CRLF);
         }
     }
 
@@ -427,7 +438,8 @@ public class FastSqlUtil {
         } else {
             replaceQueryInfo.append(WILDCARD).append(RIGHT_BRACKETS);
         }
-        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, "FROM")), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
+        return StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF) + StrUtil.sub(sql, StrUtil.indexOfIgnoreCase(sql, "FROM"), sql.length());
+//        return StrUtil.replace(sql, StrUtil.sub(sql, 0, StrUtil.indexOfIgnoreCase(sql, "FROM")), StrUtil.strBuilder(SELECT, replaceQueryInfo, CRLF));
     }
 
     /**

@@ -1,6 +1,9 @@
 package com.fast.mapper;
 
 import com.fast.cache.DataCacheType;
+import com.fast.condition.many.ManyToManyInfo;
+import com.fast.condition.many.ManyToOneInfo;
+import com.fast.condition.many.OneToManyInfo;
 import com.fast.config.PrimaryKeyType;
 
 import java.util.HashMap;
@@ -82,6 +85,22 @@ public class TableMapper<T> {
      * 操作主键类型
      */
     private Class primaryKeyClass;
+
+    /**
+     * 多对多关联
+     */
+    private List<ManyToManyInfo>  manyToManyInfoList;
+
+    /**
+     * 一对多关联
+     */
+    private List<OneToManyInfo>  oneToManyInfoList;
+
+    /**
+     * 一对多关联
+     */
+    private List<ManyToOneInfo> manyToOneInfoList;
+
     /**
      * 主键类型 32位UUID和自增
      */
@@ -243,5 +262,29 @@ public class TableMapper<T> {
 
     public void setAutoSetUpdateTime(Boolean autoSetUpdateTime) {
         this.autoSetUpdateTime = autoSetUpdateTime;
+    }
+
+    public List<ManyToManyInfo> getManyToManyInfoList() {
+        return manyToManyInfoList;
+    }
+
+    public void setManyToManyInfoList(List<ManyToManyInfo> manyToManyInfoList) {
+        this.manyToManyInfoList = manyToManyInfoList;
+    }
+
+    public List<OneToManyInfo> getOneToManyInfoList() {
+        return oneToManyInfoList;
+    }
+
+    public void setOneToManyInfoList(List<OneToManyInfo> oneToManyInfoList) {
+        this.oneToManyInfoList = oneToManyInfoList;
+    }
+
+    public List<ManyToOneInfo> getManyToOneInfoList() {
+        return manyToOneInfoList;
+    }
+
+    public void setManyToOneInfoList(List<ManyToOneInfo> manyToOneInfoList) {
+        this.manyToOneInfoList = manyToOneInfoList;
     }
 }

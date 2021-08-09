@@ -2,6 +2,7 @@ package com.fast.condition;
 
 import cn.hutool.core.util.StrUtil;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -9,8 +10,9 @@ import java.util.*;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class ConditionPackages {
+public class ConditionPackages implements Serializable {
 
+    private static final long serialVersionUID = -3640643704263216648L;
     /**
      * 条件封装
      */
@@ -63,6 +65,11 @@ public class ConditionPackages {
     private Boolean logicDeleteProtect = Boolean.TRUE;
 
     /**
+     * 关联查询
+     */
+    private Boolean relatedQuery = Boolean.FALSE;
+
+    /**
      * 排序
      */
     private List<OrderByQuery> orderByQuery;
@@ -112,6 +119,14 @@ public class ConditionPackages {
         conditions.add(FastCondition.notEqual(fieldName, value, way));
     }
 
+    public void leftBracket() {
+        conditions.add(FastCondition.leftBracket(way));
+    }
+
+    public void rightBracket() {
+        conditions.add(FastCondition.rightBracket());
+    }
+
     public void addLikeQuery(String fieldName, Object value) {
         conditions.add(FastCondition.like(fieldName, value, way));
     }
@@ -120,12 +135,12 @@ public class ConditionPackages {
         conditions.add(FastCondition.notLike(fieldName, value, way));
     }
 
-    public void addMatchQuery(String matchName, Object... againstValues) {
-        conditions.add(FastCondition.match(matchName, new ArrayList<>(Arrays.asList(againstValues)), way));
+    public void addMatchQuery(String matchName, Object againstValue) {
+        conditions.add(FastCondition.match(matchName, againstValue, way));
     }
 
-    public void addNotMatchQuery(String matchName, Object... againstValues) {
-        conditions.add(FastCondition.notMatch(matchName, new ArrayList<>(Arrays.asList(againstValues)), way));
+    public void addNotMatchQuery(String matchName, Object againstValue) {
+        conditions.add(FastCondition.notMatch(matchName, againstValue, way));
     }
 
     public void addInQuery(String inName, Object... inValues) {
@@ -341,6 +356,10 @@ public class ConditionPackages {
         this.logicDeleteProtect = Boolean.FALSE;
     }
 
+    public void openRelatedQuery() {
+        this.relatedQuery = Boolean.TRUE;
+    }
+
     public Integer getPage() {
         return page;
     }
@@ -375,6 +394,10 @@ public class ConditionPackages {
 
     public Boolean getLogicDeleteProtect() {
         return logicDeleteProtect;
+    }
+
+    public Boolean getRelatedQuery() {
+        return relatedQuery;
     }
 
     public String getCustomSql() {

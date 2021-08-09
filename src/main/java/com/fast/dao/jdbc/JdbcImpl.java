@@ -48,7 +48,8 @@ public class JdbcImpl<T> implements DaoActuator<T> {
     public List<T> select() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
-        return JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
+        List<T> list = JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
+        return list;
     }
 
     @Override

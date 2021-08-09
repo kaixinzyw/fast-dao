@@ -2,16 +2,19 @@ package com.fast.condition;
 
 import cn.hutool.core.util.EnumUtil;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 条件封装
+ *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class FastCondition {
+public class FastCondition implements Serializable {
 
+    private static final long serialVersionUID = -1411365904337000710L;
     /**
      * 条件类型
      */
@@ -56,6 +59,18 @@ public class FastCondition {
      */
     private Map<String, Object> params;
 
+    public static FastCondition leftBracket(Way way) {
+        FastCondition conditions = new FastCondition();
+        conditions.setExpression(Expression.LeftBracket);
+        conditions.setWay(way);
+        return conditions;
+    }
+
+    public static FastCondition rightBracket() {
+        FastCondition conditions = new FastCondition();
+        conditions.setExpression(Expression.RightBracket);
+        return conditions;
+    }
 
     public static FastCondition equal(String field, Object value, Way way) {
         FastCondition conditions = new FastCondition();
@@ -65,6 +80,7 @@ public class FastCondition {
         conditions.setValue(value);
         return conditions;
     }
+
     public static FastCondition notEqual(String field, Object value, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.NotEqual);
@@ -82,6 +98,7 @@ public class FastCondition {
         conditions.setValue(value);
         return conditions;
     }
+
     public static FastCondition notLike(String field, Object value, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.NotLike);
@@ -91,21 +108,21 @@ public class FastCondition {
         return conditions;
     }
 
-    public static FastCondition match(String matchName, Collection againstValues, Way way) {
+    public static FastCondition match(String matchName, Object againstValue, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.Match);
         conditions.setWay(way);
         conditions.setField(matchName);
-        conditions.setValueList(againstValues);
+        conditions.setValue(againstValue);
         return conditions;
     }
 
-    public static FastCondition notMatch(String matchName, Collection againstValues, Way way) {
+    public static FastCondition notMatch(String matchName, Object againstValue, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.NotMatch);
         conditions.setWay(way);
         conditions.setField(matchName);
-        conditions.setValueList(againstValues);
+        conditions.setValue(againstValue);
         return conditions;
     }
 
@@ -117,6 +134,7 @@ public class FastCondition {
         conditions.setValueList(inValues);
         return conditions;
     }
+
     public static FastCondition notIn(String inName, Collection inValues, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.NotIn);
@@ -135,6 +153,7 @@ public class FastCondition {
         conditions.setBetweenMax(betweenMax);
         return conditions;
     }
+
     public static FastCondition notBetweenQuery(String betweenName, Object betweenMin, Object betweenMax, Way way) {
         FastCondition conditions = new FastCondition();
         conditions.setExpression(Expression.NotBetween);
@@ -230,15 +249,15 @@ public class FastCondition {
             this.expression = expression;
         }
 
-        private static final Map<String,Way> wayMap = new HashMap<>();
+        private static final Map<String, Way> wayMap = new HashMap<>();
 
-        public static Way getWay(String name){
+        public static Way getWay(String name) {
             Way way = wayMap.get(name);
             if (way != null) {
                 return way;
             }
-            way = EnumUtil.likeValueOf(Way.class,name);
-            wayMap.put(name,way);
+            way = EnumUtil.likeValueOf(Way.class, name);
+            wayMap.put(name, way);
             return way;
         }
     }
@@ -263,6 +282,8 @@ public class FastCondition {
         GreaterOrEqual("greaterOrEqual", " >= "),
         Less("less", " < "),
         LessOrEqual("lessOrEqual", " <= "),
+        LeftBracket("leftBracket", " ( "),
+        RightBracket("rightBracket", " ) "),
 
         SQL("sql", "自定义SQL添加"),
         Obj("object", " = ");
@@ -275,15 +296,15 @@ public class FastCondition {
             this.expression = expression;
         }
 
-        private static final Map<String,Expression> exMap = new HashMap<>();
+        private static final Map<String, Expression> exMap = new HashMap<>();
 
-        public static Expression getExpression(String name){
+        public static Expression getExpression(String name) {
             Expression ex = exMap.get(name);
             if (ex != null) {
                 return ex;
             }
-            ex = EnumUtil.likeValueOf(Expression.class,name);
-            exMap.put(name,ex);
+            ex = EnumUtil.likeValueOf(Expression.class, name);
+            exMap.put(name, ex);
             return ex;
         }
     }
@@ -367,4 +388,5 @@ public class FastCondition {
     public void setParams(Map<String, Object> params) {
         this.params = params;
     }
+
 }

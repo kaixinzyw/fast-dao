@@ -3,6 +3,7 @@ package com.fast.condition;
 import com.fast.mapper.TableMapper;
 import com.fast.mapper.TableMapperUtil;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -11,8 +12,9 @@ import java.util.Map;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class CustomizeUpdate<Pojo> {
+public class CustomizeUpdate<Pojo> implements Serializable {
 
+    private static final long serialVersionUID = -848871486184328929L;
     /**
      * 条件封装
      */
@@ -166,7 +168,8 @@ public class CustomizeUpdate<Pojo> {
         return fastExample.field(fieldName);
     }
 
-    public static class CustomizeUpdateData {
+    public static class CustomizeUpdateData implements Serializable{
+        private static final long serialVersionUID = 5067765705944232020L;
         private String fieldName;
         private String sql;
         private Map<String, Object> data;
