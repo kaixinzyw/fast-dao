@@ -17,12 +17,12 @@ public class FileCreateConfig {
     /**
      * Pojo文件路径
      */
-    private String beanPackage = CodeCreateModule.Pojo.codeModule;
+    private String beanPackage = CodeCreateModule.POJO.codeModule;
 
     /**
      * Pojo文件路径
      */
-    private String fastPojoPackage = CodeCreateModule.FastPojo.codeModule;
+//    private String fastPojoPackage = CodeCreateModule.FastPojo.codeModule;
 //    /**
 //     * Pojo字段文件路径
 //     */
@@ -30,7 +30,7 @@ public class FileCreateConfig {
     /**
      * DB模板文件路径
      */
-    private String beanFastDao = CodeCreateModule.PojoFastDao.codeModule;
+    private String beanFastDao = CodeCreateModule.FastDAO.codeModule;
     /**
      * service文件路径
      */
@@ -38,11 +38,11 @@ public class FileCreateConfig {
 //    /**
 //     * DAO文件路径
 //     */
-    private String daoPackage = CodeCreateModule.Dao.codeModule;
+    private String daoPackage = CodeCreateModule.DAO.codeModule;
     /**
      * DTO文件路径
      */
-    private String dtoPackage = CodeCreateModule.Dto.codeModule;
+    private String dtoPackage = CodeCreateModule.DTO.codeModule;
 
     /**
      * 需要生成模型的表名
@@ -235,11 +235,11 @@ public class FileCreateConfig {
          */
         Base("pojo,fast"),
 
-        Pojo("pojo"),
+        POJO("pojo"),
 
-        FastPojo("fastpojo"),
+//        FastPojo("fastpojo"),
 
-        PojoFastDao("fast"),
+        FastDAO("fast"),
 
 //        PojoFields("fields"),
 
@@ -247,9 +247,9 @@ public class FileCreateConfig {
 
         ServiceImpl("service_impl"),
 
-        Dto("dto"),
+        DTO("dto"),
 
-        Dao("dao"),
+        DAO("dao"),
 
         All("pojo,fast,service,service_impl,dto,dao");
 
@@ -320,9 +320,9 @@ public class FileCreateConfig {
         return beanPackage;
     }
 
-    public String getFastPojoPackage() {
-        return fastPojoPackage;
-    }
+//    public String getFastPojoPackage() {
+//        return fastPojoPackage;
+//    }
 
     //    public String getBeanFieldsPackage() {
 //        return beanFieldsPackage;

@@ -1,12 +1,12 @@
 package com.fast.fast;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.io.resource.ClassPathResource;
-import com.fast.condition.FastExample;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.util.StrUtil;
+import com.fast.condition.ConditionPackages;
+import com.fast.utils.SqlTemplateUtil;
 import com.fast.utils.page.PageInfo;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +18,7 @@ import java.util.Map;
  */
 public class FastCustomSqlDao<T> {
 
-    private static final Map<String,String> sqlMap=new HashMap<>();
-
-    private FastExample<T> fastExample;
+    private ConditionPackages<T> conditionPackages;
 
     private FastCustomSqlDao() {
     }
@@ -34,13 +32,10 @@ public class FastCustomSqlDao<T> {
      * @param <T>    自定义SQL操作的对象泛型
      * @return 自定义SQL执行器
      */
-    public static <T> FastCustomSqlDao<T> create(Class<T> clazz, String sql, Map<String, Object> params) {
-        if (params == null) {
-            params = new HashMap<>();
-        }
+    public static <T> FastCustomSqlDao<T> create(Class<T> clazz, String sql, Object params) {
         FastCustomSqlDao<T> customSqlDao = new FastCustomSqlDao<>();
-        customSqlDao.fastExample = new FastExample<>(clazz);
-        customSqlDao.fastExample.conditionPackages().customSQL(sql, params);
+        customSqlDao.conditionPackages = ConditionPackages.create(clazz);
+        customSqlDao.conditionPackages.customSQL(sql, SqlTemplateUtil.getMap(params));
         return customSqlDao;
     }
 
@@ -53,40 +48,37 @@ public class FastCustomSqlDao<T> {
      * @param <T>    自定义SQL操作的对象泛型
      * @return 自定义SQL执行器
      */
-    public static <T> FastCustomSqlDao<T> createResource(Class<T> clazz, String path, Map<String, Object> params) {
-        String sql = sqlMap.get(path);
-        if(sql == null){
-            ClassPathResource resource = new ClassPathResource(path);
-            sql = IoUtil.read(resource.getStream()).toString();
-            sqlMap.put(path,sql);
-        }
-        return create(clazz, sql, params);
+    public static <T> FastCustomSqlDao<T> createResource(Class<T> clazz, String path, Object params) {
+        return create(clazz, SqlTemplateUtil.getSql(path, params), params);
     }
 
     /**
      * 自定义SQL执行器初始化,如需使用,必须调用此方法进行初始化创建
      *
-     * @param clazz  自定义SQL操作的类
-     * @param path   文件的绝对路径,文件编码必须为UTF-8
-     * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
-     * @param <T>    自定义SQL操作的对象泛型
+     * @param clazz   自定义SQL操作的类
+     * @param path    resource 目录下的文件,文件编码必须为UTF-8
+     * @param sqlList resource 额外的SQL 在SQL尾部进行拼接
+     * @param params  占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     * @param <T>     自定义SQL操作的对象泛型
      * @return 自定义SQL执行器
      */
-    public static <T> FastCustomSqlDao<T> createPath(Class<T> clazz, String path, Map<String, Object> params) {
-        String sql = sqlMap.get(path);
-        if(sql == null){
-            sql = FileUtil.readUtf8String(path);
-            sqlMap.put(path,sql);
+    public static <T> FastCustomSqlDao<T> createResource(Class<T> clazz, String path, List<String> sqlList, Object params) {
+        StrBuilder strBuilder = StrUtil.strBuilder(SqlTemplateUtil.getSql(path, params));
+        if (CollUtil.isNotEmpty(sqlList)) {
+            for (String sql : sqlList) {
+                if (StrUtil.isNotEmpty(sql)) {
+                    strBuilder.append(sql).append(System.lineSeparator());
+                }
+            }
         }
-        return create(clazz, sql, params);
+        return create(clazz, strBuilder.toString(), params);
     }
 
-    /**
-     * 新增操作
-     */
-    public void insert() {
-        DaoTemplate.<T>init(fastExample).insert(null);
+    public FastDao<T> dao(){
+        return FastDao.init(conditionPackages);
     }
+
+
 
     /**
      * 通过查询条件查询一条数据
@@ -94,7 +86,7 @@ public class FastCustomSqlDao<T> {
      * @return 数据结果
      */
     public T findOne() {
-        return DaoTemplate.<T>init(fastExample).findOne();
+        return DaoTemplate.init(conditionPackages).findOne();
     }
 
     /**
@@ -103,7 +95,7 @@ public class FastCustomSqlDao<T> {
      * @return 数据结果
      */
     public List<T> findAll() {
-        return DaoTemplate.<T>init(fastExample).findAll();
+        return DaoTemplate.init(conditionPackages).findAll();
     }
 
     /**
@@ -112,7 +104,7 @@ public class FastCustomSqlDao<T> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.<T>init(fastExample).findCount();
+        return DaoTemplate.init(conditionPackages).findCount();
     }
 
     /**
@@ -124,7 +116,7 @@ public class FastCustomSqlDao<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(int pageNum, int pageSize, int navigatePages) {
-        return DaoTemplate.<T>init(fastExample).findPage(pageNum, pageSize, navigatePages);
+        return DaoTemplate.<T>init(conditionPackages).findPage(pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -135,16 +127,7 @@ public class FastCustomSqlDao<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(int pageNum, int pageSize) {
-        return DaoTemplate.<T>init(fastExample).findPage(pageNum, pageSize, 9);
-    }
-
-    /**
-     * 更新数据
-     *
-     * @return 更新影响到的数据
-     */
-    public Integer update() {
-        return DaoTemplate.<T>init(fastExample).update(null, true);
+        return DaoTemplate.<T>init(conditionPackages).findPage(pageNum, pageSize, 9);
     }
 
     /**
@@ -153,7 +136,14 @@ public class FastCustomSqlDao<T> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.<T>init(fastExample).delete();
+        return DaoTemplate.init(conditionPackages).delete();
     }
 
+    public String getSql() {
+        return conditionPackages.getCustomSql();
+    }
+
+    public Map<String, Object> getParams() {
+        return conditionPackages.getCustomSqlParams();
+    }
 }

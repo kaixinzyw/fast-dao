@@ -124,7 +124,7 @@ public class DbUtils {
         String prefixPath = StrUtil.isNotEmpty(tableInfo.getPrefixName()) ? "." + tableInfo.getPrefixName() : "";
 
         String pojoPackPath = conf.getBasePackage() + "." + conf.getBeanPackage() + prefixPath;
-        String fastPojoPackPath = conf.getBasePackage() + "." + conf.getFastPojoPackage() + prefixPath;
+//        String fastPojoPackPath = conf.getBasePackage() + "." + conf.getFastPojoPackage() + prefixPath;
 //        String pojoFieldsPackPath = conf.getBasePackage() + "." + conf.getBeanPackage() + ".fast." + conf.getBeanFieldsPackage() + prefixPath;
         String pojoFastDaoPackPath = conf.getBasePackage()+ "." + conf.getBeanPackage() + "." + conf.getBeanFastDao() + prefixPath;
         String dtoPackPath = conf.getBasePackage() + "." + conf.getDtoPackage() + prefixPath;
@@ -137,10 +137,10 @@ public class DbUtils {
         tableInfo.setPojoClassPackPath(tableInfo.getPojoPackPath() + "." + tableInfo.getPojoName());
         tableInfo.setPojoFilePath(javabasePath + tableInfo.getPojoPackPath().replace(".", separator) + separator + tableInfo.getPojoName() + ".java");
 
-        tableInfo.setFastPojoPackPath(fastPojoPackPath);
-        tableInfo.setFastPojoName("Fast"+tableInfo.getBeanName());
-        tableInfo.setFastPojoClassPackPath(tableInfo.getPojoPackPath() + "." + tableInfo.getFastPojoName());
-        tableInfo.setFastPojoFilePath(javabasePath + tableInfo.getFastPojoPackPath().replace(".", separator) + separator + tableInfo.getFastPojoName() + ".java");
+//        tableInfo.setFastPojoPackPath(fastPojoPackPath);
+//        tableInfo.setFastPojoName("Fast"+tableInfo.getBeanName());
+//        tableInfo.setFastPojoClassPackPath(tableInfo.getPojoPackPath() + "." + tableInfo.getFastPojoName());
+//        tableInfo.setFastPojoFilePath(javabasePath + tableInfo.getFastPojoPackPath().replace(".", separator) + separator + tableInfo.getFastPojoName() + ".java");
 
         tableInfo.setPojoFastDaoPackPath(pojoFastDaoPackPath);
         tableInfo.setPojoFastDaoName(tableInfo.getPojoName() + "FastDAO");

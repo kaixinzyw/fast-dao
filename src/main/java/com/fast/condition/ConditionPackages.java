@@ -1,6 +1,9 @@
 package com.fast.condition;
 
 import cn.hutool.core.util.StrUtil;
+import com.fast.fast.JoinFastDao;
+import com.fast.mapper.TableMapper;
+import com.fast.mapper.TableMapperUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -10,9 +13,12 @@ import java.util.*;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class ConditionPackages implements Serializable {
+public class ConditionPackages<P> implements Serializable {
 
     private static final long serialVersionUID = -3640643704263216648L;
+
+    private TableMapper tableMapper;
+    private String tableAlias;
     /**
      * 条件封装
      */
@@ -85,10 +91,19 @@ public class ConditionPackages implements Serializable {
      * 自定义SQL
      */
     private String customSql;
+    private JoinFastDao<P> joinFastDao;
     /**
      * 自定义SQL参数
      */
     private Map<String, Object> customSqlParams;
+
+    private ConditionPackages(){}
+
+    public static <T>ConditionPackages<T> create(Class<T> pojoClass) {
+        ConditionPackages<T> conditionPackages = new ConditionPackages<>();
+        conditionPackages.tableMapper = TableMapperUtil.getTableMappers(pojoClass);
+        return conditionPackages;
+    }
 
     public void init() {
         this.conditions = new ArrayList<>();
@@ -318,40 +333,6 @@ public class ConditionPackages implements Serializable {
         this.customSqlParams = customSQLParams;
     }
 
-    public static class OrderByQuery {
-
-        /**
-         * 排序字段名
-         */
-        private String orderByName;
-
-        /**
-         * 是否降序
-         */
-        private Boolean isDesc;
-
-        public OrderByQuery(String orderByName, Boolean isDesc) {
-            this.orderByName = orderByName;
-            this.isDesc = isDesc;
-        }
-
-        public String getOrderByName() {
-            return orderByName;
-        }
-
-        public void setOrderByName(String orderByName) {
-            this.orderByName = orderByName;
-        }
-
-        public Boolean getDesc() {
-            return isDesc;
-        }
-
-        public void setDesc(Boolean desc) {
-            isDesc = desc;
-        }
-    }
-
     public void closeLogicDeleteProtect() {
         this.logicDeleteProtect = Boolean.FALSE;
     }
@@ -408,4 +389,23 @@ public class ConditionPackages implements Serializable {
         return customSqlParams;
     }
 
+    public TableMapper getTableMapper() {
+        return tableMapper;
+    }
+
+    public String getTableAlias() {
+        return tableAlias;
+    }
+
+    public void setTableAlias(String tableAlias) {
+        this.tableAlias = tableAlias;
+    }
+
+    public JoinFastDao<P> getJoinFastDao() {
+        return joinFastDao;
+    }
+
+    public void setJoinFastDao(JoinFastDao<P> joinFastDao) {
+        this.joinFastDao = joinFastDao;
+    }
 }

@@ -17,7 +17,7 @@ public class FastDeleteProvider {
             return;
         }
         StrBuilder fastSQL = FastSqlUtil.deleteSql(param);
-        FastSqlUtil.whereSql(fastSQL, param);
+        FastSqlUtil.whereSql(fastSQL, param.getConditionPackages(), param.getParamMap(), Boolean.TRUE, Boolean.FALSE);
         param.setSql(fastSQL.toString());
 
     }

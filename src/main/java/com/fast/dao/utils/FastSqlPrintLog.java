@@ -19,7 +19,11 @@ import com.fast.fast.FastCustomSqlDao;
 import com.fast.fast.FastDao;
 import com.fast.fast.FastDaoParam;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class FastSqlPrintLog {
 
@@ -59,22 +63,7 @@ public class FastSqlPrintLog {
         if (CollUtil.isNotEmpty(paramMap)) {
             for (String key : paramMap.keySet()) {
                 Object value = paramMap.get(key);
-                String sqlValue;
-                if (value == null) {
-                    sqlValue = NULL_STR;
-                } else if (value instanceof CharSequence) {
-                    sqlValue = StrUtil.strBuilder(APOSTROPHE, Convert.toStr(value), APOSTROPHE).toString();
-                } else if (DATA_STR.equals(value.getClass().getSimpleName())) {
-                    sqlValue = StrUtil.strBuilder(APOSTROPHE, DateUtil.formatDateTime(Convert.toDate(value)), APOSTROPHE).toString();
-                } else if (BooleanUtil.isBoolean(value.getClass())) {
-                    if ((Boolean) value) {
-                        sqlValue = TRUE_STR;
-                    } else {
-                        sqlValue = FALSE_STR;
-                    }
-                } else {
-                    sqlValue = value.toString();
-                }
+                String sqlValue = getValueString(value);
                 if (sql.contains(PARAM_PREFIX)) {
                     sql = StrUtil.replace(sql, StrUtil.strBuilder(PARAM_PREFIX, key, PARAM_SUFFIX), sqlValue);
                 }
@@ -86,13 +75,37 @@ public class FastSqlPrintLog {
         printSql(sql, null, param);
     }
 
+    private static String getValueString(Object value) {
+        String sqlValue;
+        if (value == null) {
+            sqlValue = NULL_STR;
+        } else if (value instanceof CharSequence) {
+            sqlValue = StrUtil.strBuilder(APOSTROPHE, Convert.toStr(value), APOSTROPHE).toString();
+        } else if (DATA_STR.equals(value.getClass().getSimpleName())) {
+            sqlValue = StrUtil.strBuilder(APOSTROPHE, DateUtil.formatDateTime(Convert.toDate(value)), APOSTROPHE).toString();
+        } else if (BooleanUtil.isBoolean(value.getClass())) {
+            if ((Boolean) value) {
+                sqlValue = TRUE_STR;
+            } else {
+                sqlValue = FALSE_STR;
+            }
+        } else if (value instanceof Collection) {
+            StrBuilder inStr = StrUtil.strBuilder();
+            ((Collection) value).stream().forEach(v->inStr.append(getValueString(v)).append(StrUtil.COMMA));
+            sqlValue = inStr.subString(0,inStr.length()-1);
+        } else {
+            sqlValue = value.toString();
+        }
+        return sqlValue;
+    }
+
     private static void printSql(String sql, Map<String, Object> sqlParams, FastDaoParam param) {
         StackTraceElement stackTraceElement = null;
         try {
             StackTraceElement[] traceElements = ThreadUtil.getStackTrace();
             for (int i = 0; i < traceElements.length; i++) {
                 if (StrUtil.equalsAny(traceElements[i].getClassName(), FastDao.class.getName(), FastCustomSqlDao.class.getName())
-                        &&!StrUtil.equalsAny(traceElements[i+1].getClassName(), FastBaseDAO.class.getName(), FastBaseServiceImpl.class.getName())) {
+                        && !StrUtil.equalsAny(traceElements[i + 1].getClassName(), FastBaseDAO.class.getName(), FastBaseServiceImpl.class.getName())) {
                     if (StrUtil.equals(FIND_PAGE, traceElements[i].getMethodName())) {
                         stackTraceElement = traceElements[i + 2];
                         break;
@@ -102,7 +115,8 @@ public class FastSqlPrintLog {
                     }
                 }
             }
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         StrBuilder strBuilder;
         if (ObjectUtil.isNotNull(stackTraceElement)) {
             strBuilder = new StrBuilder(stackTraceElement.getClassName(), StrUtil.DOT, stackTraceElement.getMethodName(), LEFT_PARENTHESIS, StrUtil.toString(stackTraceElement.getLineNumber()), RIGHT_PARENTHESIS);
@@ -110,7 +124,7 @@ public class FastSqlPrintLog {
             strBuilder = new StrBuilder();
         }
         Log log = LogFactory.get(param.getTableMapper().getTableName());
-        StrBuilder printLog = StrUtil.strBuilder(strBuilder.toString(),SQL_REPORT, sql, StrUtil.endWith(sql, CRLF) ? "" : CRLF, TIME, param.getSqlTime().toString(), TIME_TYPE);
+        StrBuilder printLog = StrUtil.strBuilder(strBuilder.toString(), SQL_REPORT, sql, StrUtil.endWith(sql, CRLF) ? "" : CRLF, TIME, param.getSqlTime().toString(), TIME_TYPE);
         if (sqlParams != null) {
             printLog.append(PARAM);
             printLog.append(JSONObject.toJSONString(sqlParams));

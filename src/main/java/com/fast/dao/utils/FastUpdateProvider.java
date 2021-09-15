@@ -16,7 +16,7 @@ public class FastUpdateProvider {
             return;
         }
         StrBuilder sqlBuilder = FastSqlUtil.updateSql(param);
-        FastSqlUtil.whereSql(sqlBuilder, param);
+        FastSqlUtil.whereSql(sqlBuilder, param.getConditionPackages(), param.getParamMap(), Boolean.TRUE, Boolean.FALSE);
         param.setSql(sqlBuilder.toString());
     }
 }

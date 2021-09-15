@@ -90,6 +90,16 @@ public class FastDaoAttributes {
     public static String defaultSqlWhereDeleteValueFalse;
 
     /**
+     * sql模板前缀
+     */
+    public static String sqlTemplatePrefix = "";
+    /**
+     * sql模板后缀
+     */
+    public static String sqlTemplateSuffix = "";
+
+
+    /**
      * 是否开启缓存功能
      */
     public static Boolean isOpenCache = Boolean.TRUE;
@@ -138,6 +148,7 @@ public class FastDaoAttributes {
      */
     private static DataSource dataSource;
     private static final FastThreadLocal<DataSource> dataSourceFastThreadLocal = new FastThreadLocal<>();
+
     public static DataSource getDataSource() {
         DataSource dataSource = dataSourceFastThreadLocal.get();
         if (dataSource != null) {
@@ -163,10 +174,10 @@ public class FastDaoAttributes {
         switchDataSource();
     }
 
-    private static void switchDataSource(){
+    private static void switchDataSource() {
         if (ObjectUtil.equal(FastDaoAttributes.daoActuator, JdbcImpl.class)) {
             JdbcConnection.dataSource();
-        }else if (ObjectUtil.equal(FastDaoAttributes.daoActuator, MyBatisImpl.class)) {
+        } else if (ObjectUtil.equal(FastDaoAttributes.daoActuator, MyBatisImpl.class)) {
             MyBatisConnection.dataSource();
         }
         FastTransaction.switchTransaction();

@@ -1,118 +1,78 @@
 package com.fast.utils;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
 
 import java.io.Serializable;
 
 /**
- * @author 张亚伟 https://github.com/kaixinzyw
+ * 通用返回对象
+ * @author zyw
  */
-public class FastResult<T> implements Serializable {
+public class FastResult<T>  implements Serializable{
+	
 
-    private static final long serialVersionUID = 6330060397747273715L;
-
-    private int code = HttpStatus.HTTP_OK;
-    private String msg;
+	private int code;
+    
+    private String message;
+    
     private T data;
 
-    public static FastResult error(String msg) {
-        FastResult result = new FastResult();
-        result.setCode(HttpStatus.HTTP_INTERNAL_ERROR);
-        result.setMsg(msg);
-        return result;
+    protected FastResult() {
     }
 
-    public static <T>FastResult<T> error(T data) {
-        FastResult<T> result = new FastResult<T>();
-        result.setCode(HttpStatus.HTTP_INTERNAL_ERROR);
-        result.setData(data);
-        return result;
-    }
-
-    public static <T>FastResult<T> error(T data, String msg) {
-        FastResult<T> result = new FastResult<T>();
-        result.setCode(HttpStatus.HTTP_INTERNAL_ERROR);
-        result.setData(data);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static FastResult success(String msg) {
-        FastResult result = new FastResult();
-        result.setCode(HttpStatus.HTTP_OK);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static <T>FastResult<T> success(T data) {
-        FastResult<T> result = new FastResult<T>();
-        result.setCode(HttpStatus.HTTP_OK);
-        result.setData(data);
-        return result;
-    }
-
-    public static <T>FastResult<T> success(T data, String msg) {
-        FastResult<T> result = new FastResult<T>();
-        result.setCode(HttpStatus.HTTP_OK);
-        result.setData(data);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static FastResult customize(int code) {
-        FastResult result = new FastResult();
-        result.setCode(code);
-        return result;
-    }
-
-    public static FastResult customize(int code, String msg) {
-        FastResult result = new FastResult();
-        result.setCode(code);
-        result.setMsg(msg);
-        return result;
-    }
-
-
-
-    public static <T>FastResult<T> customize(int code, T data) {
-        FastResult<T> result = new FastResult<T>();
-        result.setCode(code);
-        result.setData(data);
-        return result;
-    }
-
-    public static <T>FastResult<T> customize(int code, T data, String msg) {
-        FastResult<T> result = new FastResult<T>();
-        result.setCode(code);
-        result.setData(data);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public FastResult() {
-    }
-
-    public FastResult(int code) {
+    protected FastResult(int code, String message, T data) {
         this.code = code;
-    }
-
-    public FastResult(int code, T data) {
-        this.code = code;
+        this.message = message;
         this.data = data;
     }
-
-    public FastResult(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
+    
+    public Boolean isSuccess() {
+    	return  HttpStatus.HTTP_OK==code ? Boolean.TRUE : Boolean.FALSE;
     }
 
-    public FastResult(int code, T data, String msg) {
-        this.code = code;
-        this.data = data;
-        this.msg = msg;
+    public static <T> FastResult<T> success(T data) {
+        return new FastResult<T>(HttpStatus.HTTP_OK, StrUtil.EMPTY, data);
+    }
+    
+
+    public static <T> FastResult<T> successMsg(String msg) {
+        return new FastResult<T>(HttpStatus.HTTP_OK, msg, null);
     }
 
 
+    public static <T> FastResult<T> success(T data, String message) {
+        return new FastResult<T>(HttpStatus.HTTP_OK, message, data);
+    }
+
+    public static <T> FastResult<T> failure(T data) {
+        return new FastResult<T>(HttpStatus.HTTP_INTERNAL_ERROR, StrUtil.EMPTY, data);
+    }
+
+
+    public static <T> FastResult<T> failureMsg(String msg) {
+        return new FastResult<T>(HttpStatus.HTTP_INTERNAL_ERROR, msg, null);
+    }
+
+
+    public static <T> FastResult<T> failure(T data, String message) {
+        return new FastResult<T>(HttpStatus.HTTP_INTERNAL_ERROR, message, data);
+    }
+
+
+    public static <T> FastResult<T> customize(int code, T data) {
+        return new FastResult<T>(code, StrUtil.EMPTY, data);
+    }
+
+
+    public static <T> FastResult<T> customizeMsg(int code, String msg) {
+        return new FastResult<T>(code, msg, null);
+    }
+
+
+    public static <T> FastResult<T> customize(int code, T data, String message) {
+        return new FastResult<T>(code, message, data);
+    }
 
     public int getCode() {
         return code;
@@ -122,12 +82,12 @@ public class FastResult<T> implements Serializable {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public T getData() {

@@ -1,5 +1,5 @@
 
->主页: [http://www.fast-dao.com/](http://www.fast-dao.com/) 
+>Gitee: [https://gitee.com/fast-product/fast-dao](https://gitee.com/fast-product/fast-dao) 
 >
 >GitHub: [https://github.com/kaixinzyw/fast-dao](https://github.com/kaixinzyw/fast-dao/) 
 >
@@ -37,7 +37,7 @@ PageInfo<User> page = UserFastDao.create().dao().findPage(1, 10); //查,分页�
 <dependency>
     <groupId>com.fast-dao</groupId>
     <artifactId>fast-dao</artifactId>
-    <version>LATEST</version>
+    <version>9.5</version>
 </dependency>
 ```
 

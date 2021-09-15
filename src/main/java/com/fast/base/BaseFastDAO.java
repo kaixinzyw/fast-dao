@@ -1,8 +1,9 @@
 package com.fast.base;
 
-import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.fast.condition.FastExample;
 import com.fast.fast.FastDao;
+import com.fast.fast.JoinFastDao;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -13,49 +14,63 @@ import java.util.Map;
  * @param <T> 需要操作的对象泛型
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class BaseFastDAO<T> implements Serializable {
+public class BaseFastDAO<P,T> implements Serializable {
 
     private static final long serialVersionUID = 5126897802718795886L;
+    private JoinFastDao<P> joinFastDao;
 
     /**
      * 条件封装器
      */
-    protected FastExample<T> fastExample;
+    protected FastExample<P,T> fastExample;
 
     protected BaseFastDAO() {
-        fastExample = new FastExample<>((Class<T>) ClassUtil.getTypeArgument(this.getClass()));
     }
 
-    public FastDao<T> dao() {
+    public FastDao<P> dao() {
         return fastExample.dao();
     }
+
+
+    public <P2,T2>JoinFastDao<P> leftJoin(BaseFastDAO<P2,T2> fastDAO,FastExample.FieldCriteria<P2,T2> leftCondition, FastExample.FieldCriteria<P,T> rightCondition){
+        getJoinFastDao().leftJoinNotQuery(fastDAO).on(leftCondition,rightCondition);
+        if (fastExample.conditionPackages().getJoinFastDao() == null) {
+            fastExample.conditionPackages().setJoinFastDao(getJoinFastDao());
+        }
+        return getJoinFastDao();
+    }
+    public <P2,T2>JoinFastDao<P> rightJoin(BaseFastDAO<P2,T2> fastDAO,FastExample.FieldCriteria<P2,T2> leftCondition, FastExample.FieldCriteria<P,T> rightCondition){
+        getJoinFastDao().rightJoinNotQuery(fastDAO).on(leftCondition,rightCondition);
+        if (fastExample.conditionPackages().getJoinFastDao() == null) {
+            fastExample.conditionPackages().setJoinFastDao(getJoinFastDao());
+        }
+        return getJoinFastDao();
+    }
+    private JoinFastDao<P> getJoinFastDao(){
+        return joinFastDao==null?joinFastDao = (JoinFastDao<P>) JoinFastDao.create(ObjectUtil.getTypeArgument(this),this):joinFastDao;
+    }
+
 
     /**
      * 对象有参属性匹配
      *
      * @param o 传入对象中参数不为空的属性会作为AND条件
+     * @return {@link T}
      */
-    public void equalObject(Object o) {
-        fastExample.equalObject(o);
+    public T equalObject(Object o) {
+        return fastExample.global().equalObject(o);
     }
 
-    /**
-     * 自定义查询列
-     *
-     * @param queryColumn SELECT查询时自定义列
-     */
-    public void customQueryColumn(String queryColumn) {
-        fastExample.customQueryColumn(queryColumn);
-    }
 
     /**
      * 自定义sql条件,会将传入的参数进行AND条件进行拼接
      *
      * @param sql    自定义sql语句,如果有占位符,使用#{参数名}进行描述 例:userName=${userName}
      * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     * @return {@link T}
      */
-    public void andSql(String sql, Map<String, Object> params) {
-        fastExample.andSql(sql, params);
+    public T andSql(String sql, Map<String, Object> params) {
+        return fastExample.global().andSql(sql, params);
     }
 
     /**
@@ -63,9 +78,10 @@ public class BaseFastDAO<T> implements Serializable {
      *
      * @param sql    自定义sql语句,如果有占位符,使用#{参数名}进行描述 例:userName=${userName}
      * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     * @return {@link T}
      */
-    public void sql(String sql, Map<String, Object> params) {
-        fastExample.sql(sql, params);
+    public T sql(String sql, Map<String, Object> params) {
+        return fastExample.global().sql(sql, params);
     }
 
     /**
@@ -74,7 +90,7 @@ public class BaseFastDAO<T> implements Serializable {
      * @param fieldName 字段名称
      * @return 操作对象
      */
-    public FastExample.Criteria<T> customFieldOperation(String fieldName) {
+    public FastExample.FieldCriteria<P, T> customFieldOperation(String fieldName) {
         return fastExample.field(fieldName);
     }
 
@@ -83,42 +99,59 @@ public class BaseFastDAO<T> implements Serializable {
      *
      * @param sql    自定义sql语句,如果有占位符,使用#{参数名}进行描述 例:userName=${userName}
      * @param params 占位符参数,如果使用占位符进行条件参数封装,必须传入条件参数 如上,需要使用Map put("userName","XXX")
+     * @return {@link T}
      */
-    public void orSQL(String sql, Map<String, Object> params) {
-        fastExample.orSql(sql, params);
+    public T orSQL(String sql, Map<String, Object> params) {
+        return fastExample.global().orSql(sql, params);
     }
 
 
     /**
      * 左括号
+     *
+     * @return {@link T}
      */
-    public void OrLeftBracket() {
-        fastExample.OrLeftBracket();
+    public T orLeftBracket() {
+        return fastExample.global().orLeftBracket();
     }
 
     /**
      * 左括号
+     *
+     * @return {@link T}
      */
-    public void AndLeftBracket() {
-        fastExample.AndLeftBracket();
+    public T andLeftBracket() {
+        return fastExample.global().andLeftBracket();
     }
 
     /**
      * 右括号
+     *
+     * @return {@link T}
      */
-    public void rightBracket() {
-        fastExample.rightBracket();
+    public T rightBracket() {
+        return fastExample.global().rightBracket();
     }
 
     /**
      * 关闭逻辑删除条件保护,如果开启了逻辑删除功能,需要进行删除数据的操作,需要使用此方法进行关闭逻辑条件过滤
+     *
+     * @return {@link T}
      */
-    public void closeLogicDeleteProtect() {
-        fastExample.closeLogicDeleteProtect();
+    public T closeLogicDeleteProtect() {
+        return fastExample.global().closeLogicDeleteProtect();
     }
 
-    public void openRelatedQuery() {
-        fastExample.openRelatedQuery();
+    /**
+     * 打开相关查询
+     *
+     * @return {@link T}
+     */
+    public T openRelatedQuery() {
+        return fastExample.global().openRelatedQuery();
     }
 
+    public FastExample<P, T> fastExample(){
+        return fastExample;
+    }
 }

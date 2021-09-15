@@ -1,14 +1,13 @@
 package com.fast.mapper;
 
 import com.fast.cache.DataCacheType;
-import com.fast.condition.many.ManyToManyInfo;
-import com.fast.condition.many.ManyToOneInfo;
-import com.fast.condition.many.OneToManyInfo;
 import com.fast.config.PrimaryKeyType;
+import com.fast.dao.many.FastJoinQueryInfo;
+import com.fast.dao.many.ManyToManyInfo;
+import com.fast.dao.many.ManyToOneInfo;
+import com.fast.dao.many.OneToManyInfo;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class TableMapper<T> {
+public class TableMapper {
 
     /**
      * 类名
@@ -27,6 +26,10 @@ public class TableMapper<T> {
      * 表名称
      */
     private String tableName;
+    /**
+     * 表别名
+     */
+    private String tableAlias;
 
     /**
      * 字段集合
@@ -36,24 +39,25 @@ public class TableMapper<T> {
     /**
      * 字段类型集合
      */
-    private Map<String, Class> fieldTypes;
+    private LinkedHashMap<String, Class> fieldTypes;
 
     /**
      * <字段名,表列名>
      */
-    private HashMap<String, String> fieldTableNames;
+    private LinkedHashMap<String, String> fieldTableNames;
     /**
      * <表列名,字段名>
      */
-    private HashMap<String, String> tableFieldNames;
+    private LinkedHashMap<String, String> tableFieldNames;
     /**
      * select查询时候现实的列名
      */
-    private HashMap<String, String> showTableNames;
+    private LinkedHashMap<String, String> showTableNames;
     /**
      * 代替select *
      */
     private String showAllTableNames;
+    private String showPrefixAllTableNames;
 
     /**
      * 缓存类型
@@ -71,7 +75,7 @@ public class TableMapper<T> {
     /**
      * 操作对象的Class信息
      */
-    private Class<T> objClass;
+    private Class objClass;
 
     /**
      * 操作主键字段名
@@ -86,15 +90,16 @@ public class TableMapper<T> {
      */
     private Class primaryKeyClass;
 
+
     /**
      * 多对多关联
      */
-    private List<ManyToManyInfo>  manyToManyInfoList;
+    private List<ManyToManyInfo> manyToManyInfoList;
 
     /**
      * 一对多关联
      */
-    private List<OneToManyInfo>  oneToManyInfoList;
+    private List<OneToManyInfo> oneToManyInfoList;
 
     /**
      * 一对多关联
@@ -110,6 +115,46 @@ public class TableMapper<T> {
     private Boolean autoSetCreateTime = Boolean.FALSE;
     private Boolean autoSetUpdateTime = Boolean.FALSE;
 
+    /**
+     * 多对象信息列表
+     */
+    private List<FastJoinQueryInfo> fastJoinQueryInfoList;
+    private Map<Class, List<FastJoinQueryInfo>> fastJoinQueryInfoMap = new HashMap<>();
+
+    public Map<Class, List<FastJoinQueryInfo>> getFastJoinQueryInfoMap() {
+        return fastJoinQueryInfoMap;
+    }
+
+    private Map<String, Map<String, String>> tableAliasFieldMap = new HashMap<>();
+
+    public void addFastJoinQueryInfoMap(Class joinClass, FastJoinQueryInfo fastJoinQueryInfo) {
+        List<FastJoinQueryInfo> fastJoinQueryInfos = fastJoinQueryInfoMap.get(joinClass);
+        if (fastJoinQueryInfoMap.get(joinClass) == null) {
+            fastJoinQueryInfoMap.put(joinClass, fastJoinQueryInfos = new ArrayList<>());
+        }
+        fastJoinQueryInfos.add(fastJoinQueryInfo);
+    }
+
+    public List<FastJoinQueryInfo> getJoinQueryInfoList() {
+        return fastJoinQueryInfoList;
+    }
+
+    public void setJoinQueryInfoList(List<FastJoinQueryInfo> fastJoinQueryInfoList) {
+        this.fastJoinQueryInfoList = fastJoinQueryInfoList;
+    }
+
+    public Map<String, Map<String, String>> getTableAliasFieldMap() {
+        return tableAliasFieldMap;
+    }
+
+    public void addTableAliasFieldMap(String tableAliasName, String columnName, String fileName) {
+        Map<String, String> tableAliasMap = tableAliasFieldMap.get(tableAliasName);
+        if (tableAliasMap == null) {
+            tableAliasMap = new HashMap<>();
+            tableAliasFieldMap.put(tableAliasName, tableAliasMap);
+        }
+        tableAliasMap.put(columnName, fileName);
+    }
 
     public String getClassName() {
         return className;
@@ -135,11 +180,11 @@ public class TableMapper<T> {
         this.fieldNames = fieldNames;
     }
 
-    public Map<String, String> getFieldTableNames() {
+    public LinkedHashMap<String, String> getFieldTableNames() {
         return fieldTableNames;
     }
 
-    public void setFieldTableNames(HashMap<String, String> fieldTableNames) {
+    public void setFieldTableNames(LinkedHashMap<String, String> fieldTableNames) {
         this.fieldTableNames = fieldTableNames;
     }
 
@@ -168,19 +213,19 @@ public class TableMapper<T> {
         this.cacheType = cacheType;
     }
 
-    public Map<String, Class> getFieldTypes() {
+    public LinkedHashMap<String, Class> getFieldTypes() {
         return fieldTypes;
     }
 
-    public void setFieldTypes(Map<String, Class> fieldTypes) {
+    public void setFieldTypes(LinkedHashMap<String, Class> fieldTypes) {
         this.fieldTypes = fieldTypes;
     }
 
-    public Class<T> getObjClass() {
+    public Class getObjClass() {
         return objClass;
     }
 
-    public void setObjClass(Class<T> objClass) {
+    public void setObjClass(Class objClass) {
         this.objClass = objClass;
     }
 
@@ -208,19 +253,19 @@ public class TableMapper<T> {
         this.showAllTableNames = showAllTableNames;
     }
 
-    public HashMap<String, String> getShowTableNames() {
+    public LinkedHashMap<String, String> getShowTableNames() {
         return showTableNames;
     }
 
-    public void setShowTableNames(HashMap<String, String> showTableNames) {
+    public void setShowTableNames(LinkedHashMap<String, String> showTableNames) {
         this.showTableNames = showTableNames;
     }
 
-    public Map<String, String> getTableFieldNames() {
+    public LinkedHashMap<String, String> getTableFieldNames() {
         return tableFieldNames;
     }
 
-    public void setTableFieldNames(HashMap<String, String> tableFieldNames) {
+    public void setTableFieldNames(LinkedHashMap<String, String> tableFieldNames) {
         this.tableFieldNames = tableFieldNames;
     }
 
@@ -286,5 +331,21 @@ public class TableMapper<T> {
 
     public void setManyToOneInfoList(List<ManyToOneInfo> manyToOneInfoList) {
         this.manyToOneInfoList = manyToOneInfoList;
+    }
+
+    public String getShowPrefixAllTableNames() {
+        return showPrefixAllTableNames;
+    }
+
+    public void setShowPrefixAllTableNames(String showPrefixAllTableNames) {
+        this.showPrefixAllTableNames = showPrefixAllTableNames;
+    }
+
+    public String getTableAlias() {
+        return tableAlias;
+    }
+
+    public void setTableAlias(String tableAlias) {
+        this.tableAlias = tableAlias;
     }
 }

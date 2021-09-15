@@ -12,13 +12,13 @@ import java.util.Map;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class CustomizeUpdate<Pojo> implements Serializable {
+public class CustomizeUpdate<P,T> implements Serializable {
 
     private static final long serialVersionUID = -848871486184328929L;
     /**
      * 条件封装
      */
-    private FastExample<Pojo> fastExample;
+    private FastExample<P,T> fastExample;
     /**
      * 字段名
      */
@@ -28,10 +28,10 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      */
     private String tableColumnName;
 
-    public CustomizeUpdate(Class<Pojo> pojoClass, FastExample fastExample, String fieldName) {
+    public CustomizeUpdate(Class<P> pojoClass, FastExample<P,T> fastExample, String fieldName) {
         this.fastExample = fastExample;
         this.fieldName = fieldName;
-        TableMapper<Pojo> tableMapper = TableMapperUtil.getTableMappers(pojoClass);
+        TableMapper tableMapper = TableMapperUtil.getTableMappers(pojoClass);
         this.tableColumnName = tableMapper.getShowTableNames().get(fieldName);
     }
 
@@ -45,7 +45,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param data 条件
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisAdd(Object val, Map<String, Object> data) {
+    public FastExample.FieldCriteria<P,T> thisAdd(Object val, Map<String, Object> data) {
         fastExample.conditionPackages().addCustomUpdateColumns(fieldName, new CustomizeUpdateData(fieldName, tableColumnName + " + " + val, data));
         return fastExample.field(fieldName);
     }
@@ -56,7 +56,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param value  参数
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisAdd(Number value) {
+    public FastExample.FieldCriteria<P,T> thisAdd(Number value) {
         return thisAdd(value,null);
     }
 
@@ -70,7 +70,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param data 条件
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisSbu(Object val, Map<String, Object> data) {
+    public FastExample.FieldCriteria<P,T> thisSbu(Object val, Map<String, Object> data) {
         fastExample.conditionPackages().addCustomUpdateColumns(fieldName, new CustomizeUpdateData(fieldName, tableColumnName + " - " + val, data));
         return fastExample.field(fieldName);
     }
@@ -80,7 +80,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param value  参数
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisSbu(Number value) {
+    public FastExample.FieldCriteria<P,T> thisSbu(Number value) {
         return thisSbu(value,null);
     }
 
@@ -94,7 +94,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param data 条件
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisMul(Object val, Map<String, Object> data) {
+    public FastExample.FieldCriteria<P,T> thisMul(Object val, Map<String, Object> data) {
         fastExample.conditionPackages().addCustomUpdateColumns(fieldName, new CustomizeUpdateData(fieldName, tableColumnName + " * " + val, data));
         return fastExample.field(fieldName);
     }
@@ -104,7 +104,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param value  参数
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisMul(Number value) {
+    public FastExample.FieldCriteria<P,T> thisMul(Number value) {
         return thisMul(value,null);
     }
     /**
@@ -117,7 +117,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param data 条件
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisDiv(Object val, Map<String, Object> data) {
+    public FastExample.FieldCriteria<P,T> thisDiv(Object val, Map<String, Object> data) {
         fastExample.conditionPackages().addCustomUpdateColumns(fieldName, new CustomizeUpdateData(fieldName, tableColumnName + " / " + val, data));
         return fastExample.field(fieldName);
     }
@@ -126,7 +126,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param value  参数
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisDiv(Number value) {
+    public FastExample.FieldCriteria<P,T> thisDiv(Number value) {
         return thisDiv(value,null);
     }
     /**
@@ -139,7 +139,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param data 条件
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisModulo(Object val, Map<String, Object> data) {
+    public FastExample.FieldCriteria<P,T> thisModulo(Object val, Map<String, Object> data) {
         fastExample.conditionPackages().addCustomUpdateColumns(fieldName, new CustomizeUpdateData(fieldName, tableColumnName + " % " + val, data));
         return fastExample.field(fieldName);
     }
@@ -148,7 +148,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param value  参数
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> thisModulo(Number value) {
+    public FastExample.FieldCriteria<P,T> thisModulo(Number value) {
         return thisModulo(value,null);
     }
 
@@ -163,7 +163,7 @@ public class CustomizeUpdate<Pojo> implements Serializable {
      * @param data         条件
      * @return 条件封装
      */
-    public FastExample.Criteria<Pojo> customize(String customizeVal, Map<String, Object> data) {
+    public FastExample.FieldCriteria<P,T> customize(String customizeVal, Map<String, Object> data) {
         fastExample.conditionPackages().addCustomUpdateColumns(fieldName, new CustomizeUpdateData(fieldName, customizeVal, data));
         return fastExample.field(fieldName);
     }

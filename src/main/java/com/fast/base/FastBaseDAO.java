@@ -6,7 +6,8 @@ package com.fast.base;
  * @author 张亚伟 https://github.com/kaixinzyw/fast-db-template
  */
 
-import com.fast.condition.FastExample;
+import com.fast.condition.ConditionPackages;
+import com.fast.fast.FastDao;
 import com.fast.utils.page.PageInfo;
 
 import java.lang.reflect.ParameterizedType;
@@ -29,11 +30,11 @@ public class FastBaseDAO<T> {
      * @return 是否插入成功
      */
     public T insert(T pojo) {
-        return new FastExample<>(fastDaoPojoClass).dao().insert(pojo);
+        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).insert(pojo);
     }
 
     public List<T> insertList(List<T> pojos) {
-        return new FastExample<>(fastDaoPojoClass).dao().insertList(pojos);
+        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).insertList(pojos);
     }
 
     /**
@@ -44,7 +45,7 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据结果
      */
     public T findByPrimaryKey(Object primaryKeyValue) {
-        return new FastExample<>(fastDaoPojoClass).dao().findByPrimaryKey(primaryKeyValue);
+        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).findByPrimaryKey(primaryKeyValue);
     }
 
     /**
@@ -55,9 +56,9 @@ public class FastBaseDAO<T> {
      * @return 数据结果
      */
     public T findOne(Object obj) {
-        FastExample<T> example = new FastExample<>(fastDaoPojoClass);
-        example.equalObject(obj);
-        return example.dao().findOne();
+        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        conditionPackages.setEqualObject(obj);
+        return FastDao.init(conditionPackages).findOne();
     }
 
     /**
@@ -68,9 +69,9 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据结果
      */
     public List<T> findAll(Object obj) {
-        FastExample<T> example = new FastExample<>(fastDaoPojoClass);
-        example.equalObject(obj);
-        return example.dao().findAll();
+        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        conditionPackages.setEqualObject(obj);
+        return FastDao.init(conditionPackages).findAll();
     }
 
     /**
@@ -81,9 +82,9 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据条数
      */
     public Integer findCount(Object obj) {
-        FastExample<T> example = new FastExample<>(fastDaoPojoClass);
-        example.equalObject(obj);
-        return example.dao().findCount();
+        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        conditionPackages.setEqualObject(obj);
+        return FastDao.init(conditionPackages).findCount();
     }
 
     /**
@@ -96,9 +97,9 @@ public class FastBaseDAO<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(Object obj, int pageNum, int pageSize) {
-        FastExample<T> example = new FastExample<>(fastDaoPojoClass);
-        example.equalObject(obj);
-        return example.dao().findPage(pageNum, pageSize);
+        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        conditionPackages.setEqualObject(obj);
+        return FastDao.init(conditionPackages).findPage(pageNum, pageSize);
     }
 
     /**
@@ -109,7 +110,7 @@ public class FastBaseDAO<T> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKey(T pojo) {
-        return new FastExample<>(fastDaoPojoClass).dao().updateByPrimaryKey(pojo);
+        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).updateByPrimaryKey(pojo);
     }
 
     /**
@@ -120,7 +121,7 @@ public class FastBaseDAO<T> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKeyOverwrite(T pojo) {
-        return new FastExample<>(fastDaoPojoClass).dao().updateByPrimaryKeyOverwrite(pojo);
+        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).updateByPrimaryKeyOverwrite(pojo);
     }
 
     /**
@@ -131,7 +132,7 @@ public class FastBaseDAO<T> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKey(Object primaryKey) {
-        return new FastExample<>(fastDaoPojoClass).dao().deleteByPrimaryKey(primaryKey);
+        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).deleteByPrimaryKey(primaryKey);
     }
 
 }

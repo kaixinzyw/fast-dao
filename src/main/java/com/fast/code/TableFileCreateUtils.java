@@ -82,13 +82,15 @@ public class TableFileCreateUtils {
         for (TableInfo tableInfo : tableInfos) {
             root.put("table", tableInfo);
             for (String module : modules) {
-                if (FileCreateConfig.CodeCreateModule.Pojo.codeModule.equals(module)) {
+                if (FileCreateConfig.CodeCreateModule.POJO.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("Pojo.ftl");
                     createFile(conf, tableInfo.getPojoFilePath(), root, temp);
-                } else if (FileCreateConfig.CodeCreateModule.FastPojo.codeModule.equals(module)) {
-                    Template temp = cfg.getTemplate("FastPojo.ftl");
-                    createFile(conf, tableInfo.getFastPojoFilePath(), root, temp);
-                }else if (FileCreateConfig.CodeCreateModule.PojoFastDao.codeModule.equals(module)) {
+                }
+//                else if (FileCreateConfig.CodeCreateModule.FastPojo.codeModule.equals(module)) {
+//                    Template temp = cfg.getTemplate("FastPojo.ftl");
+//                    createFile(conf, tableInfo.getFastPojoFilePath(), root, temp);
+//                }
+                else if (FileCreateConfig.CodeCreateModule.FastDAO.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("PojoFastDao.ftl");
                     createFile(conf, tableInfo.getPojoFastDaoFilePath(), root, temp);
                 } else if (FileCreateConfig.CodeCreateModule.Service.codeModule.equals(module)) {
@@ -97,10 +99,10 @@ public class TableFileCreateUtils {
                 } else if (FileCreateConfig.CodeCreateModule.ServiceImpl.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("ServiceImpl.ftl");
                     createFile(conf, tableInfo.getServiceFilePath(), root, temp);
-                }  else if (FileCreateConfig.CodeCreateModule.Dto.codeModule.equals(module)) {
+                }  else if (FileCreateConfig.CodeCreateModule.DTO.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("Dto.ftl");
                     createFile(conf, tableInfo.getDtoFilePath(), root, temp);
-                }  else if (FileCreateConfig.CodeCreateModule.Dao.codeModule.equals(module)) {
+                }  else if (FileCreateConfig.CodeCreateModule.DAO.codeModule.equals(module)) {
                     Template temp = cfg.getTemplate("Dao.ftl");
                     createFile(conf, tableInfo.getDaoFilePath(), root, temp);
                 }

@@ -1,6 +1,7 @@
 package com.fast.fast;
 
 import cn.hutool.core.util.StrUtil;
+import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastExample;
 import com.fast.mapper.TableMapper;
 import io.netty.util.concurrent.FastThreadLocal;
@@ -19,11 +20,11 @@ public class FastDaoParam<T> {
     /**
      * 操作对象的属性映射
      */
-    private TableMapper<T> tableMapper;
+    private TableMapper tableMapper;
     /**
      * SQL条件封装
      */
-    private FastExample<T> fastExample;
+    private ConditionPackages<T> conditionPackages;
     /**
      * SQL执行时间
      */
@@ -72,7 +73,7 @@ public class FastDaoParam<T> {
      */
     private static final FastThreadLocal<FastDaoParam> fastDaoParamThreadLocal = new FastThreadLocal<>();
 
-    public static <T> FastDaoParam<T> init(TableMapper<T> mapper, FastExample<T> example) {
+    public static <T> FastDaoParam<T> init(ConditionPackages<T> conditionPackages) {
         FastDaoParam<T> daoParam = fastDaoParamThreadLocal.get();
         if (daoParam == null) {
             daoParam = new FastDaoParam<>();
@@ -84,16 +85,16 @@ public class FastDaoParam<T> {
         daoParam.returnVal = null;
         daoParam.logicDelete = Boolean.FALSE;
         daoParam.updateSelective = Boolean.FALSE;
-
-        daoParam.tableMapper = mapper;
-        daoParam.fastExample = example;
-        if (StrUtil.isNotEmpty(daoParam.fastExample.conditionPackages().getCustomSql())) {
-            daoParam.sql = daoParam.fastExample.conditionPackages().getCustomSql();
-            daoParam.paramMap = daoParam.fastExample.conditionPackages().getCustomSqlParams();
-            return daoParam;
+        daoParam.tableMapper = conditionPackages.getTableMapper();
+        daoParam.conditionPackages = conditionPackages;
+        if (StrUtil.isNotEmpty(daoParam.conditionPackages.getCustomSql())) {
+            daoParam.sql = daoParam.conditionPackages.getCustomSql();
+            daoParam.paramMap = daoParam.conditionPackages.getCustomSqlParams();
+        } else {
+            daoParam.sql = null;
+            daoParam.paramMap = new HashMap<>();
         }
-        daoParam.sql = null;
-        daoParam.paramMap = new HashMap<>();
+
 
         return daoParam;
     }
@@ -102,7 +103,7 @@ public class FastDaoParam<T> {
         return fastDaoParamThreadLocal.get();
     }
 
-    public TableMapper<T> getTableMapper() {
+    public TableMapper getTableMapper() {
         return tableMapper;
     }
 
@@ -148,16 +149,16 @@ public class FastDaoParam<T> {
     }
 
 
-    public void setTableMapper(TableMapper<T> tableMapper) {
+    public void setTableMapper(TableMapper tableMapper) {
         this.tableMapper = tableMapper;
     }
 
-    public FastExample<T> getFastExample() {
-        return fastExample;
+    public ConditionPackages<T> getConditionPackages() {
+        return conditionPackages;
     }
 
-    public void setFastExample(FastExample<T> fastExample) {
-        this.fastExample = fastExample;
+    public void setConditionPackages(ConditionPackages<T> conditionPackages) {
+        this.conditionPackages = conditionPackages;
     }
 
     public Object getReturnVal() {

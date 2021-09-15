@@ -17,7 +17,7 @@ public class FastSelectProvider {
             sqlBuilder = StrUtil.strBuilder(param.getSql().replace(";", " "));
         } else {
             sqlBuilder = FastSqlUtil.selectSql(param);
-            FastSqlUtil.whereSql(sqlBuilder, param);
+            FastSqlUtil.whereSql(sqlBuilder, param.getConditionPackages(), param.getParamMap(), Boolean.TRUE, Boolean.FALSE);
             FastSqlUtil.orderBy(sqlBuilder, param);
         }
         FastSqlUtil.limit(sqlBuilder, param);
@@ -30,7 +30,7 @@ public class FastSelectProvider {
             return;
         }
         StrBuilder sqlBuilder = FastSqlUtil.selectSql(param);
-        FastSqlUtil.whereSql(sqlBuilder, param);
+        FastSqlUtil.whereSql(sqlBuilder, param.getConditionPackages(), param.getParamMap(), Boolean.TRUE, Boolean.FALSE);
         param.setSql(FastSqlUtil.countQueryInfoReplace(sqlBuilder.toString()));
     }
 

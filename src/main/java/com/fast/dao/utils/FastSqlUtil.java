@@ -10,6 +10,7 @@ import com.fast.condition.*;
 import com.fast.config.FastDaoAttributes;
 import com.fast.fast.FastDaoParam;
 import com.fast.mapper.TableMapper;
+import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,7 @@ public class FastSqlUtil {
             AVG + StrUtil.SPACE, AVG + LEFT_BRACKETS,
             MIN + StrUtil.SPACE, MIN + LEFT_BRACKETS,
             MAX + StrUtil.SPACE, MAX + LEFT_BRACKETS};
+    private static final FastThreadLocal<ParamIndex> paramIndexThreadLocal = new FastThreadLocal<>();
 
     /**
      * 对封装SQL拼接时的参数信息
@@ -118,22 +120,22 @@ public class FastSqlUtil {
         }
     }
 
+    private static String getSqlTableName(boolean isAddTableName, ConditionPackages select) {
+        return isAddTableName ? StrUtil.isNotBlank(select.getTableAlias()) ? select.getTableAlias() + StrUtil.DOT : select.getTableMapper().getTableName() + StrUtil.DOT
+                : StrUtil.EMPTY;
+    }
 
-    /**
-     * 对SQL where条件进行封装
-     *
-     * @param sqlBuilder sql信息
-     * @param param      Dao执行参数
-     */
-    public static void whereSql(StrBuilder sqlBuilder, FastDaoParam param) {
-        ConditionPackages select = param.getFastExample().conditionPackages();
-        Map paramMap = param.getParamMap();
-        TableMapper tableMapper = param.getTableMapper();
+
+    public static void whereSql(StrBuilder sqlBuilder, ConditionPackages select, Map paramMap, boolean isAddWhere, boolean isAddTableName) {
+        TableMapper tableMapper = select.getTableMapper();
         boolean isFirst = Boolean.TRUE;
         if (select.getLogicDeleteProtect()) {
             if (FastDaoAttributes.isOpenLogicDelete) {
                 if (tableMapper.getLogicDelete()) {
-                    sqlBuilder.append(WHERE);
+                    if (isAddWhere) {
+                        sqlBuilder.append(WHERE);
+                    }
+                    sqlBuilder.append(getSqlTableName(isAddTableName, select));
                     sqlBuilder.append(!FastDaoAttributes.defaultDeleteValue ?
                             FastDaoAttributes.defaultSqlWhereDeleteValueTrue : FastDaoAttributes.defaultSqlWhereDeleteValueFalse);
                     sqlBuilder.append(CRLF);
@@ -142,12 +144,15 @@ public class FastSqlUtil {
             }
         }
         boolean isWHERE = false;
-        if (isFirst && select.getConditions().size() > 0) {
+        if (isAddWhere && isFirst && select.getConditions().size() > 0) {
             sqlBuilder.append(WHERE);
             isWHERE = true;
         }
-
-        ParamIndex paramIndex = new ParamIndex();
+        ParamIndex paramIndex = paramIndexThreadLocal.get();
+        if (paramIndex == null) {
+            paramIndex = new ParamIndex();
+            paramIndexThreadLocal.set(paramIndex);
+        }
         paramIndex.setParamType(WHERE_PARAM_TYPE);
         List<FastCondition> conditions = select.getConditions();
         if (CollUtil.isNotEmpty(conditions)) {
@@ -156,7 +161,7 @@ public class FastSqlUtil {
             for (int i = 0; i < conditions.size(); i++) {
                 FastCondition condition = conditions.get(i);
                 if (ObjectUtil.equal(condition.getExpression(), FastCondition.Expression.LeftBracket)) {
-                    leftBracket ++;
+                    leftBracket++;
                     leftBracketNum = 2;
                     sqlBuilder.append(condition.getWay().expression);
                 } else if (ObjectUtil.equal(condition.getExpression(), FastCondition.Expression.RightBracket)) {
@@ -169,8 +174,8 @@ public class FastSqlUtil {
                 } else {
                     isFirst = Boolean.FALSE;
                 }
-                whereCondition(condition, sqlBuilder, paramMap, tableMapper, paramIndex);
-                if (leftBracket==0) {
+                whereCondition(condition, sqlBuilder, paramMap, select, paramIndex, isAddTableName);
+                if (leftBracket == 0) {
                     sqlBuilder.append(CRLF);
                 }
                 if (leftBracketNum != 0) {
@@ -187,41 +192,43 @@ public class FastSqlUtil {
     /**
      * where条件封装器
      *
-     * @param condition   条件信息
-     * @param sqlBuilder  SQL信息
-     * @param paramMap    参数信息
-     * @param tableMapper 对象属性映射
-     * @param paramIndex  参数角标
+     * @param condition  条件信息
+     * @param sqlBuilder SQL信息
+     * @param paramMap   参数信息
+     * @param select     对象属性映射
+     * @param paramIndex 参数角标
      */
     private static void whereCondition(FastCondition condition, StrBuilder sqlBuilder, Map<String, Object> paramMap,
-                                       TableMapper tableMapper, ParamIndex paramIndex) {
+                                       ConditionPackages select, ParamIndex paramIndex, boolean isAddTableName) {
+        TableMapper tableMapper = select.getTableMapper();
         switch (condition.getExpression()) {
             case In:
             case NotIn:
-                sqlBuilder.append(tableMapper.getShowTableNames().get(condition.getField())
-                        .toString()).append(condition.getExpression().expression).append(LEFT_BRACKETS);
-                for (Object value : condition.getValueList()) {
-                    packParam(sqlBuilder, paramMap, value, paramIndex).append(StrUtil.COMMA);
-                }
+                sqlBuilder.append(getSqlTableName(isAddTableName, select)).append(tableMapper.getShowTableNames().get(condition.getField()))
+                        .append(condition.getExpression().expression).append(LEFT_BRACKETS);
+                packParam(sqlBuilder, paramMap, condition.getValueList(), paramIndex);
+//                for (Object value : condition.getValueList()) {
+//                    packParam(sqlBuilder, paramMap, value, paramIndex).append(StrUtil.COMMA);
+//                }
                 sqlBuilder.del(sqlBuilder.length() - 1, sqlBuilder.length()).append(RIGHT_BRACKETS);
                 break;
             case Match:
             case NotMatch:
-                sqlBuilder.append(condition.getExpression().name).append(LEFT_BRACKETS).append(tableMapper.getShowTableNames().get(condition.getField()))
+                sqlBuilder.append(condition.getExpression().name).append(LEFT_BRACKETS).append(getSqlTableName(isAddTableName, select)).append(tableMapper.getShowTableNames().get(condition.getField()))
                         .append(RIGHT_BRACKETS).append(condition.getExpression().expression).append(LEFT_BRACKETS);
                 packParam(sqlBuilder, paramMap, condition.getValue(), paramIndex).append(RIGHT_BRACKETS);
                 break;
             case Between:
             case NotBetween:
-                sqlBuilder.append(tableMapper.getShowTableNames()
-                        .get(condition.getField()).toString()).append(condition.getExpression().expression);
+                sqlBuilder.append(getSqlTableName(isAddTableName, select)).append(tableMapper.getShowTableNames()
+                        .get(condition.getField())).append(condition.getExpression().expression);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMin(), paramIndex).append(AND);
                 packParam(sqlBuilder, paramMap, condition.getBetweenMax(), paramIndex);
                 break;
             case Null:
             case NotNull:
-                sqlBuilder.append(tableMapper.getShowTableNames()
-                        .get(condition.getField()).toString()).append(condition.getExpression().expression);
+                sqlBuilder.append(getSqlTableName(isAddTableName, select)).append(tableMapper.getShowTableNames()
+                        .get(condition.getField())).append(condition.getExpression().expression);
                 break;
             case LeftBracket:
                 sqlBuilder.append(condition.getExpression().expression);
@@ -243,7 +250,7 @@ public class FastSqlUtil {
                     fieldMap = (Map<String, Object>) condition.getObject();
                     if (CollUtil.isNotEmpty(fieldMap)) {
                         for (String fieldName : fieldMap.keySet()) {
-                            String showTable = showTableNames.get(fieldName);
+                            String showTable = getSqlTableName(isAddTableName, select) + showTableNames.get(fieldName);
                             Object val = fieldMap.get(fieldName);
                             if (showTable != null && val != null) {
                                 queryNum++;
@@ -275,7 +282,7 @@ public class FastSqlUtil {
                                     continue;
                                 }
                                 queryNum++;
-                                sqlBuilder.append(showTable).append(whereData.getCondition().expression);
+                                sqlBuilder.append(getSqlTableName(isAddTableName, select)).append(showTable).append(whereData.getCondition().expression);
                                 packParam(sqlBuilder, paramMap, "%" + fieldMap.get(fieldName).toString() + "%", paramIndex);
                             } else {
                                 String showTable = showTableNames.get(whereData.getFieldName());
@@ -283,7 +290,7 @@ public class FastSqlUtil {
                                     continue;
                                 }
                                 queryNum++;
-                                sqlBuilder.append(showTable).append(whereData.getCondition().expression);
+                                sqlBuilder.append(getSqlTableName(isAddTableName, select)).append(showTable).append(whereData.getCondition().expression);
                                 packParam(sqlBuilder, paramMap, fieldMap.get(fieldName), paramIndex);
                             }
                             sqlBuilder.append(whereData.getWay().expression);
@@ -295,8 +302,8 @@ public class FastSqlUtil {
                 }
                 break;
             default:
-                sqlBuilder.append(tableMapper.getShowTableNames()
-                        .get(condition.getField()).toString()).append(condition.getExpression().expression);
+                sqlBuilder.append(getSqlTableName(isAddTableName, select)).append(tableMapper.getShowTableNames()
+                        .get(condition.getField())).append(condition.getExpression().expression);
                 packParam(sqlBuilder, paramMap, condition.getValue(), paramIndex);
         }
     }
@@ -306,12 +313,13 @@ public class FastSqlUtil {
      *
      * @param sqlBuilder SQL信息
      * @param param      Dao执行条件
+     * @param <T>        操作对象类型
      */
-    public static void orderBy(StrBuilder sqlBuilder, FastDaoParam param) {
-        ConditionPackages conditionPackages = param.getFastExample().conditionPackages();
+    public static <T> void orderBy(StrBuilder sqlBuilder, FastDaoParam<T> param) {
+        ConditionPackages<T> conditionPackages = param.getConditionPackages();
         TableMapper tableMapper = param.getTableMapper();
         if (conditionPackages != null && conditionPackages.getOrderByQuery() != null) {
-            for (ConditionPackages.OrderByQuery orderByQuery : conditionPackages.getOrderByQuery()) {
+            for (OrderByQuery orderByQuery : conditionPackages.getOrderByQuery()) {
                 if (orderByQuery.getDesc()) {
                     sqlBuilder.append(ORDER_BY).append(tableMapper.getShowTableNames().get(orderByQuery.getOrderByName())).append(DESC);
                 } else {
@@ -328,7 +336,7 @@ public class FastSqlUtil {
      * @param param      Dao执行条件
      */
     public static void limit(StrBuilder sqlBuilder, FastDaoParam param) {
-        ConditionPackages conditionPackages = param.getFastExample().conditionPackages();
+        ConditionPackages conditionPackages = param.getConditionPackages();
         if (conditionPackages != null) {
             if (conditionPackages.getPage() != null && conditionPackages.getSize() != null) {
                 ParamIndex paramIndex = new ParamIndex();
@@ -351,11 +359,12 @@ public class FastSqlUtil {
      * 封装select需要查询的字段信息,
      *
      * @param param Dao执行条件
+     * @param <T>   操作对象类型
      * @return 封装后的SQL
      */
-    public static StrBuilder selectSql(FastDaoParam param) {
+    public static <T> StrBuilder selectSql(FastDaoParam<T> param) {
         StrBuilder sqlBuilder = StrUtil.strBuilder(SELECT);
-        ConditionPackages select = param.getFastExample().conditionPackages();
+        ConditionPackages<T> select = param.getConditionPackages();
         TableMapper tableMapper = param.getTableMapper();
         Map<String, String> fieldTableNames = tableMapper.getShowTableNames();
 
@@ -479,8 +488,8 @@ public class FastSqlUtil {
             }
         }
 
-        if (param.getFastExample() != null && CollUtil.isNotEmpty(param.getFastExample().conditionPackages().getCustomUpdateColumns())) {
-            Map<String, CustomizeUpdate.CustomizeUpdateData> customUpdateColumns = param.getFastExample().conditionPackages().getCustomUpdateColumns();
+        if (param.getConditionPackages() != null && CollUtil.isNotEmpty(param.getConditionPackages().getCustomUpdateColumns())) {
+            Map<String, CustomizeUpdate.CustomizeUpdateData> customUpdateColumns = param.getConditionPackages().getCustomUpdateColumns();
             for (String fieldName : customUpdateColumns.keySet()) {
                 CustomizeUpdate.CustomizeUpdateData customizeUpdateData = customUpdateColumns.get(fieldName);
                 if (CollUtil.isNotEmpty(customizeUpdateData.getData())) {

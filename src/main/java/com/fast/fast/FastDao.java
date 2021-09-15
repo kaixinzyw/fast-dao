@@ -1,5 +1,6 @@
 package com.fast.fast;
 
+import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastExample;
 import com.fast.utils.page.PageInfo;
 import io.netty.util.concurrent.FastThreadLocal;
@@ -19,22 +20,20 @@ public class FastDao<Pojo> {
 
     private static final FastThreadLocal<FastDao> fastDaoThreadLocal = new FastThreadLocal<>();
 
-    public static <Pojo> FastDao<Pojo> init(Class<Pojo> clazz, FastExample<Pojo> fastExample) {
+    public static <Pojo> FastDao<Pojo> init(ConditionPackages<Pojo> conditionPackages) {
         FastDao<Pojo> fastDao = fastDaoThreadLocal.get();
         if (fastDao == null) {
             fastDao = new FastDao<>();
             fastDaoThreadLocal.set(fastDao);
         }
-        fastDao.clazz = clazz;
-        fastDao.fastExample = fastExample;
-        fastDao.fastExample.conditionPackages().setSize(null);
-        fastDao.fastExample.conditionPackages().setPage(null);
-        fastDao.fastExample.conditionPackages().setLimit(null);
+        fastDao.conditionPackages = conditionPackages;
+        fastDao.conditionPackages.setSize(null);
+        fastDao.conditionPackages.setPage(null);
+        fastDao.conditionPackages.setLimit(null);
         return fastDao;
     }
 
-    private Class<Pojo> clazz;
-    private FastExample<Pojo> fastExample;
+    private ConditionPackages<Pojo> conditionPackages;
 
     /**
      * 新增数据
@@ -43,7 +42,7 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public Pojo insert(Pojo pojo) {
-        return DaoTemplate.init(fastExample).insert(pojo);
+        return DaoTemplate.init(conditionPackages).insert(pojo);
     }
 
     /**
@@ -53,7 +52,7 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public List<Pojo> insertList(List<Pojo> pojos) {
-        return DaoTemplate.init(fastExample).insertList(pojos);
+        return DaoTemplate.init(conditionPackages).insertList(pojos);
     }
 
     /**
@@ -64,7 +63,7 @@ public class FastDao<Pojo> {
      * @return 是否新增成功
      */
     public List<Pojo> insertList(List<Pojo> pojos, Integer size) {
-        return DaoTemplate.init(fastExample).insertList(pojos, size);
+        return DaoTemplate.init(conditionPackages).insertList(pojos, size);
     }
 
     /**
@@ -73,7 +72,7 @@ public class FastDao<Pojo> {
      * @return 新增结果
      */
     public Pojo insertOrUpdateByPrimaryKey(Pojo pojo) {
-        return DaoTemplate.init(fastExample).insertOrUpdateByPrimaryKey(pojo, Boolean.TRUE);
+        return DaoTemplate.init(conditionPackages).insertOrUpdateByPrimaryKey(pojo, Boolean.TRUE);
     }
 
     /**
@@ -82,7 +81,7 @@ public class FastDao<Pojo> {
      * @return 新增结果
      */
     public Pojo insertOrUpdateByPrimaryKeyOverwrite(Pojo pojo) {
-        return DaoTemplate.init(fastExample).insertOrUpdateByPrimaryKey(pojo, Boolean.FALSE);
+        return DaoTemplate.init(conditionPackages).insertOrUpdateByPrimaryKey(pojo, Boolean.FALSE);
     }
 
 
@@ -95,7 +94,7 @@ public class FastDao<Pojo> {
      * @return 查询到的数据结果
      */
     public Pojo findByPrimaryKey(Object primaryKeyValue) {
-        return DaoTemplate.init(fastExample).findByPrimaryKey(primaryKeyValue);
+        return DaoTemplate.init(conditionPackages).findByPrimaryKey(primaryKeyValue);
     }
 
     /**
@@ -104,7 +103,7 @@ public class FastDao<Pojo> {
      * @return 数据结果
      */
     public Pojo findOne() {
-        return DaoTemplate.init(fastExample).findOne();
+        return DaoTemplate.init(conditionPackages).findOne();
     }
 
     /**
@@ -113,7 +112,7 @@ public class FastDao<Pojo> {
      * @return 数据结果
      */
     public List<Pojo> findAll() {
-        return DaoTemplate.init(fastExample).findAll();
+        return DaoTemplate.init(conditionPackages).findAll();
     }
 
     /**
@@ -122,7 +121,7 @@ public class FastDao<Pojo> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.init(fastExample).findCount();
+        return DaoTemplate.init(conditionPackages).findCount();
     }
 
     /**
@@ -134,7 +133,7 @@ public class FastDao<Pojo> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize, Integer navigatePages) {
-        return DaoTemplate.init(fastExample).findPage(pageNum, pageSize, navigatePages);
+        return DaoTemplate.init(conditionPackages).findPage(pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -156,7 +155,7 @@ public class FastDao<Pojo> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKey(Pojo pojo) {
-        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo, Boolean.TRUE);
+        return DaoTemplate.init(conditionPackages).updateByPrimaryKey(pojo, Boolean.TRUE);
     }
 
     /**
@@ -167,7 +166,7 @@ public class FastDao<Pojo> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKeyOverwrite(Pojo pojo) {
-        return DaoTemplate.init(fastExample).updateByPrimaryKey(pojo, Boolean.FALSE);
+        return DaoTemplate.init(conditionPackages).updateByPrimaryKey(pojo, Boolean.FALSE);
     }
 
     /**
@@ -178,7 +177,7 @@ public class FastDao<Pojo> {
      * @return 更新影响到的数据
      */
     public Integer update(Pojo pojo) {
-        return DaoTemplate.init(fastExample).update(pojo, true);
+        return DaoTemplate.init(conditionPackages).update(pojo, true);
     }
 
     /**
@@ -189,7 +188,7 @@ public class FastDao<Pojo> {
      * @return 更新影响到的数据
      */
     public Integer updateOverwrite(Pojo pojo) {
-        return DaoTemplate.init(fastExample).update(pojo, false);
+        return DaoTemplate.init(conditionPackages).update(pojo, false);
     }
 
     /**
@@ -200,7 +199,7 @@ public class FastDao<Pojo> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKey(Object primaryKey) {
-        return DaoTemplate.init(fastExample).deleteByPrimaryKey(primaryKey);
+        return DaoTemplate.init(conditionPackages).deleteByPrimaryKey(primaryKey);
     }
 
     /**
@@ -210,7 +209,7 @@ public class FastDao<Pojo> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.init(fastExample).delete();
+        return DaoTemplate.init(conditionPackages).delete();
     }
 
 

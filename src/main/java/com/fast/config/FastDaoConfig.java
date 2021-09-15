@@ -134,11 +134,30 @@ public class FastDaoConfig {
         FastDaoAttributes.isToCamelCase = Boolean.FALSE;
     }
 
+
     /**
-     * 添加执行器
+     * sql模板前缀
      *
-     * @param expanderClass 实现FastDaoExpander的扩展类
+     * @param sqlTemplatePrefix sql模板前缀
      */
+    public static void sqlTemplatePrefix(String sqlTemplatePrefix) {
+        FastDaoAttributes.sqlTemplatePrefix = sqlTemplatePrefix;
+    }
+
+    /**
+     * sql模板后缀
+     *
+     * @param sqlTemplateSuffix sql模板后缀
+     */
+    public static void sqlTemplateSuffix(String sqlTemplateSuffix) {
+        FastDaoAttributes.sqlTemplateSuffix = sqlTemplateSuffix;
+    }
+
+        /**
+         * 添加执行器
+         *
+         * @param expanderClass 实现FastDaoExpander的扩展类
+         */
     public static void addFastDaoExpander(Class<? extends FastDaoExpander> expanderClass) {
         if (expanderClass != null) {
             if (expanderClass.isInterface()) {

@@ -6,14 +6,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fast.aspect.DaoActuatorAspect;
 import com.fast.cache.DataCache;
+import com.fast.condition.ConditionPackages;
 import com.fast.condition.FastDaoParameterException;
-import com.fast.condition.FastExample;
 import com.fast.config.FastDaoAttributes;
 import com.fast.dao.DaoActuator;
 import com.fast.mapper.TableMapper;
 import com.fast.mapper.TableMapperUtil;
 import com.fast.utils.FastValueUtil;
-import com.fast.condition.many.ManyQuery;
+import com.fast.dao.many.ManyQuery;
 import com.fast.utils.page.PageInfo;
 import io.netty.util.concurrent.FastThreadLocal;
 
@@ -33,7 +33,7 @@ public class DaoTemplate<T> {
     /**
      * 条件封装
      */
-    private FastExample<T> fastExample;
+    private ConditionPackages<T> conditionPackages;
     /**
      * ORM实现
      */
@@ -41,7 +41,7 @@ public class DaoTemplate<T> {
     /**
      * 操作对象映射
      */
-    private TableMapper<T> tableMapper;
+    private TableMapper tableMapper;
 
     private DaoTemplate() {
     }
@@ -49,23 +49,23 @@ public class DaoTemplate<T> {
     /**
      * 初始化
      *
-     * @param <T>         操作对象的泛型信息
-     * @param fastExample 条件封装
+     * @param conditionPackages 条件的包
+     * @param <T>  操作对象类型
      * @return ORM执行器
      */
-    public static <T> DaoTemplate<T> init(FastExample<T> fastExample) {
-        if (fastExample == null) {
-            throw new RuntimeException("Fast-Dao初始化失败 FastExample不能为null");
-        }
+    public static <T> DaoTemplate<T> init(ConditionPackages<T> conditionPackages) {
         DaoTemplate<T> template = daoTemplateThreadLocal.get();
         if (template == null) {
             template = new DaoTemplate<>();
             template.daoActuator = ProxyUtil.proxy(FastDaoAttributes.<T>getDaoActuator(), DaoActuatorAspect.class);
             daoTemplateThreadLocal.set(template);
         }
-        template.fastExample = fastExample;
-        template.tableMapper = TableMapperUtil.getTableMappers(fastExample.getPojoClass());
-        FastDaoParam.init(template.tableMapper, template.fastExample);
+        template.tableMapper = conditionPackages.getTableMapper();
+        template.conditionPackages = conditionPackages;
+        template.conditionPackages.setPage(null);
+        template.conditionPackages.setSize(null);
+        template.conditionPackages.setLimit(null);
+        FastDaoParam.init(conditionPackages);
         return template;
     }
 
@@ -129,11 +129,10 @@ public class DaoTemplate<T> {
             FastValueUtil.setNoDelete(bean, tableMapper);
         }
         List<List<T>> inSplit = CollUtil.split(ins, size);
-        FastDaoParam<T> daoParam = FastDaoParam.<T>get();
         for (List<T> ts : inSplit) {
             FastDaoParam.<T>get().setInsertList(ts);
             daoActuator.insert();
-            FastDaoParam.init(tableMapper, fastExample);
+            FastDaoParam.init(conditionPackages);
         }
         DataCache.upCache(tableMapper);
         return ins;
@@ -174,8 +173,8 @@ public class DaoTemplate<T> {
         if (StrUtil.isBlank(primaryKeyField)) {
             throw new FastDaoParameterException(tableMapper.getTableName() + ": 未设置主键!!!");
         }
-        this.fastExample.conditionPackages().init();
-        this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
+        this.conditionPackages.init();
+        this.conditionPackages.addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
         return findOne();
     }
 
@@ -185,7 +184,7 @@ public class DaoTemplate<T> {
      * @return 查询结果
      */
     public T findOne() {
-        this.fastExample.conditionPackages().setLimit(1);
+        this.conditionPackages.setLimit(1);
         List<T> pojos = findAll();
         if (CollUtil.isNotEmpty(pojos)) {
             return pojos.get(0);
@@ -200,7 +199,7 @@ public class DaoTemplate<T> {
      */
     public List<T> findAll() {
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null) {
-            List<T> list = DataCache.<T>init(tableMapper, fastExample).getList();
+            List<T> list = DataCache.<T>init(tableMapper,conditionPackages).getList();
             if (list != null) {
                 return list;
             }
@@ -208,7 +207,7 @@ public class DaoTemplate<T> {
         List<T> query = daoActuator.select();
         ManyQuery.relatedQuery(query, FastDaoParam.get());
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null && query != null) {
-            DataCache.<T>init(tableMapper, fastExample).setList(query);
+            DataCache.<T>init(tableMapper, conditionPackages).setList(query);
         }
         return query;
     }
@@ -220,14 +219,14 @@ public class DaoTemplate<T> {
      */
     public Integer findCount() {
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null) {
-            Integer one = DataCache.<Integer>init(tableMapper, fastExample).getCount();
+            Integer one = DataCache.<Integer>init(tableMapper, conditionPackages).getCount();
             if (one != null) {
                 return one;
             }
         }
         Integer count = daoActuator.count();
         if (FastDaoAttributes.isOpenCache && tableMapper.getCacheType() != null && count != null) {
-            DataCache.<Integer>init(tableMapper, fastExample).setCount(count);
+            DataCache.<Integer>init(tableMapper, conditionPackages).setCount(count);
         }
         return count;
     }
@@ -249,12 +248,12 @@ public class DaoTemplate<T> {
             return new PageInfo<>(0, pageNum, pageSize, new ArrayList<T>(), navigatePages);
         }
         if (pageNum == 1) {
-            this.fastExample.conditionPackages().setPage(0);
+            this.conditionPackages.setPage(0);
         } else {
-            this.fastExample.conditionPackages().setPage((pageNum - 1) * pageSize);
+            this.conditionPackages.setPage((pageNum - 1) * pageSize);
         }
-        this.fastExample.conditionPackages().setSize(pageSize);
-        FastDaoParam.init(tableMapper, fastExample);
+        this.conditionPackages.setSize(pageSize);
+        FastDaoParam.init(conditionPackages);
         List<T> list = findAll();
         if (list == null) {
             list = new ArrayList<>();
@@ -284,8 +283,8 @@ public class DaoTemplate<T> {
         if (fieldValue == null) {
             throw new FastDaoParameterException(tableMapper.getTableName() + ": 主键参数不能为空!!!");
         }
-        this.fastExample.conditionPackages().init();
-        this.fastExample.conditionPackages().addEqualFieldQuery(primaryKeyField, fieldValue);
+        this.conditionPackages.init();
+        this.conditionPackages.addEqualFieldQuery(primaryKeyField, fieldValue);
         return update(t, isSelective) > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
@@ -299,10 +298,10 @@ public class DaoTemplate<T> {
      */
     public Integer update(T pojo, boolean isSelective) {
         FastDaoParam<T> fastDaoParam = FastDaoParam.get();
-        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions()) && StrUtil.isBlank(this.fastExample.conditionPackages().getCustomSql())) {
+        if (CollUtil.isEmpty(this.conditionPackages.getConditions()) && StrUtil.isBlank(this.conditionPackages.getCustomSql())) {
             Object primaryKeyVal = FastValueUtil.getPrimaryKeyVal(pojo, tableMapper);
             if (primaryKeyVal != null) {
-                fastDaoParam.getFastExample().conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
+                fastDaoParam.getConditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyVal);
             } else {
                 throw new FastDaoParameterException(tableMapper.getTableName() + ": 更新操作必须设置条件!!!");
             }
@@ -330,8 +329,8 @@ public class DaoTemplate<T> {
         if (StrUtil.isBlank(primaryKeyField)) {
             throw new FastDaoParameterException(tableMapper.getTableName() + ": 未设置主键!!!");
         }
-        this.fastExample.conditionPackages().init();
-        this.fastExample.conditionPackages().addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
+        this.conditionPackages.init();
+        this.conditionPackages.addEqualFieldQuery(tableMapper.getPrimaryKeyField(), primaryKeyValue);
         return delete() > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
@@ -341,16 +340,16 @@ public class DaoTemplate<T> {
      * @return 删除条数
      */
     public Integer delete() {
-        if (CollUtil.isEmpty(this.fastExample.conditionPackages().getConditions()) && StrUtil.isBlank(this.fastExample.conditionPackages().getCustomSql())) {
+        if (CollUtil.isEmpty(this.conditionPackages.getConditions()) && StrUtil.isBlank(this.conditionPackages.getCustomSql())) {
             throw new FastDaoParameterException(tableMapper.getTableName() + ": 删除操作必须设置条件!!!");
         }
-        if (!FastDaoAttributes.isOpenLogicDelete || !tableMapper.getLogicDelete() || !fastExample.conditionPackages().getLogicDeleteProtect() || fastExample.conditionPackages().getCustomSql() != null) {
+        if (!FastDaoAttributes.isOpenLogicDelete || !tableMapper.getLogicDelete() || !conditionPackages.getLogicDeleteProtect() || conditionPackages.getCustomSql() != null) {
             return DataCache.upCache(daoActuator.delete(), tableMapper);
         }
 
         try {
             FastDaoParam.get().setLogicDelete(true);
-            T pojo = tableMapper.getObjClass().newInstance();
+            T pojo = (T)tableMapper.getObjClass().newInstance();
             FastValueUtil.setDeleted(pojo, tableMapper);
             return update(pojo, Boolean.TRUE);
         } catch (Exception e) {

@@ -35,7 +35,7 @@ public class JdbcRowMapper<T> implements RowMapper<T> {
     private JdbcRowMapper() {
     }
 
-    private TableMapper<T> mapper;
+    private TableMapper mapper;
 
     /**
      * {@inheritDoc}.
@@ -61,9 +61,9 @@ public class JdbcRowMapper<T> implements RowMapper<T> {
                 }
             }
             if (ClassUtil.isBasicType(mapper.getObjClass())) {
-                return rs.getObject(1,mapper.getObjClass());
+                return (T)rs.getObject(1,mapper.getObjClass());
             }
-            return jsonObject.toJavaObject(mapper.getObjClass());
+            return (T)jsonObject.toJavaObject(mapper.getObjClass());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

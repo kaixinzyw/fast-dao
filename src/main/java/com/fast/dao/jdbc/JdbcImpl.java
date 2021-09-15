@@ -2,6 +2,7 @@ package com.fast.dao.jdbc;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fast.config.PrimaryKeyType;
 import com.fast.dao.DaoActuator;
 import com.fast.dao.utils.*;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,8 +50,17 @@ public class JdbcImpl<T> implements DaoActuator<T> {
     public List<T> select() {
         FastDaoParam<T> param = FastDaoParam.get();
         FastSelectProvider.findAll(param);
-        List<T> list = JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
-        return list;
+        if (CollUtil.isEmpty(param.getTableMapper().getJoinQueryInfoList())) {
+            return JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()), param.getParamMap(), JdbcRowMapper.init(param));
+        }else {
+            List<Map<String, JSONObject>> query = JdbcConnection.getJdbcTemplate().query(FastSqlUtil.sqlConversion(param.getSql()),
+                    param.getParamMap(), JdbcJoinQueryRowMapper.init());
+            List<JSONObject> resultJsonList = JSONResultUtil.change(query);
+            if (resultJsonList == null) {
+                return new ArrayList<>();
+            }
+            return JSONObject.parseArray(resultJsonList.toString(), param.getTableMapper().getObjClass());
+        }
     }
 
     @Override

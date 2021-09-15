@@ -1,6 +1,7 @@
 <#assign beanName = table.pojoName/>
 <#assign prefixName = table.prefixName/>
 <#assign properties = table.properties/>
+<#assign properties2 = table.properties2/>
 <#assign keys = properties?keys/>
 package ${table.pojoFastDaoPackPath};
 
@@ -14,17 +15,17 @@ ${package}
 /**
 * ${table.tableDesc}
 */
-public class ${table.pojoFastDaoName} extends BaseFastDAO<${beanName}> {
-
+public class ${table.pojoFastDaoName} extends BaseFastDAO<${beanName}, ${table.pojoFastDaoName}> {
+    private ${table.pojoFastDaoName}(){super.fastExample=new FastExample<>(${beanName}.class,this);}
     public static ${table.pojoFastDaoName} create(){return new ${table.pojoFastDaoName}();}
-    public static ${table.pojoFastDaoName} create(Object object) {
-        ${table.pojoFastDaoName} fastDao = new ${table.pojoFastDaoName}();
-        fastDao.equalObject(object);
-        return fastDao;
-    }
+    public static ${table.pojoFastDaoName} create(Object object) {return new ${table.pojoFastDaoName}().equalObject(object);}
+<#list properties2 as bean>
 
-<#list keys as key>
-    public FastExample.Criteria<${beanName}> ${key}(${properties["${key}"]}... ${key}s){return fastExample.field("${key}").valEqual(${key}s);}
+    /**
+    *${bean.propertyDesc}
+    */
+    public ${table.pojoFastDaoName} ${bean.propertyName}(${bean.propertyType} ${bean.propertyName}){return fastExample.field("${bean.propertyName}").valEqual(${bean.propertyName});}
+    public FastExample.FieldCriteria<${beanName},${table.pojoFastDaoName}> ${bean.propertyName}(){return fastExample.field("${bean.propertyName}");}
 </#list>
 
 }
