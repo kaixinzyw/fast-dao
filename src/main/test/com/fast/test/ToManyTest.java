@@ -1,9 +1,5 @@
 package com.fast.test;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
-import javax.sql.DataSource;
-
 public class ToManyTest {
 
     static {

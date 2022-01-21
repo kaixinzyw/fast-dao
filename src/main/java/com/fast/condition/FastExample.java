@@ -19,7 +19,7 @@ public class FastExample<P, T> implements Serializable {
     private static final long serialVersionUID = 756400131596569134L;
     private ConditionPackages<P> conditionPackages;
     private FieldCriteria<P, T> fieldCriteria;
-    private GlobalCriteria<P, T> globalCriteria;
+    private ParamSet<P, T> paramSet;
     private T operationObject;
     private String fieldName;
     /**
@@ -28,10 +28,6 @@ public class FastExample<P, T> implements Serializable {
     private Class<P> pojoClass;
 
     private FastExample() {
-    }
-
-    public Class<P> getPojoClass() {
-        return pojoClass;
     }
 
     /**
@@ -45,15 +41,15 @@ public class FastExample<P, T> implements Serializable {
         }
         this.pojoClass = pojoClass;
         this.operationObject = operationObject;
-        this.conditionPackages = ConditionPackages.create(pojoClass);
+        this.conditionPackages = new ConditionPackages(pojoClass);
 
     }
 
-    public GlobalCriteria<P, T> global(){
-        if (globalCriteria == null) {
-            globalCriteria = new GlobalCriteria<>(this);
+    public ParamSet<P, T> global(){
+        if (paramSet == null) {
+            paramSet = new ParamSet<>(this);
         }
-        return globalCriteria;
+        return paramSet;
     }
 
     public String getFieldName() {
@@ -79,11 +75,11 @@ public class FastExample<P, T> implements Serializable {
      * 条件封装类
      */
 
-    public static class GlobalCriteria<P,T> {
+    public static class ParamSet<P,T> {
 
         private final FastExample<P,T> fastExample;
 
-        public GlobalCriteria(FastExample<P,T> fastExample) {
+        public ParamSet(FastExample<P,T> fastExample) {
             this.fastExample = fastExample;
         }
 
@@ -169,11 +165,23 @@ public class FastExample<P, T> implements Serializable {
          *
          * @return {@link T}
          */
+        public T leftBracket() {
+            fastExample.conditionPackages.setWay(FastCondition.Way.CUSTOM);
+            fastExample.conditionPackages.leftBracket();
+            return fastExample.operationObject;
+        }
+
+        /**
+         * 左括号
+         *
+         * @return {@link T}
+         */
         public T orLeftBracket() {
             fastExample.conditionPackages.setWay(FastCondition.Way.OR);
             fastExample.conditionPackages.leftBracket();
             return fastExample.operationObject;
         }
+
 
         /**
          * 左括号
@@ -206,16 +214,6 @@ public class FastExample<P, T> implements Serializable {
             return fastExample.operationObject;
         }
 
-        /**
-         * 打开相关查询
-         *
-         * @return {@link T}
-         */
-        public T openRelatedQuery() {
-            fastExample.conditionPackages.openRelatedQuery();
-            return fastExample.operationObject;
-        }
-
         public FastDao<P> dao() {
             return fastExample.dao();
         }
@@ -236,7 +234,7 @@ public class FastExample<P, T> implements Serializable {
      * @return Dao执行器
      */
     public FastDao<P> dao() {
-        return FastDao.init(conditionPackages);
+        return new FastDao<>(conditionPackages);
     }
 
 

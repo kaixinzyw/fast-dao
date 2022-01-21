@@ -31,9 +31,11 @@ import java.util.List;
 /**
  * 对Page结果进行包装
  * 新增分页的多项属性，主要参考:http://bbs.csdn.net/topics/360010907
+ * @author 张亚伟
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageInfo<T> extends PageSerializable<T> {
+    private static final long serialVersionUID = 1526687077188010025L;
     //当前页
     private int pageNum;
     //每页的数量

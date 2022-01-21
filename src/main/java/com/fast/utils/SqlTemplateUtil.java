@@ -71,6 +71,8 @@ public class SqlTemplateUtil {
             cfg.setStatementEnd2(System.lineSeparator());
             cfg.setHtmlTagSupport(false);
             cfg.setSafeOutput(true);
+//            cfg.setPlaceholderStart2("${");
+//            cfg.setPlaceholderEnd2("}");
             return new GroupTemplate(resourceLoader, cfg);
         });
         //获取模板

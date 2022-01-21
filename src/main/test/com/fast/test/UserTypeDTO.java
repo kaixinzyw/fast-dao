@@ -1,8 +1,8 @@
 package com.fast.test;
 
 import com.fast.dao.many.FastJoinQuery;
-import com.fast.fast.TableAlias;
 import com.fast.test.pojo.User;
+import com.fast.test.pojo.UserTypeInfo;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,13 +11,15 @@ import java.util.List;
 /**
  * FAST-DAO 测试表
  */
-@TableAlias("user_type")
 public class UserTypeDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @FastJoinQuery
     private List<User> userList;
+
+    @FastJoinQuery
+    private List<UserTypeInfo> userTypeInfoList;
 
     /**
      *主键
@@ -90,5 +92,13 @@ public class UserTypeDTO implements Serializable {
 
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public List<UserTypeInfo> getUserTypeInfoList() {
+        return userTypeInfoList;
+    }
+
+    public void setUserTypeInfoList(List<UserTypeInfo> userTypeInfoList) {
+        this.userTypeInfoList = userTypeInfoList;
     }
 }

@@ -249,15 +249,15 @@ public class FastCondition implements Serializable {
             this.expression = expression;
         }
 
-        private static final Map<String, Way> wayMap = new HashMap<>();
+        private static final Map<String, Way> WAY_MAP = new HashMap<>();
 
         public static Way getWay(String name) {
-            Way way = wayMap.get(name);
+            Way way = WAY_MAP.get(name);
             if (way != null) {
                 return way;
             }
             way = EnumUtil.likeValueOf(Way.class, name);
-            wayMap.put(name, way);
+            WAY_MAP.put(name, way);
             return way;
         }
     }
@@ -296,15 +296,15 @@ public class FastCondition implements Serializable {
             this.expression = expression;
         }
 
-        private static final Map<String, Expression> exMap = new HashMap<>();
+        private static final Map<String, Expression> EX_MAP = new HashMap<>();
 
         public static Expression getExpression(String name) {
-            Expression ex = exMap.get(name);
+            Expression ex = EX_MAP.get(name);
             if (ex != null) {
                 return ex;
             }
             ex = EnumUtil.likeValueOf(Expression.class, name);
-            exMap.put(name, ex);
+            EX_MAP.put(name, ex);
             return ex;
         }
     }

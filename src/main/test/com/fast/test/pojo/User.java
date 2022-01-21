@@ -24,8 +24,8 @@ public class User implements Serializable {
     /**
     *用户类型
     */
-    @Column(name = "user_type_id")
-    private Long userTypeId;
+    @Column(name = "type_id")
+    private Long typeId;
 
     /**
     *用户名
@@ -58,14 +58,6 @@ public class User implements Serializable {
     private Boolean deleted;
 
 
-    public Long getUserTypeId() {
-        return this.userTypeId;
-    }
-    public User setUserTypeId(Long userTypeId) {
-        this.userTypeId = userTypeId;
-        return this;
-    }
-
     public Boolean getDeleted() {
         return this.deleted;
     }
@@ -79,6 +71,14 @@ public class User implements Serializable {
     }
     public User setCreateTime(Date createTime) {
         this.createTime = createTime;
+        return this;
+    }
+
+    public Long getTypeId() {
+        return this.typeId;
+    }
+    public User setTypeId(Long typeId) {
+        this.typeId = typeId;
         return this;
     }
 

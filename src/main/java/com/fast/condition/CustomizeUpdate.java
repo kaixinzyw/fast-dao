@@ -18,15 +18,15 @@ public class CustomizeUpdate<P,T> implements Serializable {
     /**
      * 条件封装
      */
-    private FastExample<P,T> fastExample;
+    private final FastExample<P,T> fastExample;
     /**
      * 字段名
      */
-    private String fieldName;
+    private final String fieldName;
     /**
      * 更新列
      */
-    private String tableColumnName;
+    private final String tableColumnName;
 
     public CustomizeUpdate(Class<P> pojoClass, FastExample<P,T> fastExample, String fieldName) {
         this.fastExample = fastExample;

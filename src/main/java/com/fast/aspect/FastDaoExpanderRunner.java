@@ -2,24 +2,20 @@ package com.fast.aspect;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Singleton;
-import com.fast.fast.FastDaoParam;
+import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.StrUtil;
+import com.fast.condition.ConditionPackages;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FastDaoExpanderRunner {
 
-    private static List<Class<FastDaoExpander>> insertOccasion = new ArrayList<>();
-    private static List<Class<FastDaoExpander>> deleteOccasion = new ArrayList<>();
-    private static List<Class<FastDaoExpander>> updateOccasion = new ArrayList<>();
-    private static List<Class<FastDaoExpander>> selectOccasion = new ArrayList<>();
+    private static final List<Class<FastDaoExpander>> INSERT_OCCASION = new ArrayList<>();
+    private static final List<Class<FastDaoExpander>> DELETE_OCCASION = new ArrayList<>();
+    private static final List<Class<FastDaoExpander>> UPDATE_OCCASION = new ArrayList<>();
+    private static final List<Class<FastDaoExpander>> SELECT_OCCASION = new ArrayList<>();
     private static Boolean isExpander = Boolean.FALSE;
-
-    private static final String INSERT = "insert";
-    private static final String SELECT = "select";
-    private static final String COUNT = "count";
-    private static final String UPDATE = "update";
-    private static final String DELETE = "delete";
 
 
     public static void addFastDaoExpander(Class<FastDaoExpander> expanderClass) {
@@ -28,73 +24,69 @@ public class FastDaoExpanderRunner {
             return;
         }
         for (ExpanderOccasion occasion : expander.occasion()) {
-            if (occasion.equals(ExpanderOccasion.INSERT)) {
-                insertOccasion.add(expanderClass);
+            if (occasion.method.equals(ExpanderOccasion.INSERT.method)) {
+                INSERT_OCCASION.add(expanderClass);
                 continue;
             }
-            if (occasion.equals(ExpanderOccasion.DELETE)) {
-                deleteOccasion.add(expanderClass);
+            if (occasion.method.equals(ExpanderOccasion.DELETE.method)) {
+                DELETE_OCCASION.add(expanderClass);
                 continue;
             }
-            if (occasion.equals(ExpanderOccasion.UPDATE)) {
-                updateOccasion.add(expanderClass);
+            if (occasion.method.equals(ExpanderOccasion.UPDATE.method)) {
+                UPDATE_OCCASION.add(expanderClass);
                 continue;
             }
-            if (occasion.equals(ExpanderOccasion.SELECT)) {
-                selectOccasion.add(expanderClass);
-                continue;
+            if (occasion.method.equals(ExpanderOccasion.SELECT.method) || occasion.method.equals(ExpanderOccasion.COUNT.method)) {
+                SELECT_OCCASION.add(expanderClass);
             }
         }
         isExpander = Boolean.TRUE;
     }
 
-    public static boolean runBeforeFastDaoExpander(FastDaoParam param, String methodName) {
+    public static void runBeforeFastDaoExpander(ConditionPackages conditionPackages, String methodName) {
         if (!isExpander) {
-            return true;
+            return;
         }
-        List<Class<FastDaoExpander>> expanders = getExpanders(param, methodName);
+        List<Class<FastDaoExpander>> expanders = getExpanders(conditionPackages, methodName);
         if (CollUtil.isEmpty(expanders)) {
-            return true;
+            return;
         }
 
         for (Class<FastDaoExpander> expanderClass : expanders) {
             FastDaoExpander expander = Singleton.get(expanderClass);
-            if (!expander.before(param)) {
-                return false;
-            }
+            expander.before(conditionPackages);
         }
-        return true;
     }
 
-    public static void runAfterFastDaoExpander(FastDaoParam param, String methodName) {
+    public static void runAfterFastDaoExpander(ConditionPackages conditionPackages, String methodName) {
         if (!isExpander) {
             return;
         }
-        List<Class<FastDaoExpander>> expanders = getExpanders(param, methodName);
+        List<Class<FastDaoExpander>> expanders = getExpanders(conditionPackages, methodName);
         if (CollUtil.isEmpty(expanders)) {
             return;
         }
 
         for (Class<FastDaoExpander> expanderClass : expanders) {
-            Singleton.get(expanderClass).after(param);
+            Singleton.get(expanderClass).after(conditionPackages);
         }
     }
 
 
-    private static List<Class<FastDaoExpander>> getExpanders(FastDaoParam param, String methodName) {
+    private static List<Class<FastDaoExpander>> getExpanders(ConditionPackages conditionPackages, String methodName) {
         List<Class<FastDaoExpander>> expanders = null;
-        if (methodName.equals(INSERT)) {
-            expanders = insertOccasion;
-        } else if (methodName.equals(DELETE)) {
-            expanders = deleteOccasion;
-        } else if (methodName.equals(UPDATE)) {
-            if (param.getLogicDelete()) {
-                expanders = deleteOccasion;
+        if (StrUtil.equals(methodName, ExpanderOccasion.INSERT.method)) {
+            expanders = INSERT_OCCASION;
+        } else if (methodName.equals(ExpanderOccasion.DELETE.method)) {
+            expanders = DELETE_OCCASION;
+        } else if (methodName.equals(ExpanderOccasion.UPDATE.method)) {
+            if (BooleanUtil.isTrue(conditionPackages.getLogicDelete())) {
+                expanders = DELETE_OCCASION;
             } else {
-                expanders = updateOccasion;
+                expanders = UPDATE_OCCASION;
             }
-        } else if (methodName.equals(SELECT) || methodName.equals(COUNT)) {
-            expanders = selectOccasion;
+        } else if (methodName.equals(ExpanderOccasion.SELECT.method) || methodName.equals(ExpanderOccasion.COUNT.method)) {
+            expanders = SELECT_OCCASION;
         }
         return expanders;
     }

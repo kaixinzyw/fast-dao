@@ -8,18 +8,25 @@
 package ${table.dtoPackPath};
 
 import java.io.Serializable;
+import com.fast.mapper.TableAlias;
 <#if conf.useLombok>
 import lombok.Data;
 import lombok.experimental.Accessors;
 </#if>
 <#if conf.useDTOSwagger2>
 import io.swagger.annotations.ApiModel;
+<#if !conf.dtoExtendsPOJO>
 import io.swagger.annotations.ApiModelProperty;
 </#if>
+</#if>
+<#if conf.dtoExtendsPOJO>
+import ${table.pojoClassPackPath};
+</#if>
+<#if !conf.dtoExtendsPOJO>
 <#list table.packages as package>
 ${package}
 </#list>
-
+</#if>
 /**
 * ${table.tableDesc}
 */
@@ -30,10 +37,10 @@ ${package}
 <#if conf.useDTOSwagger2>
 @ApiModel("${beanName} ${table.tableDesc}")
 </#if>
-public class ${table.dtoName} implements Serializable {
-
+@TableAlias("${table.tableName}")
+public class ${table.dtoName} <#if conf.dtoExtendsPOJO>extends ${beanName} </#if>implements Serializable {
     private static final long serialVersionUID = 1L;
-
+<#if !conf.dtoExtendsPOJO>
 <#list properties2 as bean>
 
     /**
@@ -57,5 +64,6 @@ public class ${table.dtoName} implements Serializable {
     }
 
     </#list>
+</#if>
 </#if>
 }

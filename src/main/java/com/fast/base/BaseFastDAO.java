@@ -1,8 +1,8 @@
 package com.fast.base;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fast.condition.FastExample;
 import com.fast.fast.FastDao;
+import com.fast.condition.FastExample;
 import com.fast.fast.JoinFastDao;
 
 import java.io.Serializable;
@@ -33,18 +33,14 @@ public class BaseFastDAO<P,T> implements Serializable {
 
 
     public <P2,T2>JoinFastDao<P> leftJoin(BaseFastDAO<P2,T2> fastDAO,FastExample.FieldCriteria<P2,T2> leftCondition, FastExample.FieldCriteria<P,T> rightCondition){
-        getJoinFastDao().leftJoinNotQuery(fastDAO).on(leftCondition,rightCondition);
-        if (fastExample.conditionPackages().getJoinFastDao() == null) {
-            fastExample.conditionPackages().setJoinFastDao(getJoinFastDao());
-        }
-        return getJoinFastDao();
+        JoinFastDao<P> joinFastDao = getJoinFastDao();
+        joinFastDao.leftJoin(fastDAO).on(leftCondition,rightCondition);
+        return joinFastDao;
     }
     public <P2,T2>JoinFastDao<P> rightJoin(BaseFastDAO<P2,T2> fastDAO,FastExample.FieldCriteria<P2,T2> leftCondition, FastExample.FieldCriteria<P,T> rightCondition){
-        getJoinFastDao().rightJoinNotQuery(fastDAO).on(leftCondition,rightCondition);
-        if (fastExample.conditionPackages().getJoinFastDao() == null) {
-            fastExample.conditionPackages().setJoinFastDao(getJoinFastDao());
-        }
-        return getJoinFastDao();
+        JoinFastDao<P> joinFastDao = getJoinFastDao();
+        joinFastDao.rightJoin(fastDAO).on(leftCondition,rightCondition);
+        return joinFastDao;
     }
     private JoinFastDao<P> getJoinFastDao(){
         return joinFastDao==null?joinFastDao = (JoinFastDao<P>) JoinFastDao.create(ObjectUtil.getTypeArgument(this),this):joinFastDao;
@@ -105,6 +101,14 @@ public class BaseFastDAO<P,T> implements Serializable {
         return fastExample.global().orSql(sql, params);
     }
 
+    /**
+     * 左括号
+     *
+     * @return {@link T}
+     */
+    public T leftBracket() {
+        return fastExample.global().leftBracket();
+    }
 
     /**
      * 左括号
@@ -142,14 +146,6 @@ public class BaseFastDAO<P,T> implements Serializable {
         return fastExample.global().closeLogicDeleteProtect();
     }
 
-    /**
-     * 打开相关查询
-     *
-     * @return {@link T}
-     */
-    public T openRelatedQuery() {
-        return fastExample.global().openRelatedQuery();
-    }
 
     public FastExample<P, T> fastExample(){
         return fastExample;

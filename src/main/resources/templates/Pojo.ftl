@@ -11,13 +11,18 @@ import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.Column;
 import java.io.Serializable;
+import com.fast.mapper.FastDaoBean;
+<#list table.packages as package>
+${package}
+</#list>
 <#if conf.useLombok>
 import lombok.Data;
 import lombok.experimental.Accessors;
 </#if>
-<#list table.packages as package>
-${package}
-</#list>
+<#if conf.usePOJOSwagger2>
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+</#if>
 
 /**
 * ${table.tableDesc}
@@ -27,8 +32,11 @@ ${package}
 @Accessors(chain=true)
 </#if>
 @Table(name = "${table.tableName}")
+<#if conf.usePOJOSwagger2>
+@ApiModel("${beanName} ${table.tableDesc}")
+</#if>
+@FastDaoBean
 public class ${beanName} implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
 <#list properties2 as bean>
@@ -38,6 +46,9 @@ public class ${beanName} implements Serializable {
     */
     @Id
     @Column(name = "${propertiesAnColumns[bean.propertyName]}")
+    <#if conf.usePOJOSwagger2>
+    @ApiModelProperty(value = "${bean.propertyDesc}")
+    </#if>
     private ${bean.propertyType} ${bean.propertyName};
 
     <#else>
@@ -45,6 +56,9 @@ public class ${beanName} implements Serializable {
     *${bean.propertyDesc}
     */
     @Column(name = "${propertiesAnColumns[bean.propertyName]}")
+    <#if conf.usePOJOSwagger2>
+    @ApiModelProperty(value = "${bean.propertyDesc}")
+    </#if>
     private ${bean.propertyType} ${bean.propertyName};
 
     </#if>

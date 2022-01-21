@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import java.io.Serializable;
 import com.fast.base.BaseFastDAO;
 import com.fast.condition.FastExample;
+import com.fast.mapper.FastDaoBean;
 
 <#if conf.useLombok>
 import lombok.Data;
@@ -30,6 +31,7 @@ ${package}
 @Accessors(chain=true)
 </#if>
 @Table(name = "${table.tableName}")
+@FastDaoBean
 public class ${table.fastPojoName} extends BaseFastDAO<${table.fastPojoName}> implements Serializable {
 
     private static final long serialVersionUID = 1L;

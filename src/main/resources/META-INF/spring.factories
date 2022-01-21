@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.fast.utils.SpringUtil,\
-  com.fast.dao.transaction.FastTransactionAspect
+  com.fast.dao.transaction.FastTransactionAspect,\
+  com.fast.mapper.FastDaoBeanListener

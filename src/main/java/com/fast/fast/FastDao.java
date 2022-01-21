@@ -1,9 +1,7 @@
 package com.fast.fast;
 
 import com.fast.condition.ConditionPackages;
-import com.fast.condition.FastExample;
 import com.fast.utils.page.PageInfo;
-import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.List;
 
@@ -13,27 +11,13 @@ import java.util.List;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class FastDao<Pojo> {
+public class FastDao<POJO> {
 
-    private FastDao() {
+    public FastDao(ConditionPackages<POJO> conditionPackages) {
+        this.conditionPackages = conditionPackages;
     }
 
-    private static final FastThreadLocal<FastDao> fastDaoThreadLocal = new FastThreadLocal<>();
-
-    public static <Pojo> FastDao<Pojo> init(ConditionPackages<Pojo> conditionPackages) {
-        FastDao<Pojo> fastDao = fastDaoThreadLocal.get();
-        if (fastDao == null) {
-            fastDao = new FastDao<>();
-            fastDaoThreadLocal.set(fastDao);
-        }
-        fastDao.conditionPackages = conditionPackages;
-        fastDao.conditionPackages.setSize(null);
-        fastDao.conditionPackages.setPage(null);
-        fastDao.conditionPackages.setLimit(null);
-        return fastDao;
-    }
-
-    private ConditionPackages<Pojo> conditionPackages;
+    private final ConditionPackages<POJO> conditionPackages;
 
     /**
      * 新增数据
@@ -41,8 +25,8 @@ public class FastDao<Pojo> {
      * @param pojo 需要新增的数据,会对框架设置的主键字段进行赋值
      * @return 是否新增成功
      */
-    public Pojo insert(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).insert(pojo);
+    public POJO insert(POJO pojo) {
+        return FastDaoTemplate.insert(conditionPackages, pojo);
     }
 
     /**
@@ -51,8 +35,8 @@ public class FastDao<Pojo> {
      * @param pojos 需要新增的数据,会对框架设置的主键字段进行赋值
      * @return 是否新增成功
      */
-    public List<Pojo> insertList(List<Pojo> pojos) {
-        return DaoTemplate.init(conditionPackages).insertList(pojos);
+    public List<POJO> insertList(List<POJO> pojos) {
+        return FastDaoTemplate.insertList(conditionPackages, pojos);
     }
 
     /**
@@ -62,28 +46,29 @@ public class FastDao<Pojo> {
      * @param size  每次插入条数
      * @return 是否新增成功
      */
-    public List<Pojo> insertList(List<Pojo> pojos, Integer size) {
-        return DaoTemplate.init(conditionPackages).insertList(pojos, size);
+    public List<POJO> insertList(List<POJO> pojos, Integer size) {
+        return FastDaoTemplate.insertList(conditionPackages, pojos, size);
     }
 
     /**
      * 新增或更新操作
+     *
      * @param pojo 如果主键有值则进行更新操作,主键为空则进行新增操作,参数为空不进行更新
      * @return 新增结果
      */
-    public Pojo insertOrUpdateByPrimaryKey(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).insertOrUpdateByPrimaryKey(pojo, Boolean.TRUE);
+    public POJO insertOrUpdateByPrimaryKey(POJO pojo) {
+        return FastDaoTemplate.insertOrUpdateByPrimaryKey(conditionPackages, pojo, Boolean.TRUE);
     }
 
     /**
      * 新增或更新操作
+     *
      * @param pojo 如果主键有值则进行更新操作,主键为空则进行新增操作,参数为空则也进行更新
      * @return 新增结果
      */
-    public Pojo insertOrUpdateByPrimaryKeyOverwrite(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).insertOrUpdateByPrimaryKey(pojo, Boolean.FALSE);
+    public POJO insertOrUpdateByPrimaryKeyOverwrite(POJO pojo) {
+        return FastDaoTemplate.insertOrUpdateByPrimaryKey(conditionPackages, pojo, Boolean.FALSE);
     }
-
 
 
     /**
@@ -93,8 +78,8 @@ public class FastDao<Pojo> {
      * @param primaryKeyValue 主键参数
      * @return 查询到的数据结果
      */
-    public Pojo findByPrimaryKey(Object primaryKeyValue) {
-        return DaoTemplate.init(conditionPackages).findByPrimaryKey(primaryKeyValue);
+    public POJO findByPrimaryKey(Object primaryKeyValue) {
+        return FastDaoTemplate.findByPrimaryKey(conditionPackages, primaryKeyValue);
     }
 
     /**
@@ -102,8 +87,8 @@ public class FastDao<Pojo> {
      *
      * @return 数据结果
      */
-    public Pojo findOne() {
-        return DaoTemplate.init(conditionPackages).findOne();
+    public POJO findOne() {
+        return FastDaoTemplate.findOne(conditionPackages);
     }
 
     /**
@@ -111,8 +96,8 @@ public class FastDao<Pojo> {
      *
      * @return 数据结果
      */
-    public List<Pojo> findAll() {
-        return DaoTemplate.init(conditionPackages).findAll();
+    public List<POJO> findAll() {
+        return FastDaoTemplate.findAll(conditionPackages);
     }
 
     /**
@@ -121,7 +106,7 @@ public class FastDao<Pojo> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.init(conditionPackages).findCount();
+        return FastDaoTemplate.findCount(conditionPackages);
     }
 
     /**
@@ -132,8 +117,8 @@ public class FastDao<Pojo> {
      * @param navigatePages 页面数量
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
-    public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize, Integer navigatePages) {
-        return DaoTemplate.init(conditionPackages).findPage(pageNum, pageSize, navigatePages);
+    public PageInfo<POJO> findPage(Integer pageNum, Integer pageSize, Integer navigatePages) {
+        return FastDaoTemplate.findPage(conditionPackages, pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -143,7 +128,7 @@ public class FastDao<Pojo> {
      * @param pageSize 条数
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
-    public PageInfo<Pojo> findPage(Integer pageNum, Integer pageSize) {
+    public PageInfo<POJO> findPage(Integer pageNum, Integer pageSize) {
         return findPage(pageNum, pageSize, 9);
     }
 
@@ -154,8 +139,8 @@ public class FastDao<Pojo> {
      * @param pojo 需要更新的数据,对象中必须有主键参数
      * @return 是否更新成功
      */
-    public Boolean updateByPrimaryKey(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).updateByPrimaryKey(pojo, Boolean.TRUE);
+    public Boolean updateByPrimaryKey(POJO pojo) {
+        return FastDaoTemplate.updateByPrimaryKey(conditionPackages, pojo, Boolean.TRUE);
     }
 
     /**
@@ -165,8 +150,8 @@ public class FastDao<Pojo> {
      * @param pojo 需要更新的数据,对象中必须有主键参数
      * @return 是否更新成功
      */
-    public Boolean updateByPrimaryKeyOverwrite(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).updateByPrimaryKey(pojo, Boolean.FALSE);
+    public Boolean updateByPrimaryKeyOverwrite(POJO pojo) {
+        return FastDaoTemplate.updateByPrimaryKey(conditionPackages, pojo, Boolean.FALSE);
     }
 
     /**
@@ -176,8 +161,8 @@ public class FastDao<Pojo> {
      * @param pojo 需要更新的数据 (本操作会对更新时间自动赋值)
      * @return 更新影响到的数据
      */
-    public Integer update(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).update(pojo, true);
+    public Integer update(POJO pojo) {
+        return FastDaoTemplate.update(conditionPackages, pojo, true);
     }
 
     /**
@@ -187,8 +172,8 @@ public class FastDao<Pojo> {
      * @param pojo 需要更新的数据 (本操作会对更新时间自动赋值)
      * @return 更新影响到的数据
      */
-    public Integer updateOverwrite(Pojo pojo) {
-        return DaoTemplate.init(conditionPackages).update(pojo, false);
+    public Integer updateOverwrite(POJO pojo) {
+        return FastDaoTemplate.update(conditionPackages, pojo, false);
     }
 
     /**
@@ -199,7 +184,7 @@ public class FastDao<Pojo> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKey(Object primaryKey) {
-        return DaoTemplate.init(conditionPackages).deleteByPrimaryKey(primaryKey);
+        return FastDaoTemplate.deleteByPrimaryKey(conditionPackages, primaryKey);
     }
 
     /**
@@ -209,7 +194,7 @@ public class FastDao<Pojo> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.init(conditionPackages).delete();
+        return FastDaoTemplate.delete(conditionPackages);
     }
 
 

@@ -1,15 +1,11 @@
 package com.fast.config;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.fast.dao.DaoActuator;
-import com.fast.dao.jdbc.JdbcConnection;
-import com.fast.dao.jdbc.JdbcImpl;
-import com.fast.dao.mybatis.MyBatisConnection;
-import com.fast.dao.mybatis.MyBatisImpl;
 import com.fast.dao.transaction.FastTransaction;
 import com.fast.utils.SpringUtil;
 import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -118,39 +114,23 @@ public class FastDaoAttributes {
     public static Boolean isToCamelCase = Boolean.TRUE;
 
     /**
-     * 使用的OMR实现,目前框架自身对SpringJDBC和MyBatis 进行了Mysql实现
-     * 参数
-     * JdbcImpl.class:使用JDBC实现
-     * MyBatisImpl.class: 使用MyBatis实现
-     * <p>
-     * 如果需要自定义扩展,可以实现DaoActuator接口进行自定义扩展
-     */
-    private static Class<? extends DaoActuator> daoActuator = JdbcImpl.class;
-
-    public static <T> DaoActuator<T> getDaoActuator() {
-        try {
-            return daoActuator.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Class<? extends DaoActuator> getDaoActuatorClass() {
-        return FastDaoAttributes.daoActuator;
-    }
-
-    public static void setDaoActuator(Class<? extends DaoActuator> dbActuator) {
-        FastDaoAttributes.daoActuator = dbActuator;
-    }
-
-    /**
      * 数据源
      */
     private static DataSource dataSource;
-    private static final FastThreadLocal<DataSource> dataSourceFastThreadLocal = new FastThreadLocal<>();
+    private static final FastThreadLocal<DataSource> DATA_SOURCE_FAST_THREAD_LOCAL = new FastThreadLocal<>();
+    private static final FastThreadLocal<NamedParameterJdbcTemplate> JDBC_TEMPLATE_THREAD_LOCAL = new FastThreadLocal<>();
+
+    public static NamedParameterJdbcTemplate getJdbcTemplate() {
+        NamedParameterJdbcTemplate jdbcTemplate = JDBC_TEMPLATE_THREAD_LOCAL.get();
+        if (jdbcTemplate == null) {
+            jdbcTemplate = new NamedParameterJdbcTemplate(FastDaoAttributes.getDataSource());
+            JDBC_TEMPLATE_THREAD_LOCAL.set(jdbcTemplate);
+        }
+        return jdbcTemplate;
+    }
 
     public static DataSource getDataSource() {
-        DataSource dataSource = dataSourceFastThreadLocal.get();
+        DataSource dataSource = DATA_SOURCE_FAST_THREAD_LOCAL.get();
         if (dataSource != null) {
             return dataSource;
         }
@@ -170,25 +150,31 @@ public class FastDaoAttributes {
     }
 
     public static void setThreadLocalDataSource(DataSource dataSource) {
-        dataSourceFastThreadLocal.set(dataSource);
+        DATA_SOURCE_FAST_THREAD_LOCAL.set(dataSource);
         switchDataSource();
     }
 
     private static void switchDataSource() {
-        if (ObjectUtil.equal(FastDaoAttributes.daoActuator, JdbcImpl.class)) {
-            JdbcConnection.dataSource();
-        } else if (ObjectUtil.equal(FastDaoAttributes.daoActuator, MyBatisImpl.class)) {
-            MyBatisConnection.dataSource();
-        }
         FastTransaction.switchTransaction();
+        JDBC_TEMPLATE_THREAD_LOCAL.remove();
     }
 
     /**
      * Redis
      */
     private static RedisConnectionFactory redisConnectionFactory;
+    private static final FastThreadLocal<StringRedisTemplate> STRING_REDIS_TEMPLATE_FAST_THREAD_LOCAL = new FastThreadLocal<>();
 
-    public static RedisConnectionFactory getRedisConnectionFactory() {
+    public static StringRedisTemplate getStringRedisTemplate() {
+        StringRedisTemplate stringRedisTemplate = STRING_REDIS_TEMPLATE_FAST_THREAD_LOCAL.get();
+        if (stringRedisTemplate == null) {
+            stringRedisTemplate = new StringRedisTemplate(FastDaoAttributes.getRedisConnectionFactory());
+            STRING_REDIS_TEMPLATE_FAST_THREAD_LOCAL.set(stringRedisTemplate);
+        }
+        return stringRedisTemplate;
+    }
+
+    private static RedisConnectionFactory getRedisConnectionFactory() {
         RedisConnectionFactory rcf = FastDaoAttributes.redisConnectionFactory;
         if (rcf == null) {
             rcf = SpringUtil.getBean(RedisConnectionFactory.class);

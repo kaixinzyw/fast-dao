@@ -3,11 +3,11 @@ package com.fast.mapper;
 import com.fast.cache.DataCacheType;
 import com.fast.config.PrimaryKeyType;
 import com.fast.dao.many.FastJoinQueryInfo;
-import com.fast.dao.many.ManyToManyInfo;
-import com.fast.dao.many.ManyToOneInfo;
-import com.fast.dao.many.OneToManyInfo;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -63,6 +63,7 @@ public class TableMapper {
      * 缓存类型
      */
     private DataCacheType cacheType;
+    private Boolean isOpenCache = Boolean.FALSE;
     /**
      * 缓存时间
      */
@@ -91,20 +92,6 @@ public class TableMapper {
     private Class primaryKeyClass;
 
 
-    /**
-     * 多对多关联
-     */
-    private List<ManyToManyInfo> manyToManyInfoList;
-
-    /**
-     * 一对多关联
-     */
-    private List<OneToManyInfo> oneToManyInfoList;
-
-    /**
-     * 一对多关联
-     */
-    private List<ManyToOneInfo> manyToOneInfoList;
 
     /**
      * 主键类型 32位UUID和自增
@@ -118,29 +105,34 @@ public class TableMapper {
     /**
      * 多对象信息列表
      */
-    private List<FastJoinQueryInfo> fastJoinQueryInfoList;
-    private Map<Class, List<FastJoinQueryInfo>> fastJoinQueryInfoMap = new HashMap<>();
+    private final Map<String, FastJoinQueryInfo> fastJoinQueryInfoMap = new HashMap<>();
 
-    public Map<Class, List<FastJoinQueryInfo>> getFastJoinQueryInfoMap() {
-        return fastJoinQueryInfoMap;
+
+    private final Map<String, Map<String, String>> tableAliasFieldMap = new HashMap<>();
+    private final Map<String, String> columnAliasMap = new HashMap<>();
+
+
+    public Map<String, String> getColumnAliasMap() {
+        return columnAliasMap;
     }
 
-    private Map<String, Map<String, String>> tableAliasFieldMap = new HashMap<>();
+    public void addColumnAliasMap(String columnName, String columnAliasName) {
+        this.columnAliasMap.put(columnName, columnAliasName);
+    }
 
-    public void addFastJoinQueryInfoMap(Class joinClass, FastJoinQueryInfo fastJoinQueryInfo) {
-        List<FastJoinQueryInfo> fastJoinQueryInfos = fastJoinQueryInfoMap.get(joinClass);
-        if (fastJoinQueryInfoMap.get(joinClass) == null) {
-            fastJoinQueryInfoMap.put(joinClass, fastJoinQueryInfos = new ArrayList<>());
+    public void addFastJoinQueryInfoMap(String tableAlias, FastJoinQueryInfo fastJoinQueryInfo) {
+        FastJoinQueryInfo fastJoinQueryInfos = fastJoinQueryInfoMap.get(tableAlias);
+        if (fastJoinQueryInfos == null) {
+            fastJoinQueryInfoMap.put(tableAlias, fastJoinQueryInfo);
         }
-        fastJoinQueryInfos.add(fastJoinQueryInfo);
     }
 
-    public List<FastJoinQueryInfo> getJoinQueryInfoList() {
-        return fastJoinQueryInfoList;
+    public void putFastJoinQueryInfoMap(Map<String, FastJoinQueryInfo> fastJoinQueryInfoMap) {
+        this.fastJoinQueryInfoMap.putAll(fastJoinQueryInfoMap);
     }
 
-    public void setJoinQueryInfoList(List<FastJoinQueryInfo> fastJoinQueryInfoList) {
-        this.fastJoinQueryInfoList = fastJoinQueryInfoList;
+    public Map<String, FastJoinQueryInfo> getFastJoinQueryInfoMap() {
+        return fastJoinQueryInfoMap;
     }
 
     public Map<String, Map<String, String>> getTableAliasFieldMap() {
@@ -309,29 +301,6 @@ public class TableMapper {
         this.autoSetUpdateTime = autoSetUpdateTime;
     }
 
-    public List<ManyToManyInfo> getManyToManyInfoList() {
-        return manyToManyInfoList;
-    }
-
-    public void setManyToManyInfoList(List<ManyToManyInfo> manyToManyInfoList) {
-        this.manyToManyInfoList = manyToManyInfoList;
-    }
-
-    public List<OneToManyInfo> getOneToManyInfoList() {
-        return oneToManyInfoList;
-    }
-
-    public void setOneToManyInfoList(List<OneToManyInfo> oneToManyInfoList) {
-        this.oneToManyInfoList = oneToManyInfoList;
-    }
-
-    public List<ManyToOneInfo> getManyToOneInfoList() {
-        return manyToOneInfoList;
-    }
-
-    public void setManyToOneInfoList(List<ManyToOneInfo> manyToOneInfoList) {
-        this.manyToOneInfoList = manyToOneInfoList;
-    }
 
     public String getShowPrefixAllTableNames() {
         return showPrefixAllTableNames;
@@ -347,5 +316,13 @@ public class TableMapper {
 
     public void setTableAlias(String tableAlias) {
         this.tableAlias = tableAlias;
+    }
+
+    public Boolean getOpenCache() {
+        return isOpenCache;
+    }
+
+    public void setOpenCache(Boolean openCache) {
+        isOpenCache = openCache;
     }
 }

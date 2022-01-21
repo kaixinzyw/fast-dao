@@ -1,7 +1,13 @@
 package com.fast.dao.many;
 
-public class FastJoinQueryInfo {
+import java.io.Serializable;
 
+/**
+ * @author 张亚伟
+ */
+public class FastJoinQueryInfo implements Serializable {
+
+    private static final long serialVersionUID = -5190257549097009134L;
     /**
      * 表别名
      */
@@ -20,11 +26,6 @@ public class FastJoinQueryInfo {
      * 加入行名称
      */
     private String joinColumnName;
-
-    /**
-     * join表主键
-     */
-    private String joinPrimaryKey;
 
     /**
      * 字段名
@@ -84,14 +85,6 @@ public class FastJoinQueryInfo {
 
     public void setCollectionType(Boolean collectionType) {
         isCollectionType = collectionType;
-    }
-
-    public String getJoinPrimaryKey() {
-        return joinPrimaryKey;
-    }
-
-    public void setJoinPrimaryKey(String joinPrimaryKey) {
-        this.joinPrimaryKey = joinPrimaryKey;
     }
 
 }

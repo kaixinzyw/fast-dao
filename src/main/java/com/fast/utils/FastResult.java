@@ -10,9 +10,10 @@ import java.io.Serializable;
  * @author zyw
  */
 public class FastResult<T>  implements Serializable{
-	
 
-	private int code;
+
+    private static final long serialVersionUID = -5161129098361229412L;
+    private int code;
     
     private String message;
     

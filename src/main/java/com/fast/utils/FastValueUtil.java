@@ -23,27 +23,18 @@ public class FastValueUtil {
      * @return {@link Boolean}
      */
     public static Boolean valueIsNullVerify(Object value) {
-        if (ObjectUtil.isNull(value)) {
-            return true;
-//            throw new FastDaoParameterException("条件参数不能为空!!!");
-        }
-        return false;
+        //            throw new FastDaoParameterException("条件参数不能为空!!!");
+        return ObjectUtil.isNull(value);
     }
 
     public static Boolean arrayIsNullVerify(Object value) {
-        if (ArrayUtil.isEmpty(value)) {
-            return true;
-//            throw new FastDaoParameterException("条件参数不能为空!!!");
-        }
-        return false;
+        //            throw new FastDaoParameterException("条件参数不能为空!!!");
+        return ArrayUtil.isEmpty(value);
     }
 
     public static Boolean collectionIsNullVerify(Collection value) {
-        if (CollUtil.isEmpty(value)) {
-            return true;
-//            throw new FastDaoParameterException("条件参数不能为空!!!");
-        }
-        return false;
+        //            throw new FastDaoParameterException("条件参数不能为空!!!");
+        return CollUtil.isEmpty(value);
     }
 
     public static void setCreateTime(Object o, TableMapper tableMapper) {
@@ -99,7 +90,7 @@ public class FastValueUtil {
      */
     public static String toCamelCase(String val) {
         if (val == null) {
-            return val;
+            return null;
         }
         if (FastDaoAttributes.isToCamelCase) {
             val = StrUtil.toCamelCase(val);

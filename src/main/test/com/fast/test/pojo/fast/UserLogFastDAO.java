@@ -10,6 +10,8 @@ import java.util.Date;
 * 用户日志
 */
 public class UserLogFastDAO extends BaseFastDAO<UserLog, UserLogFastDAO> {
+    private static final long serialVersionUID = -6250092823755961834L;
+
     private UserLogFastDAO(){super.fastExample=new FastExample<>(UserLog.class,this);}
     public static UserLogFastDAO create(){return new UserLogFastDAO();}
     public static UserLogFastDAO create(Object object) {return new UserLogFastDAO().equalObject(object);}

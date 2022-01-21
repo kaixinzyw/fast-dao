@@ -2,7 +2,6 @@ package com.fast.config;
 
 import com.fast.aspect.FastDaoExpander;
 import com.fast.aspect.FastDaoExpanderRunner;
-import com.fast.dao.DaoActuator;
 import com.fast.utils.FastValueUtil;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -11,15 +10,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FastDaoConfig {
-
-    /**
-     * @param daoImpl 使用的ORM实现 ,框架自身可选值,不设置优先使用jdbc实现
-     *                1:JdbcImpl.class:使用JDBC框架模式
-     *                2:FastMyBatisImpl.class: 使用MyBatis插件模式
-     */
-    public static void daoActuator(Class<? extends DaoActuator> daoImpl) {
-        FastDaoAttributes.setDaoActuator(daoImpl);
-    }
 
     /**
      * 配置全局数据源

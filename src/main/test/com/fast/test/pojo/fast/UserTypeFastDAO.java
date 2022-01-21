@@ -10,6 +10,8 @@ import java.util.Date;
 * 用户类型
 */
 public class UserTypeFastDAO extends BaseFastDAO<UserType, UserTypeFastDAO> {
+    private static final long serialVersionUID = 1585326395866133296L;
+
     private UserTypeFastDAO(){super.fastExample=new FastExample<>(UserType.class,this);}
     public static UserTypeFastDAO create(){return new UserTypeFastDAO();}
     public static UserTypeFastDAO create(Object object) {return new UserTypeFastDAO().equalObject(object);}

@@ -4,33 +4,25 @@ import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fast.config.FastDaoAttributes;
 import com.fast.mapper.TableMapper;
-import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.List;
 import java.util.Set;
-
 public class RedisCacheImpl {
 
-    private static final FastThreadLocal<StringRedisTemplate> redisTemplateThreadLocal = new FastThreadLocal<>();
     private final static String WILDCARD = ":*";
 
     private static StringRedisTemplate redisTemplate() {
-        StringRedisTemplate redisTemplate = redisTemplateThreadLocal.get();
-        if (redisTemplate == null) {
-            redisTemplate = new StringRedisTemplate(FastDaoAttributes.getRedisConnectionFactory());
-            redisTemplateThreadLocal.set(redisTemplate);
-        }
-        return redisTemplate;
+        return FastDaoAttributes.getStringRedisTemplate();
     }
 
-    public static <T> List<T> get(TableMapper tableMapper, String keyName) {
+    public static <T> List<T> get(Class<T> resultClass, String keyName) {
         StringRedisTemplate redisTemplate = redisTemplate();
         String ostr = redisTemplate.opsForValue().get(keyName);
         if (ostr == null) {
             return null;
         }
-        return JSONObject.parseArray(ostr, tableMapper.getObjClass());
+        return JSONObject.parseArray(ostr, resultClass);
     }
 
     public static <T> void set(List<T> ts, TableMapper tableMapper, String keyName) {

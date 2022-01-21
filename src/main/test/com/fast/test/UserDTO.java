@@ -1,30 +1,41 @@
 package com.fast.test;
 
 import com.fast.dao.many.FastJoinQuery;
-import com.fast.fast.TableAlias;
+import com.fast.mapper.ColumnAlias;
+import com.fast.mapper.TableAlias;
+import com.fast.mapper.NotQuery;
 import com.fast.test.pojo.User;
 import com.fast.test.pojo.UserLog;
-import com.fast.test.pojo.UserType;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 商品信息
+ * 用户多表查询DTO
  */
-@TableAlias("user")
+@TableAlias("user_test")
 public class UserDTO extends User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @FastJoinQuery(joinColumnName = "user_id")
-    private List<UserLog> userLogList;
+    @NotQuery
+    private Boolean deleted;
+
     @FastJoinQuery
-    private UserType userType;
+    private List<UserLog> userLogList;
+
+    @FastJoinQuery("log2")
+    private List<UserLog> userLogList2;
+
+    @FastJoinQuery("user_type")
+    private UserTypeDTO userType;
 
     @TableAlias("user_type")
     private String typeName;
 
+    @TableAlias("user_type")
+    @ColumnAlias("id")
+    private Long userTypeId;
 
     public List<UserLog> getUserLogList() {
         return userLogList;
@@ -34,12 +45,20 @@ public class UserDTO extends User implements Serializable {
         this.userLogList = userLogList;
     }
 
-    public UserType getUserType() {
+    public UserTypeDTO getUserType() {
         return userType;
     }
 
-    public void setUserType(UserType userType) {
+    public void setUserType(UserTypeDTO userType) {
         this.userType = userType;
+    }
+
+    public List<UserLog> getUserLogList2() {
+        return userLogList2;
+    }
+
+    public void setUserLogList2(List<UserLog> userLogList2) {
+        this.userLogList2 = userLogList2;
     }
 
     public String getTypeName() {
@@ -50,4 +69,11 @@ public class UserDTO extends User implements Serializable {
         this.typeName = typeName;
     }
 
+    public Long getUserTypeId() {
+        return userTypeId;
+    }
+
+    public void setUserTypeId(Long userTypeId) {
+        this.userTypeId = userTypeId;
+    }
 }

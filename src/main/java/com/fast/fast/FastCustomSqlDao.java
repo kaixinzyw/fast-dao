@@ -34,7 +34,20 @@ public class FastCustomSqlDao<T> {
      */
     public static <T> FastCustomSqlDao<T> create(Class<T> clazz, String sql, Object params) {
         FastCustomSqlDao<T> customSqlDao = new FastCustomSqlDao<>();
-        customSqlDao.conditionPackages = ConditionPackages.create(clazz);
+        customSqlDao.conditionPackages = new ConditionPackages<>(clazz);
+        if (CollUtil.isNotEmpty(customSqlDao.conditionPackages.getTableMapper().getFastJoinQueryInfoMap())) {
+            for (String tn : customSqlDao.conditionPackages.getTableMapper().getFastJoinQueryInfoMap().keySet()) {
+                customSqlDao.conditionPackages.addFastJoinQueryInfo(customSqlDao.conditionPackages.getTableMapper().getFastJoinQueryInfoMap().get(tn));
+            }
+        }
+
+        customSqlDao.conditionPackages.customSQL(sql, SqlTemplateUtil.getMap(params));
+        return customSqlDao;
+    }
+
+    public static <T> FastCustomSqlDao<T> create(ConditionPackages<T> conditionPackages, String sql, Object params) {
+        FastCustomSqlDao<T> customSqlDao = new FastCustomSqlDao<>();
+        customSqlDao.conditionPackages = conditionPackages;
         customSqlDao.conditionPackages.customSQL(sql, SqlTemplateUtil.getMap(params));
         return customSqlDao;
     }
@@ -74,10 +87,9 @@ public class FastCustomSqlDao<T> {
         return create(clazz, strBuilder.toString(), params);
     }
 
-    public FastDao<T> dao(){
-        return FastDao.init(conditionPackages);
+    public FastDao<T> dao() {
+        return new FastDao(conditionPackages);
     }
-
 
 
     /**
@@ -86,7 +98,7 @@ public class FastCustomSqlDao<T> {
      * @return 数据结果
      */
     public T findOne() {
-        return DaoTemplate.init(conditionPackages).findOne();
+        return FastDaoTemplate.findOne(conditionPackages);
     }
 
     /**
@@ -95,7 +107,7 @@ public class FastCustomSqlDao<T> {
      * @return 数据结果
      */
     public List<T> findAll() {
-        return DaoTemplate.init(conditionPackages).findAll();
+        return FastDaoTemplate.findAll(conditionPackages);
     }
 
     /**
@@ -104,7 +116,7 @@ public class FastCustomSqlDao<T> {
      * @return 查询到的数据条数
      */
     public Integer findCount() {
-        return DaoTemplate.init(conditionPackages).findCount();
+        return FastDaoTemplate.findCount(conditionPackages);
     }
 
     /**
@@ -116,7 +128,7 @@ public class FastCustomSqlDao<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(int pageNum, int pageSize, int navigatePages) {
-        return DaoTemplate.<T>init(conditionPackages).findPage(pageNum, pageSize, navigatePages);
+        return FastDaoTemplate.findPage(conditionPackages, pageNum, pageSize, navigatePages);
     }
 
     /**
@@ -127,7 +139,7 @@ public class FastCustomSqlDao<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(int pageNum, int pageSize) {
-        return DaoTemplate.<T>init(conditionPackages).findPage(pageNum, pageSize, 9);
+        return FastDaoTemplate.findPage(conditionPackages, pageNum, pageSize, 9);
     }
 
     /**
@@ -136,7 +148,7 @@ public class FastCustomSqlDao<T> {
      * @return 删除影响到的数据条数
      */
     public Integer delete() {
-        return DaoTemplate.init(conditionPackages).delete();
+        return FastDaoTemplate.delete(conditionPackages);
     }
 
     public String getSql() {

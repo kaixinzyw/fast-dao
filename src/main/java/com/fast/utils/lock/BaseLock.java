@@ -2,7 +2,6 @@ package com.fast.utils.lock;
 
 import cn.hutool.core.util.StrUtil;
 import com.fast.config.FastDaoAttributes;
-import io.netty.util.concurrent.FastThreadLocal;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
@@ -12,7 +11,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 public class BaseLock {
 
-    private static final FastThreadLocal<StringRedisTemplate> redisLockThreadLocal = new FastThreadLocal<>();
 
     /**
      * 前缀
@@ -35,7 +33,7 @@ public class BaseLock {
 
     public BaseLock(String lockKey) {
         this.lockKey = KEY_PRE + lockKey;
-        redisTemplate = init();
+        redisTemplate = FastDaoAttributes.getStringRedisTemplate();
         threadId = String.valueOf(Thread.currentThread().getId());
     }
 
@@ -55,19 +53,4 @@ public class BaseLock {
         return redisTemplate.opsForValue().get(lockKey) == null ? Boolean.FALSE : Boolean.TRUE;
     }
 
-
-    /**
-     * 初始化Redis
-     *
-     * @return Redis模板对象
-     */
-    private StringRedisTemplate init() {
-        StringRedisTemplate lock = redisLockThreadLocal.get();
-        if (lock == null) {
-            lock = new StringRedisTemplate(FastDaoAttributes.getRedisConnectionFactory());
-            redisLockThreadLocal.set(lock);
-            return lock;
-        }
-        return lock;
-    }
 }

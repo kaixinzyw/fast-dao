@@ -1,6 +1,5 @@
 package com.fast.test;
 
-import com.fast.condition.FastWhere;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.Date;
 public class FastUserTestQuery implements Serializable {
 
 
+    private static final long serialVersionUID = -5269407877536439007L;
     /**
     *主键ID
     */
@@ -19,12 +19,10 @@ public class FastUserTestQuery implements Serializable {
     /**
     *用户名
     */
-    @FastWhere(condition = FastWhere.WhereCondition.Like)
     private String userName;
     /**
     *年龄
     */
-    @FastWhere(condition = FastWhere.WhereCondition.Greater, fieldName = "age",way = FastWhere.WhereWay.OR)
     private Integer agee;
     /**
     *创建时间

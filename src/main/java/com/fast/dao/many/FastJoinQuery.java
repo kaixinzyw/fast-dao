@@ -42,7 +42,12 @@ public @interface FastJoinQuery {
      */
     String joinColumnName() default "";
 
-
+    /**
+     * 连接表别名
+     *
+     * @return {@link String}
+     */
+    String value() default "";
 
 
 }

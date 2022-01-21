@@ -27,7 +27,7 @@ public class FastSetConfigTest {
          * 参数2: 是否打印详细SQL日志
          * 参数3: 是否打印SQL执行结果
          */
-        FastDaoConfig.openSqlPrint(SqlLogLevel.INFO,true, true);
+        FastDaoConfig.openSqlPrint(SqlLogLevel.INFO, true, true);
         /**
          * 开启自动对数据 新增操作 进行创建时间设置
          * 参数1: 需要设置创建时间的字段名
@@ -43,7 +43,7 @@ public class FastSetConfigTest {
          * 参数1:  逻辑删除字段名
          * 参数2:  逻辑删除标记默认值
          */
-//        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
+        FastDaoConfig.openLogicDelete("deleted", Boolean.TRUE);
         /**
          * 设置全局默认缓存时间,两种缓存模式(本地缓存，Redis缓存),支持缓存的自动刷新<更新,删除,新增>后会自动刷新缓存的数据
          * Reids缓存需要进行配置
@@ -59,15 +59,15 @@ public class FastSetConfigTest {
         /**
          * redis缓存配置,Spring环境可自动识别
          */
-//        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
+        FastDaoConfig.redisConnectionFactory(getRedisConnectionFactory());
 
     }
 
     private static DataSource getDataSource() {
         DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/my_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&useOldAliasMetadataBehavior=true");
-        dataSource.setUsername("root");
-        dataSource.setPassword("kaixinzyw");
+        dataSource.setUrl("jdbc:mysql://192.168.1.101:3306/my_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&useOldAliasMetadataBehavior=true");
+        dataSource.setUsername("my_test");
+        dataSource.setPassword("my_test");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         return dataSource;
     }
@@ -76,10 +76,11 @@ public class FastSetConfigTest {
         RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
         redisConfig.setHostName("127.0.0.1");
         redisConfig.setPort(6379);
-        redisConfig.setDatabase(1);
-        return new JedisConnectionFactory(redisConfig);
+        redisConfig.setDatabase(0);
+        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisConfig);
+        jedisConnectionFactory.afterPropertiesSet();
+        return jedisConnectionFactory;
     }
-
 
 
 }

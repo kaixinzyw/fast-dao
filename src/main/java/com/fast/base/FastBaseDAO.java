@@ -30,11 +30,11 @@ public class FastBaseDAO<T> {
      * @return 是否插入成功
      */
     public T insert(T pojo) {
-        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).insert(pojo);
+        return new FastDao<T>(new ConditionPackages<>(fastDaoPojoClass)).insert(pojo);
     }
 
     public List<T> insertList(List<T> pojos) {
-        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).insertList(pojos);
+        return new FastDao<T>(new ConditionPackages<>(fastDaoPojoClass)).insertList(pojos);
     }
 
     /**
@@ -45,7 +45,7 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据结果
      */
     public T findByPrimaryKey(Object primaryKeyValue) {
-        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).findByPrimaryKey(primaryKeyValue);
+        return new FastDao<T>(new ConditionPackages<>(fastDaoPojoClass)).findByPrimaryKey(primaryKeyValue);
     }
 
     /**
@@ -56,9 +56,9 @@ public class FastBaseDAO<T> {
      * @return 数据结果
      */
     public T findOne(Object obj) {
-        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        ConditionPackages<T> conditionPackages = new ConditionPackages<>(fastDaoPojoClass);
         conditionPackages.setEqualObject(obj);
-        return FastDao.init(conditionPackages).findOne();
+        return new FastDao<>(conditionPackages).findOne();
     }
 
     /**
@@ -69,9 +69,9 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据结果
      */
     public List<T> findAll(Object obj) {
-        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        ConditionPackages<T> conditionPackages = new ConditionPackages<>(fastDaoPojoClass);
         conditionPackages.setEqualObject(obj);
-        return FastDao.init(conditionPackages).findAll();
+        return new FastDao<>(conditionPackages).findAll();
     }
 
     /**
@@ -82,9 +82,9 @@ public class FastBaseDAO<T> {
      * @return 查询到的数据条数
      */
     public Integer findCount(Object obj) {
-        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        ConditionPackages<T> conditionPackages = new ConditionPackages<>(fastDaoPojoClass);
         conditionPackages.setEqualObject(obj);
-        return FastDao.init(conditionPackages).findCount();
+        return new FastDao<>(conditionPackages).findCount();
     }
 
     /**
@@ -97,9 +97,9 @@ public class FastBaseDAO<T> {
      * @return 分页对象, 内包含分页信息和查询到的数据
      */
     public PageInfo<T> findPage(Object obj, int pageNum, int pageSize) {
-        ConditionPackages<T> conditionPackages = ConditionPackages.create(fastDaoPojoClass);
+        ConditionPackages<T> conditionPackages = new ConditionPackages<>(fastDaoPojoClass);
         conditionPackages.setEqualObject(obj);
-        return FastDao.init(conditionPackages).findPage(pageNum, pageSize);
+        return new FastDao<>(conditionPackages).findPage(pageNum, pageSize);
     }
 
     /**
@@ -110,7 +110,7 @@ public class FastBaseDAO<T> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKey(T pojo) {
-        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).updateByPrimaryKey(pojo);
+        return new FastDao<T>(new ConditionPackages<>(fastDaoPojoClass)).updateByPrimaryKey(pojo);
     }
 
     /**
@@ -121,7 +121,7 @@ public class FastBaseDAO<T> {
      * @return 是否更新成功
      */
     public Boolean updateByPrimaryKeyOverwrite(T pojo) {
-        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).updateByPrimaryKeyOverwrite(pojo);
+        return new FastDao<T>(new ConditionPackages<>(fastDaoPojoClass)).updateByPrimaryKeyOverwrite(pojo);
     }
 
     /**
@@ -132,7 +132,7 @@ public class FastBaseDAO<T> {
      * @return 是否删除成功
      */
     public Boolean deleteByPrimaryKey(Object primaryKey) {
-        return FastDao.init(ConditionPackages.create(fastDaoPojoClass)).deleteByPrimaryKey(primaryKey);
+        return new FastDao<T>(new ConditionPackages<>(fastDaoPojoClass)).deleteByPrimaryKey(primaryKey);
     }
 
 }

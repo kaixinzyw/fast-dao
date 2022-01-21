@@ -1,7 +1,8 @@
 package com.fast.condition;
 
 import cn.hutool.core.util.StrUtil;
-import com.fast.fast.JoinFastDao;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fast.dao.many.FastJoinQueryInfo;
 import com.fast.mapper.TableMapper;
 import com.fast.mapper.TableMapperUtil;
 
@@ -13,12 +14,24 @@ import java.util.*;
  *
  * @author 张亚伟 https://github.com/kaixinzyw
  */
-public class ConditionPackages<P> implements Serializable {
+public class ConditionPackages<POJO> implements Serializable {
 
     private static final long serialVersionUID = -3640643704263216648L;
 
-    private TableMapper tableMapper;
+    /**
+     * 表映射器
+     */
+    @JSONField(serialize = false)
+    private final TableMapper tableMapper;
+    /**
+     * 表别名
+     */
     private String tableAlias;
+
+    /**
+     * 表名
+     */
+    private final String tableName;
     /**
      * 条件封装
      */
@@ -26,6 +39,7 @@ public class ConditionPackages<P> implements Serializable {
     /**
      * 条件拼接方式,默认AND
      */
+    @JSONField(serialize = false)
     private FastCondition.Way way = FastCondition.Way.AND;
 
     /**
@@ -61,8 +75,14 @@ public class ConditionPackages<P> implements Serializable {
      */
     private Set<String> maxFields;
 
+    /**
+     * 自定义查询列
+     */
     private Set<String> customQueryColumns;
 
+    /**
+     * 自定义更新列
+     */
     private Map<String, CustomizeUpdate.CustomizeUpdateData> customUpdateColumns;
 
     /**
@@ -70,10 +90,6 @@ public class ConditionPackages<P> implements Serializable {
      */
     private Boolean logicDeleteProtect = Boolean.TRUE;
 
-    /**
-     * 关联查询
-     */
-    private Boolean relatedQuery = Boolean.FALSE;
 
     /**
      * 排序
@@ -91,39 +107,57 @@ public class ConditionPackages<P> implements Serializable {
      * 自定义SQL
      */
     private String customSql;
-    private JoinFastDao<P> joinFastDao;
     /**
      * 自定义SQL参数
      */
     private Map<String, Object> customSqlParams;
 
-    private ConditionPackages(){}
+    /**
+     * 多表查询信息
+     */
+    private List<FastJoinQueryInfo> fastJoinQueryInfoList;
 
-    public static <T>ConditionPackages<T> create(Class<T> pojoClass) {
-        ConditionPackages<T> conditionPackages = new ConditionPackages<>();
-        conditionPackages.tableMapper = TableMapperUtil.getTableMappers(pojoClass);
-        return conditionPackages;
-    }
+    /**
+     * SQL执行时间
+     */
+    private Long sqlTime;
 
-    public void init() {
-        this.conditions = new ArrayList<>();
-        this.way = FastCondition.Way.AND;
-        this.showFields = null;
-        this.hideFields = null;
-        this.distinctFields = null;
-        this.sumFields = null;
-        this.avgFields = null;
-        this.minFields = null;
-        this.maxFields = null;
-        this.customQueryColumns = null;
-        this.customUpdateColumns = null;
-        this.logicDeleteProtect = Boolean.TRUE;
-        this.orderByQuery = null;
-        this.page = null;
-        this.size = null;
-        this.limit = null;
-        this.customSql = null;
-        this.customSqlParams = null;
+    /**
+     * 操作所用到的对象信息
+     */
+    private POJO update;
+
+    /**
+     * 操作所用到的对象集合信息
+     */
+    private List<POJO> insertList;
+
+    /**
+     * 返回结果
+     */
+    private Object returnVal;
+
+    /**
+     * 拼接后的SQL语句
+     */
+    private String sql;
+    /**
+     * SQL参数
+     */
+    private Map<String, Object> paramMap = new HashMap<>();
+    /**
+     * 更新操作是否对不进行参数为null的字段进行操作
+     */
+    private Boolean updateSelective;
+    /**
+     * 是否为逻辑删除
+     */
+    private Boolean logicDelete;
+
+
+    public ConditionPackages(Class<POJO> pojoClass) {
+        this.tableMapper = TableMapperUtil.getTableMappers(pojoClass);
+        this.tableName = this.getTableMapper().getTableName();
     }
 
     public void addEqualFieldQuery(String fieldName, Object value) {
@@ -329,16 +363,13 @@ public class ConditionPackages<P> implements Serializable {
     }
 
     public void customSQL(String customSQL, Map<String, Object> customSQLParams) {
-        this.customSql = customSQL + StrUtil.SPACE;
+        this.customSql = customSQL;
         this.customSqlParams = customSQLParams;
+        this.paramMap.putAll(customSQLParams);
     }
 
     public void closeLogicDeleteProtect() {
         this.logicDeleteProtect = Boolean.FALSE;
-    }
-
-    public void openRelatedQuery() {
-        this.relatedQuery = Boolean.TRUE;
     }
 
     public Integer getPage() {
@@ -373,12 +404,12 @@ public class ConditionPackages<P> implements Serializable {
         return conditions;
     }
 
-    public Boolean getLogicDeleteProtect() {
-        return logicDeleteProtect;
+    public void setConditions(List<FastCondition> conditions) {
+        this.conditions=conditions;
     }
 
-    public Boolean getRelatedQuery() {
-        return relatedQuery;
+    public Boolean getLogicDeleteProtect() {
+        return logicDeleteProtect;
     }
 
     public String getCustomSql() {
@@ -393,6 +424,82 @@ public class ConditionPackages<P> implements Serializable {
         return tableMapper;
     }
 
+    public Long getSqlTime() {
+        return sqlTime;
+    }
+
+    public void setSqlTime(Long sqlTime) {
+        this.sqlTime = sqlTime;
+    }
+
+    public POJO getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(POJO update) {
+        this.update = update;
+    }
+
+    public List<POJO> getInsertList() {
+        return insertList;
+    }
+
+    public void setInsertList(List<POJO> insertList) {
+        this.insertList = insertList;
+    }
+
+    public Object getReturnVal() {
+        return returnVal;
+    }
+
+    public void setReturnVal(Object returnVal) {
+        this.returnVal = returnVal;
+    }
+
+    public String getSql() {
+        return sql;
+    }
+
+    public void setSql(String sql) {
+        this.sql = sql;
+    }
+
+    public Map<String, Object> getParamMap() {
+        return paramMap;
+    }
+
+    public void setParamMap(Map<String, Object> paramMap) {
+        this.paramMap = paramMap;
+    }
+
+    public Boolean getUpdateSelective() {
+        return updateSelective;
+    }
+
+    public void setUpdateSelective(Boolean updateSelective) {
+        this.updateSelective = updateSelective;
+    }
+
+    public Boolean getLogicDelete() {
+        return logicDelete;
+    }
+
+    public void setLogicDelete(Boolean logicDelete) {
+        this.logicDelete = logicDelete;
+    }
+
+    public List<FastJoinQueryInfo> getFastJoinQueryInfoList() {
+        return fastJoinQueryInfoList;
+    }
+
+    public void addFastJoinQueryInfo(FastJoinQueryInfo fastJoinQueryInfo) {
+        if (fastJoinQueryInfoList == null) {
+            fastJoinQueryInfoList = new ArrayList<>();
+        }
+        fastJoinQueryInfoList.add(fastJoinQueryInfo);
+    }
+
+
     public String getTableAlias() {
         return tableAlias;
     }
@@ -401,11 +508,7 @@ public class ConditionPackages<P> implements Serializable {
         this.tableAlias = tableAlias;
     }
 
-    public JoinFastDao<P> getJoinFastDao() {
-        return joinFastDao;
-    }
-
-    public void setJoinFastDao(JoinFastDao<P> joinFastDao) {
-        this.joinFastDao = joinFastDao;
+    public String getTableName() {
+        return tableName;
     }
 }
